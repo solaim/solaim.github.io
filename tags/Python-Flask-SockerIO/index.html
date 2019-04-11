@@ -3,25 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>about | Coronarium</title>
+    <title>标签：: Python, Flask, SockerIO | Coronarium</title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
-        <meta name="keywords" content="" />
-    
-    <meta name="description" content="我是干什么的？ 没错，就是程序狗！ 我会干什么？">
-<meta property="og:type" content="article">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://coronarium.cc/2019/04/10/about/index.html">
+    <meta name="description" content="Python, Golang, Js, Music, Food">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Coronarium">
+<meta property="og:url" content="http://coronarium.cc/tags/Python-Flask-SockerIO/index.html">
 <meta property="og:site_name" content="Coronarium">
-<meta property="og:description" content="我是干什么的？ 没错，就是程序狗！ 我会干什么？">
+<meta property="og:description" content="Python, Golang, Js, Music, Food">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://coronarium.cc/images/person.jpg">
-<meta property="og:updated_time" content="2019-04-10T13:40:13.499Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="我是干什么的？ 没错，就是程序狗！ 我会干什么？">
-<meta name="twitter:image" content="http://coronarium.cc/images/person.jpg">
+<meta name="twitter:title" content="Coronarium">
+<meta name="twitter:description" content="Python, Golang, Js, Music, Food">
     
 
     
@@ -152,121 +147,79 @@
                         <div class="main-body-header">
     <h1 class="header">
     
-    <a class="page-title-link" href="/categories/dust/">dust</a>
+    <i class="icon fa fa-tag"></i>标签：: <em>Python, Flask, SockerIO</em>
     </h1>
 </div>
                         <div class="main-body-content">
-                            <article id="post-about" class="article article-single article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
+                            
+
+    
+    
         
-            <header class="article-header">
-                
+        
+        <section class="archives-wrap">
+            <div class="archive-year-wrap">
+                <a href="/archives/2019" class="archive-year"><i class="icon fa fa-calendar-o"></i>2019</a>
+            </div>
+            <div class="archives">
+    
+    
+    
+        <div class="article-row">
+    
+        <article class="article article-summary">
+    <div class="article-summary-inner">
+        
+        <a href="/2019/04/11/Flask-SocketIO基本使用/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/web.jpg)" alt="Flask-SocketIO基本使用" class="thumbnail-image"></span>
+    
+    
+        
+<span class="comment-counter">
+    <i class="fa fa-comments-o"></i>
+    
+</span>
+
+
+    
+</a>
+
+        
+        <div class="article-meta">
+            <div class="category">
+            <a class="article-category-link" href="/categories/python/">python</a>
+            </div>
+            <div class="date"><time datetime="2019-04-11T13:10:04.000Z" itemprop="datePublished">2019-04-11</time></div>
+        </div>
+        
     
         <h1 class="article-title" itemprop="name">
-        about
+        <a href="/2019/04/11/Flask-SocketIO基本使用/">Flask-SocketIO基本使用</a>
         </h1>
     
 
-            </header>
-        
-        
-            <div class="article-meta">
-                
-    <div class="article-date">
-        <a href="/2019/04/10/about/" class="article-date">
-            <time datetime="2019-04-10T12:55:18.000Z" itemprop="datePublished">2019-04-10</time>
-        </a>
-    </div>
+        <p class="article-excerpt">
+            Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。
+1.安装
+pip install flask-socketio
 
-                
-            </div>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-            <h2 id="我是干什么的？"><a href="#我是干什么的？" class="headerlink" title="我是干什么的？"></a>我是干什么的？</h2><p><img src="/images/dog.jpg" alt="狗子"></p>
-<p>没错，就是程序狗！</p>
-<h2 id="我会干什么？"><a href="#我会干什么？" class="headerlink" title="我会干什么？"></a>我会干什么？</h2><p><img src="/images/python-logo.png" alt="Python"></p>
-<p><img src="/images/flask.png" alt="Flask"></p>
-<p><img src="/images/tornado.png" alt="Tornado"></p>
-<p><img src="/images/go.png" alt="Golang"></p>
+ Flask-SocketIO提供三种异步服务机制：
 
-        </div>
-        <footer class="article-footer">
-            
-
-
-
-    <a data-url="http://coronarium.cc/2019/04/10/about/" data-id="cjucnzild000atlx9c1gspe32" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
-<script>
-    (function ($) {
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-        </footer>
+eventlet：支持长轮询和websocket
+gevent：需使用第三方库
+Werkzeug
+        </p>
     </div>
 </article>
-
-    <section id="comments">
     
-        
-    <div id="valine-thread"></div>
-
+        </div>
     
-    </section>
+
+
+    </div></section>
+
 
 
                         </div>
@@ -303,29 +256,6 @@
             
         </ul>
     </div>
-    
-        
-<nav id="article-nav">
-    
-        <a href="/2019/04/11/RabbitMQ安装和基本概念/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">下一篇</strong>
-        <p class="article-nav-title">
-        
-            RabbitMQ安装和基本概念
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
-    
-    
-        <a href="/2019/04/10/ansible/" id="article-nav-older" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">上一篇</strong>
-        <p class="article-nav-title">ansible</p>
-        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
-        </a>
-    
-</nav>
-
     
     <div class="widgets-container">
         
