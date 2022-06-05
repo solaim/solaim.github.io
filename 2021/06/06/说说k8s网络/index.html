@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>说说k8s网络 | Coronarium</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="Golang, Kubernetes, Service" />
+    
+    <meta name="description" content="1、k8s组件 k8s的组件分为两大部分：控制平面组件和节点组件。 控制平面组件包括：  kube-apiserver：API server，可以水平扩展。 etcd：后端存储。 kube-scheduler：决策新创建的Pod在哪个Node上运行。 kube-controller-manager：controller进程，观测Object的状态，current state -&gt; desir">
+<meta property="og:type" content="article">
+<meta property="og:title" content="说说k8s网络">
+<meta property="og:url" content="https://solaim.github.io/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/index.html">
+<meta property="og:site_name" content="Coronarium">
+<meta property="og:description" content="1、k8s组件 k8s的组件分为两大部分：控制平面组件和节点组件。 控制平面组件包括：  kube-apiserver：API server，可以水平扩展。 etcd：后端存储。 kube-scheduler：决策新创建的Pod在哪个Node上运行。 kube-controller-manager：controller进程，观测Object的状态，current state -&gt; desir">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://solaim.github.io/images/k8s.svg">
+<meta property="article:published_time" content="2021-06-06T03:17:45.000Z">
+<meta property="article:modified_time" content="2021-06-06T09:42:26.866Z">
+<meta property="article:author" content="Jerry Wang">
+<meta property="article:tag" content="Golang, Kubernetes, Service">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://solaim.github.io/images/k8s.svg">
+    
+
+    
+        <link rel="alternate" href="/" title="Coronarium" type="application/atom+xml" />
+    
+
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">主页</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Python/">Python</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Golang/">Golang</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Js/">Js</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/music/">音乐</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/food/">食物</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/dust/">尘埃</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Golang/">Golang</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-说说k8s网络" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        说说k8s网络
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="article-date">
+            <time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <h2 id="1、k8s组件"><a href="#1、k8s组件" class="headerlink" title="1、k8s组件"></a>1、k8s组件</h2><p><img src="/images/components.svg" alt="组件"></p>
+<p>k8s的组件分为两大部分：控制平面组件和节点组件。</p>
+<p>控制平面组件包括：</p>
+<ol>
+<li>kube-apiserver：API server，可以水平扩展。</li>
+<li>etcd：后端存储。</li>
+<li>kube-scheduler：决策新创建的Pod在哪个Node上运行。</li>
+<li>kube-controller-manager：controller进程，观测Object的状态，current state -&gt; desired state。</li>
+</ol>
+<p>节点组件包括：</p>
+<ol>
+<li>kubelet：运行Pod。</li>
+<li>kube-proxy：网络代理， k8s中Service的部分实现，负责维护节点上的网络规则。</li>
+<li>Container runtime：Docker、containerd、CRI-O。</li>
+</ol>
+<h2 id="2、k8s网络需要解决的问题"><a href="#2、k8s网络需要解决的问题" class="headerlink" title="2、k8s网络需要解决的问题"></a>2、k8s网络需要解决的问题</h2><p>k8s对任何CNI实现有如下规定：</p>
+<ol>
+<li>Pod与Pod之间的通信无须使用NAT</li>
+<li>节点与Pod之间的通信无须使用NAT</li>
+<li>Pod与其他Pod看到自身的IP相同</li>
+</ol>
+<p>k8s中的Service负责对内、对外暴露网络访问，想让应用能够在集群内外正常访问，需要解决下面的几个问题：</p>
+<ol>
+<li>容器与容器的通信</li>
+<li>Pod与Pod的通信</li>
+<li>Pod与Service的通信</li>
+<li>Internet与Service的通信</li>
+</ol>
+<h2 id="3、容器与容器的通信"><a href="#3、容器与容器的通信" class="headerlink" title="3、容器与容器的通信"></a>3、容器与容器的通信</h2><p>在Linux中，使用Namespace机制实现内核级别资源的隔离，目前提供六种Namespace：</p>
+<ul>
+<li><code>Mount</code>: 隔离文件系统挂载点</li>
+<li><code>UTS</code>: 隔离主机名和域名信息</li>
+<li><code>IPC</code>: 隔离进程间通信</li>
+<li><code>PID</code>: 隔离进程的ID</li>
+<li><code>Network</code>: 隔离网络资源</li>
+<li><code>User</code>: 隔离用户和用户组的ID</li>
+</ul>
+<p>网络命名空间netns存在一个root network namespace，默认情况下，Linux将每个进程的netns设置为root，以提供网络访问。</p>
+<p>对于Docker，Pod使用同一个网络命名空间，Pod之间通过Namespace隔离，Pod内的容器共享网络命名空间，Docker负责创建网络命名空间，应用容器使用-network加入该网络命名空间，容器之间通过localhost通信。</p>
+<h2 id="4、Pod与Pod的通信"><a href="#4、Pod与Pod的通信" class="headerlink" title="4、Pod与Pod的通信"></a>4、Pod与Pod的通信</h2><p>k8s中，每个Pod拥有一个真实的IP，Pod之间通过IP通信。</p>
+<p>（本节图片来源：Kevin Sookocheff Blog）</p>
+<p><img src="https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pods-connected-by-bridge.png" alt="虚拟网桥"></p>
+<p><img src="https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pod-to-pod-same-node.gif" alt="同节点Pod通信"></p>
+<p><img src="https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pod-to-pod-different-nodes.gif" alt="跨节点Pod通信"></p>
+<h2 id="5、Pod与Service的通信"><a href="#5、Pod与Service的通信" class="headerlink" title="5、Pod与Service的通信"></a>5、Pod与Service的通信</h2><p>Pod随着时间，可能消失、重启，那么直接使用Pod IP进行访问，在动态变化的环境中会存在网络问题。k8s中使用Service解决这个问题。（本节图片来源：Kevin Sookocheff Blog）</p>
+<p>创建一个新的Service Object，实际上是创建了一个虚拟IP和一系列网络规则。</p>
+<p>kube-proxy负责维护、更新、删除、添加网络规则，其支持的代理模式有：</p>
+<ol>
+<li>userspace</li>
+<li>iptables（默认）</li>
+<li>ipvs</li>
+<li>kernelspace (windows)</li>
+</ol>
+<p><img src="https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pod-to-service.gif" alt="Pod到Service通信"></p>
+<p><img src="https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/service-to-pod.gif" alt="Service到Pod通信"></p>
+<h2 id="6、Internet与Service通信"><a href="#6、Internet与Service通信" class="headerlink" title="6、Internet与Service通信"></a>6、Internet与Service通信</h2>
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://solaim.github.io/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" data-id="cl40qj48w000zr6glbxc500z0" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="valine-thread"></div>
+
+    
+    </section>
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>关注我 :</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/solaim/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/" target="_blank">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">上一篇</strong>
+        <p class="article-nav-title">Prometheus内部实现(四)</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/k8s.svg)" alt="说说k8s网络" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="title">说说k8s网络</a></p>
+                            <p class="item-date"><time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(四)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="title">Prometheus内部实现(四)</a></p>
+                            <p class="item-date"><time datetime="2021-03-22T15:33:57.000Z" itemprop="datePublished">2021-03-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(三)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="title">Prometheus内部实现(三)</a></p>
+                            <p class="item-date"><time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(二)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="title">Prometheus内部实现(二)</a></p>
+                            <p class="item-date"><time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(一)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="title">Prometheus内部实现(一)</a></p>
+                            <p class="item-date"><time datetime="2021-03-14T10:21:00.000Z" itemprop="datePublished">2021-03-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dust/">dust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/Golang-Kubernetes-Service/" style="font-size: 10px;">Golang, Kubernetes, Service</a> <a href="/tags/Golang-Prometheus-Observability/" style="font-size: 20px;">Golang, Prometheus, Observability</a> <a href="/tags/Python-Ansible/" style="font-size: 10px;">Python, Ansible</a> <a href="/tags/Python-Flask-SocketIO/" style="font-size: 10px;">Python, Flask, SocketIO</a> <a href="/tags/life/" style="font-size: 10px;">life</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">消息队列</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2022 Jerry Wang</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7-rc3/dist/Valine.min.js"></script>
+    <script>
+        new Valine({
+            el: '#valine-thread' ,
+            notify:false,
+            verify:false,
+            app_id: 'Rn2Eyd6fRyStAHXD8g6u9g8L-gzGzoHsz',
+            app_key: '3BINIB2VixkCjtbo7JsOohuu',
+            placeholder: 'Just Do It'
+        });
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>

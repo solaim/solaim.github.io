@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Prometheus内部实现(三) | Coronarium</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="Golang, Prometheus, Observability" />
+    
+    <meta name="description" content="非线性 &#x3D;&gt; 线性，混乱 &#x3D;&gt; 秩序  上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。 Prometheus server的main函数有两个很精彩的实现，一个是reloader的注册，一个是组件启动。但是有个问题，所有的组件都是同时启动的吗？还是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prometheus内部实现(三)">
+<meta property="og:url" content="https://solaim.github.io/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/index.html">
+<meta property="og:site_name" content="Coronarium">
+<meta property="og:description" content="非线性 &#x3D;&gt; 线性，混乱 &#x3D;&gt; 秩序  上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。 Prometheus server的main函数有两个很精彩的实现，一个是reloader的注册，一个是组件启动。但是有个问题，所有的组件都是同时启动的吗？还是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://solaim.github.io/images/prom.png">
+<meta property="article:published_time" content="2021-03-20T09:43:10.000Z">
+<meta property="article:modified_time" content="2021-03-22T15:23:23.380Z">
+<meta property="article:author" content="Jerry Wang">
+<meta property="article:tag" content="Golang, Prometheus, Observability">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://solaim.github.io/images/prom.png">
+    
+
+    
+        <link rel="alternate" href="/" title="Coronarium" type="application/atom+xml" />
+    
+
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">主页</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Python/">Python</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Golang/">Golang</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Js/">Js</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/music/">音乐</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/food/">食物</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/dust/">尘埃</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Golang/">Golang</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-Prometheus内部实现-三" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Prometheus内部实现(三)
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="article-date">
+            <time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <blockquote>
+<p>非线性 =&gt; 线性，混乱 =&gt; 秩序</p>
+</blockquote>
+<p>上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。</p>
+<p>Prometheus server的main函数有两个很精彩的实现，一个是reloader的注册，一个是组件启动。但是有个问题，所有的组件都是同时启动的吗？还是有什么顺序？</p>
+<p>我们列一个组件清单：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- Termination handler.</span><br><span class="line">- Scrape discovery manager.</span><br><span class="line">- Notify discovery manager.</span><br><span class="line">- Scrape manager.</span><br><span class="line">- Reload handler.</span><br><span class="line">- Rule manager.</span><br><span class="line">- TSDB.</span><br><span class="line">- Web handler.</span><br><span class="line">- Notifier.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再来看一下组件启动使用的底层技术:</p>
+<blockquote>
+<p>run.Group is a universal mechanism to manage goroutine lifecycles.</p>
+<p>Create a zero-value run.Group, and then add actors to it. Actors are defined as a pair of functions: an <strong>execute</strong> function, which should run synchronously; and an <strong>interrupt</strong> function, which, when invoked, should cause the execute function to return. Finally, invoke Run, which concurrently runs all of the actors, waits until the first actor exits, invokes the interrupt functions, and finally returns control to the caller only once all actors have returned. This general-purpose API allows callers to model pretty much any runnable task, and achieve well-defined lifecycle semantics for the group.</p>
+<p>run.Group was written to manage component lifecycles in func main for <a target="_blank" rel="noopener" href="https://github.com/oklog/oklog">OK Log</a>. But it’s useful in any circumstance where you need to orchestrate multiple goroutines as a unit whole. <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=LHe1Cb_Ud_M&t=15m45s">Click here</a> to see a video of a talk where run.Group is described.</p>
+<p>source: <a target="_blank" rel="noopener" href="https://pkg.go.dev/github.com/oklog/run">https://pkg.go.dev/github.com/oklog/run</a></p>
+</blockquote>
+<p>简单总结一下，oklog/run库的run.Group实现了一种goroutine生命的管理机制，使用了actor模型，注册一对函数execute和interrupt。回忆一下上篇博客，实现正是如此。</p>
+<p>Termination handler组件的execute函数使用select等待term、webHandler、cancel的通知，用于保证系统正常退出，进入即阻塞。</p>
+<p>Scrape discovery manager组件直接调用discoveryManagerScrape.Run。</p>
+<p>Notify discovery manager组件直接调用discoveryManagerNotify.Run。</p>
+<p>Scrape manager组件等待reloadReady.C通知，然后运行scrapeManager.Run。</p>
+<p>Reload handler组件等待reloadReady.C通知，然后等待hup、webHandler、cancel的通知，根据通知重新加载。</p>
+<p>Initial configuration loading组件进入后等待dbOpen、cancel通知，dbOpen通知后，加载配置。</p>
+<p>Rule manager组件等待reloadReady.C通知，然后运行ruleManager.Run。</p>
+<p>TSDB组件运行openDBWithMetrics，然后close dbOpen channel。</p>
+<p>Web handler组件直接调用webHandler.Run。</p>
+<p>Notifier组件等待reloadReady.C通知，然后调用notifierManager.Run。</p>
+<p>可以看出整个控制流程有两个很重要的channel：dbOpen和reloadReady.C。我们再看看这两个channel，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Start all components while we wait for TSDB to open but only load</span></span><br><span class="line"><span class="comment">// initial config and mark ourselves as ready after it completed.</span></span><br><span class="line">dbOpen := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// sync.Once is used to make sure we can close the channel at different execution stages(SIGTERM or when the config is loaded).</span></span><br><span class="line"><span class="keyword">type</span> closeOnce <span class="keyword">struct</span> &#123;</span><br><span class="line">  C     <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">  once  sync.Once</span><br><span class="line">  Close <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Wait until the server is ready to handle reloading.</span></span><br><span class="line">reloadReady := &amp;closeOnce&#123;</span><br><span class="line">  C: <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;),</span><br><span class="line">&#125;</span><br><span class="line">reloadReady.Close = <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">  reloadReady.once.Do(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">close</span>(reloadReady.C)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据上面的总结，Termination handler、Scrape discovery manager、Notify discovery manager、TSDB、Web handler组件直接运行，TSDB初始化结束后，关闭dbOpen channel，接着Initial configuration loading结束阻塞，开始运行，在某处关闭了reloadReady.C channel后，等待该channel通知的组件开始运行。</p>
+<p>Initial configuration loading组件的execute函数如下，可见最重要的就是reloadConfig函数的实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> &lt;-dbOpen:</span><br><span class="line">  <span class="comment">// In case a shutdown is initiated before the dbOpen is released</span></span><br><span class="line">  <span class="keyword">case</span> &lt;-cancel:</span><br><span class="line">  reloadReady.Close()</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err := reloadConfig(cfg.configFile, logger, noStepSubqueryInterval, reloaders...); err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errors.Wrapf(err, <span class="string">&quot;error loading config from %q&quot;</span>, cfg.configFile)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">reloadReady.Close()</span><br></pre></td></tr></table></figure>
+
+<p>reloadConfig函数实现如下</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">reloadConfig</span><span class="params">(filename <span class="keyword">string</span>, logger log.Logger, noStepSuqueryInterval *safePromQLNoStepSubqueryInterval, rls ...reloader)</span> <span class="params">(err error)</span></span> &#123;</span><br><span class="line">  start := time.Now()</span><br><span class="line">  timings := []<span class="keyword">interface</span>&#123;&#125;&#123;&#125;</span><br><span class="line">  level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Loading configuration file&quot;</span>, <span class="string">&quot;filename&quot;</span>, filename)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">      configSuccess.Set(<span class="number">1</span>)</span><br><span class="line">      configSuccessTime.SetToCurrentTime()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      configSuccess.Set(<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;()</span><br><span class="line"></span><br><span class="line">  conf, err := config.LoadFile(filename)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> errors.Wrapf(err, <span class="string">&quot;couldn&#x27;t load configuration (--config.file=%q)&quot;</span>, filename)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  failed := <span class="literal">false</span></span><br><span class="line">  <span class="keyword">for</span> _, rl := <span class="keyword">range</span> rls &#123;</span><br><span class="line">    rstart := time.Now()</span><br><span class="line">    <span class="keyword">if</span> err := rl.reloader(conf); err != <span class="literal">nil</span> &#123;</span><br><span class="line">      level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Failed to apply configuration&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">      failed = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    timings = <span class="built_in">append</span>(timings, rl.name, time.Since(rstart))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> failed &#123;</span><br><span class="line">    <span class="keyword">return</span> errors.Errorf(<span class="string">&quot;one or more errors occurred while applying the new configuration (--config.file=%q)&quot;</span>, filename)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  noStepSuqueryInterval.Set(conf.GlobalConfig.EvaluationInterval)</span><br><span class="line">  l := []<span class="keyword">interface</span>&#123;&#125;&#123;<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Completed loading of configuration file&quot;</span>, <span class="string">&quot;filename&quot;</span>, filename, <span class="string">&quot;totalDuration&quot;</span>, time.Since(start)&#125;</span><br><span class="line">  level.Info(logger).Log(<span class="built_in">append</span>(l, timings...)...)</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该函数里面有两个重要功能，一个是解析配置文件，另一个是调用reloader。reloader的调用先不深究，我们留到下一篇讲scrape的时候再研究，这里先研究一下配置文件的解析，这个也是相当精彩的。配置文件的struct定义如下，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Config <span class="keyword">struct</span> &#123;</span><br><span class="line">	GlobalConfig   GlobalConfig    <span class="string">`yaml:&quot;global&quot;`</span></span><br><span class="line">	AlertingConfig AlertingConfig  <span class="string">`yaml:&quot;alerting,omitempty&quot;`</span></span><br><span class="line">	RuleFiles      []<span class="keyword">string</span>        <span class="string">`yaml:&quot;rule_files,omitempty&quot;`</span></span><br><span class="line">	ScrapeConfigs  []*ScrapeConfig <span class="string">`yaml:&quot;scrape_configs,omitempty&quot;`</span></span><br><span class="line"></span><br><span class="line">	RemoteWriteConfigs []*RemoteWriteConfig <span class="string">`yaml:&quot;remote_write,omitempty&quot;`</span></span><br><span class="line">	RemoteReadConfigs  []*RemoteReadConfig  <span class="string">`yaml:&quot;remote_read,omitempty&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为需要支持各种动态发现组件，ServiceDiscoveryConfigs在这里tag key为“-”，表示不解析，config.go自定义实现了UnmarshalYAML，用于解析配置</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ScrapeConfig <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// The job name to which the job label is set by default.</span></span><br><span class="line">	JobName <span class="keyword">string</span> <span class="string">`yaml:&quot;job_name&quot;`</span></span><br><span class="line">	<span class="comment">// Indicator whether the scraped metrics should remain unmodified.</span></span><br><span class="line">	HonorLabels <span class="keyword">bool</span> <span class="string">`yaml:&quot;honor_labels,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// Indicator whether the scraped timestamps should be respected.</span></span><br><span class="line">	HonorTimestamps <span class="keyword">bool</span> <span class="string">`yaml:&quot;honor_timestamps&quot;`</span></span><br><span class="line">	<span class="comment">// A set of query parameters with which the target is scraped.</span></span><br><span class="line">	Params url.Values <span class="string">`yaml:&quot;params,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// How frequently to scrape the targets of this scrape config.</span></span><br><span class="line">	ScrapeInterval model.Duration <span class="string">`yaml:&quot;scrape_interval,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// The timeout for scraping targets of this config.</span></span><br><span class="line">	ScrapeTimeout model.Duration <span class="string">`yaml:&quot;scrape_timeout,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// The HTTP resource path on which to fetch metrics from targets.</span></span><br><span class="line">	MetricsPath <span class="keyword">string</span> <span class="string">`yaml:&quot;metrics_path,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// The URL scheme with which to fetch metrics from targets.</span></span><br><span class="line">	Scheme <span class="keyword">string</span> <span class="string">`yaml:&quot;scheme,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// More than this many samples post metric-relabeling will cause the scrape to fail.</span></span><br><span class="line">	SampleLimit <span class="keyword">uint</span> <span class="string">`yaml:&quot;sample_limit,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// More than this many targets after the target relabeling will cause the</span></span><br><span class="line">	<span class="comment">// scrapes to fail.</span></span><br><span class="line">	TargetLimit <span class="keyword">uint</span> <span class="string">`yaml:&quot;target_limit,omitempty&quot;`</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// We cannot do proper Go type embedding below as the parser will then parse</span></span><br><span class="line">	<span class="comment">// values arbitrarily into the overflow maps of further-down types.</span></span><br><span class="line"></span><br><span class="line">	ServiceDiscoveryConfigs discovery.Configs       <span class="string">`yaml:&quot;-&quot;`</span></span><br><span class="line">	HTTPClientConfig        config.HTTPClientConfig <span class="string">`yaml:&quot;,inline&quot;`</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// List of target relabel configurations.</span></span><br><span class="line">	RelabelConfigs []*relabel.Config <span class="string">`yaml:&quot;relabel_configs,omitempty&quot;`</span></span><br><span class="line">	<span class="comment">// List of metric relabel configurations.</span></span><br><span class="line">	MetricRelabelConfigs []*relabel.Config <span class="string">`yaml:&quot;metric_relabel_configs,omitempty&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>conf, err := config.LoadFile(filename)</code>这个调用返回一个Config指针，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Load</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="params">(*Config, error)</span></span> &#123;</span><br><span class="line">  cfg := &amp;Config&#123;&#125;</span><br><span class="line">  <span class="comment">// If the entire config body is empty the UnmarshalYAML method is</span></span><br><span class="line">  <span class="comment">// never called. We thus have to set the DefaultConfig at the entry</span></span><br><span class="line">  <span class="comment">// point as well.</span></span><br><span class="line">  *cfg = DefaultConfig</span><br><span class="line"></span><br><span class="line">  err := yaml.UnmarshalStrict([]<span class="keyword">byte</span>(s), cfg)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> cfg, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>err := yaml.UnmarshalStrict([]byte(s), cfg)</code>调用Config的yaml Unmarshal方法，解析配置，但是Prometheus自定义了整个配置文件的解析，Config的UnmarshalYAML实现如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Config)</span> <span class="title">UnmarshalYAML</span><span class="params">(unmarshal <span class="keyword">func</span>(<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span>) <span class="title">error</span></span> &#123;</span><br><span class="line">  *c = DefaultConfig</span><br><span class="line">  <span class="comment">// We want to set c to the defaults and then overwrite it with the input.</span></span><br><span class="line">  <span class="comment">// To make unmarshal fill the plain data struct rather than calling UnmarshalYAML</span></span><br><span class="line">  <span class="comment">// again, we have to hide it using a type indirection.</span></span><br><span class="line">  <span class="keyword">type</span> plain Config</span><br><span class="line">  <span class="keyword">if</span> err := unmarshal((*plain)(c)); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// If a global block was open but empty the default global config is overwritten.</span></span><br><span class="line">  <span class="comment">// We have to restore it here.</span></span><br><span class="line">  <span class="keyword">if</span> c.GlobalConfig.isZero() &#123;</span><br><span class="line">    c.GlobalConfig = DefaultGlobalConfig</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> _, rf := <span class="keyword">range</span> c.RuleFiles &#123;</span><br><span class="line">    <span class="keyword">if</span> !patRulePath.MatchString(rf) &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.Errorf(<span class="string">&quot;invalid rule file path %q&quot;</span>, rf)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Do global overrides and validate unique names.</span></span><br><span class="line">  jobNames := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">  <span class="keyword">for</span> _, scfg := <span class="keyword">range</span> c.ScrapeConfigs &#123;</span><br><span class="line">    <span class="keyword">if</span> scfg == <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.New(<span class="string">&quot;empty or null scrape config section&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// First set the correct scrape interval, then check that the timeout</span></span><br><span class="line">    <span class="comment">// (inferred or explicit) is not greater than that.</span></span><br><span class="line">    <span class="keyword">if</span> scfg.ScrapeInterval == <span class="number">0</span> &#123;</span><br><span class="line">      scfg.ScrapeInterval = c.GlobalConfig.ScrapeInterval</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> scfg.ScrapeTimeout &gt; scfg.ScrapeInterval &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.Errorf(<span class="string">&quot;scrape timeout greater than scrape interval for scrape config with job name %q&quot;</span>, scfg.JobName)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> scfg.ScrapeTimeout == <span class="number">0</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> c.GlobalConfig.ScrapeTimeout &gt; scfg.ScrapeInterval &#123;</span><br><span class="line">        scfg.ScrapeTimeout = scfg.ScrapeInterval</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        scfg.ScrapeTimeout = c.GlobalConfig.ScrapeTimeout</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> _, ok := jobNames[scfg.JobName]; ok &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.Errorf(<span class="string">&quot;found multiple scrape configs with job name %q&quot;</span>, scfg.JobName)</span><br><span class="line">    &#125;</span><br><span class="line">    jobNames[scfg.JobName] = <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">  rwNames := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">  <span class="keyword">for</span> _, rwcfg := <span class="keyword">range</span> c.RemoteWriteConfigs &#123;</span><br><span class="line">    <span class="keyword">if</span> rwcfg == <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.New(<span class="string">&quot;empty or null remote write config section&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Skip empty names, we fill their name with their config hash in remote write code.</span></span><br><span class="line">    <span class="keyword">if</span> _, ok := rwNames[rwcfg.Name]; ok &amp;&amp; rwcfg.Name != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.Errorf(<span class="string">&quot;found multiple remote write configs with job name %q&quot;</span>, rwcfg.Name)</span><br><span class="line">    &#125;</span><br><span class="line">    rwNames[rwcfg.Name] = <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">  rrNames := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">  <span class="keyword">for</span> _, rrcfg := <span class="keyword">range</span> c.RemoteReadConfigs &#123;</span><br><span class="line">    <span class="keyword">if</span> rrcfg == <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.New(<span class="string">&quot;empty or null remote read config section&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Skip empty names, we fill their name with their config hash in remote read code.</span></span><br><span class="line">    <span class="keyword">if</span> _, ok := rrNames[rrcfg.Name]; ok &amp;&amp; rrcfg.Name != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.Errorf(<span class="string">&quot;found multiple remote read configs with job name %q&quot;</span>, rrcfg.Name)</span><br><span class="line">    &#125;</span><br><span class="line">    rrNames[rrcfg.Name] = <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个配置的解析和验证实在是太复杂了，我们不管其他struct field的unmarshal，关注scrape configs的解析，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *ScrapeConfig)</span> <span class="title">UnmarshalYAML</span><span class="params">(unmarshal <span class="keyword">func</span>(<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span>) <span class="title">error</span></span> &#123;</span><br><span class="line">  *c = DefaultScrapeConfig</span><br><span class="line">  <span class="keyword">if</span> err := discovery.UnmarshalYAMLWithInlineConfigs(c, unmarshal); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> <span class="built_in">len</span>(c.JobName) == <span class="number">0</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> errors.New(<span class="string">&quot;job_name is empty&quot;</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// The UnmarshalYAML method of HTTPClientConfig is not being called because it&#x27;s not a pointer.</span></span><br><span class="line">  <span class="comment">// We cannot make it a pointer as the parser panics for inlined pointer structs.</span></span><br><span class="line">  <span class="comment">// Thus we just do its validation here.</span></span><br><span class="line">  <span class="keyword">if</span> err := c.HTTPClientConfig.Validate(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Check for users putting URLs in target groups.</span></span><br><span class="line">  <span class="keyword">if</span> <span class="built_in">len</span>(c.RelabelConfigs) == <span class="number">0</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> err := checkStaticTargets(c.ServiceDiscoveryConfigs); err != <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> _, rlcfg := <span class="keyword">range</span> c.RelabelConfigs &#123;</span><br><span class="line">    <span class="keyword">if</span> rlcfg == <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.New(<span class="string">&quot;empty or null target relabeling rule in scrape config&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> _, rlcfg := <span class="keyword">range</span> c.MetricRelabelConfigs &#123;</span><br><span class="line">    <span class="keyword">if</span> rlcfg == <span class="literal">nil</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> errors.New(<span class="string">&quot;empty or null metric relabeling rule in scrape config&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>err := discovery.UnmarshalYAMLWithInlineConfigs(c, unmarshal)</code>里面是解析动态发现的具体实现， let us drill down：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">UnmarshalYAMLWithInlineConfigs</span><span class="params">(out <span class="keyword">interface</span>&#123;&#125;, unmarshal <span class="keyword">func</span>(<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span>) <span class="title">error</span></span> &#123;</span><br><span class="line">  outVal := reflect.ValueOf(out)</span><br><span class="line">  <span class="keyword">if</span> outVal.Kind() != reflect.Ptr &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;discovery: can only unmarshal into a struct pointer: %T&quot;</span>, out)</span><br><span class="line">  &#125;</span><br><span class="line">  outVal = outVal.Elem()</span><br><span class="line">  <span class="keyword">if</span> outVal.Kind() != reflect.Struct &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;discovery: can only unmarshal into a struct pointer: %T&quot;</span>, out)</span><br><span class="line">  &#125;</span><br><span class="line">  outTyp := outVal.Type()</span><br><span class="line"></span><br><span class="line">  cfgTyp := getConfigType(outTyp)</span><br><span class="line">  cfgPtr := reflect.New(cfgTyp)</span><br><span class="line">  cfgVal := cfgPtr.Elem()</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Copy shared fields (defaults) to dynamic value.</span></span><br><span class="line">  <span class="keyword">var</span> configs *Configs</span><br><span class="line">  <span class="keyword">for</span> i, n := <span class="number">0</span>, outVal.NumField(); i &lt; n; i++ &#123;</span><br><span class="line">    <span class="keyword">if</span> outTyp.Field(i).Type == configsType &#123;</span><br><span class="line">      configs = outVal.Field(i).Addr().Interface().(*Configs)</span><br><span class="line">      <span class="keyword">continue</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> cfgTyp.Field(i).PkgPath != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">      <span class="keyword">continue</span> <span class="comment">// Field is unexported: ignore.</span></span><br><span class="line">    &#125;</span><br><span class="line">    cfgVal.Field(i).Set(outVal.Field(i))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> configs == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Errorf(<span class="string">&quot;discovery: Configs field not found in type: %T&quot;</span>, out)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Unmarshal into dynamic value.</span></span><br><span class="line">  <span class="keyword">if</span> err := unmarshal(cfgPtr.Interface()); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> replaceYAMLTypeError(err, cfgTyp, outTyp)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Copy shared fields from dynamic value.</span></span><br><span class="line">  <span class="keyword">for</span> i, n := <span class="number">0</span>, outVal.NumField(); i &lt; n; i++ &#123;</span><br><span class="line">    <span class="keyword">if</span> cfgTyp.Field(i).PkgPath != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">      <span class="keyword">continue</span> <span class="comment">// Field is unexported: ignore.</span></span><br><span class="line">    &#125;</span><br><span class="line">    outVal.Field(i).Set(cfgVal.Field(i))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> err error</span><br><span class="line">  *configs, err = readConfigs(cfgVal, outVal.NumField())</span><br><span class="line">  <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Oh, my god! 这个太刺激了，用reflect去实现底层的数据解析，这个以后要看看底层的实现，先不管了，我们看到上面函数的倒数第二句有这样一个调用<code>*configs, err = readConfigs(cfgVal, outVal.NumField())</code>，继续drill down</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readConfigs</span><span class="params">(structVal reflect.Value, startField <span class="keyword">int</span>)</span> <span class="params">(Configs, error)</span></span> &#123;</span><br><span class="line">  <span class="keyword">var</span> (</span><br><span class="line">    configs Configs</span><br><span class="line">    targets []*targetgroup.Group</span><br><span class="line">  )</span><br><span class="line">  <span class="keyword">for</span> i, n := startField, structVal.NumField(); i &lt; n; i++ &#123;</span><br><span class="line">    field := structVal.Field(i)</span><br><span class="line">    <span class="keyword">if</span> field.Kind() != reflect.Slice &#123;</span><br><span class="line">      <span class="built_in">panic</span>(<span class="string">&quot;discovery: internal error: field is not a slice&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> k := <span class="number">0</span>; k &lt; field.Len(); k++ &#123;</span><br><span class="line">      val := field.Index(k)</span><br><span class="line">      <span class="keyword">if</span> val.IsZero() || (val.Kind() == reflect.Ptr &amp;&amp; val.Elem().IsZero()) &#123;</span><br><span class="line">        key := configFieldNames[field.Type().Elem()]</span><br><span class="line">        key = strings.TrimPrefix(key, configFieldPrefix)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">&quot;empty or null section in %s&quot;</span>, key)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">switch</span> c := val.Interface().(<span class="keyword">type</span>) &#123;</span><br><span class="line">        <span class="keyword">case</span> *targetgroup.Group:</span><br><span class="line">        <span class="comment">// Add index to the static config target groups for unique identification</span></span><br><span class="line">        <span class="comment">// within scrape pool.</span></span><br><span class="line">        c.Source = strconv.Itoa(<span class="built_in">len</span>(targets))</span><br><span class="line">        <span class="comment">// Coalesce multiple static configs into a single static config.</span></span><br><span class="line">        targets = <span class="built_in">append</span>(targets, c)</span><br><span class="line">        <span class="keyword">case</span> Config:</span><br><span class="line">        configs = <span class="built_in">append</span>(configs, c)</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">&quot;discovery: internal error: slice element is not a Config&quot;</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> <span class="built_in">len</span>(targets) &gt; <span class="number">0</span> &#123;</span><br><span class="line">    configs = <span class="built_in">append</span>(configs, StaticConfig(targets))</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> configs, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>厉害了厉害了，我们终于解析完了scrape config，终于知道可以去抓取哪些目标metrics了。嗯，又有新目标，了解yaml底层解析的原理！！！</p>
+<p>下一篇我们接着研究Prometheus server的scrape实现。</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://solaim.github.io/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" data-id="cl40qj48y0013r6gl185ofm94" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="valine-thread"></div>
+
+    
+    </section>
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>关注我 :</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/solaim/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/" target="_blank">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">下一篇</strong>
+        <p class="article-nav-title">
+        
+            Prometheus内部实现(四)
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">上一篇</strong>
+        <p class="article-nav-title">Prometheus内部实现(二)</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/k8s.svg)" alt="说说k8s网络" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="title">说说k8s网络</a></p>
+                            <p class="item-date"><time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(四)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="title">Prometheus内部实现(四)</a></p>
+                            <p class="item-date"><time datetime="2021-03-22T15:33:57.000Z" itemprop="datePublished">2021-03-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(三)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="title">Prometheus内部实现(三)</a></p>
+                            <p class="item-date"><time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(二)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="title">Prometheus内部实现(二)</a></p>
+                            <p class="item-date"><time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(一)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="title">Prometheus内部实现(一)</a></p>
+                            <p class="item-date"><time datetime="2021-03-14T10:21:00.000Z" itemprop="datePublished">2021-03-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dust/">dust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/Golang-Kubernetes-Service/" style="font-size: 10px;">Golang, Kubernetes, Service</a> <a href="/tags/Golang-Prometheus-Observability/" style="font-size: 20px;">Golang, Prometheus, Observability</a> <a href="/tags/Python-Ansible/" style="font-size: 10px;">Python, Ansible</a> <a href="/tags/Python-Flask-SocketIO/" style="font-size: 10px;">Python, Flask, SocketIO</a> <a href="/tags/life/" style="font-size: 10px;">life</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">消息队列</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2022 Jerry Wang</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7-rc3/dist/Valine.min.js"></script>
+    <script>
+        new Valine({
+            el: '#valine-thread' ,
+            notify:false,
+            verify:false,
+            app_id: 'Rn2Eyd6fRyStAHXD8g6u9g8L-gzGzoHsz',
+            app_key: '3BINIB2VixkCjtbo7JsOohuu',
+            placeholder: 'Just Do It'
+        });
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>

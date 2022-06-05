@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>ansible | Coronarium</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="Python, Ansible" />
+    
+    <meta name="description" content="1、 What is ansible? Ansible is a radically simple IT automation engine that automates cloud provisioning, configuration management, application deployment, intra-service orchestration, and many other">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ansible">
+<meta property="og:url" content="https://solaim.github.io/2019/04/10/ansible/index.html">
+<meta property="og:site_name" content="Coronarium">
+<meta property="og:description" content="1、 What is ansible? Ansible is a radically simple IT automation engine that automates cloud provisioning, configuration management, application deployment, intra-service orchestration, and many other">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://solaim.github.io/images/AnsibleArchitecture.png">
+<meta property="article:published_time" content="2019-04-10T11:55:58.000Z">
+<meta property="article:modified_time" content="2019-10-20T10:38:07.696Z">
+<meta property="article:author" content="Jerry Wang">
+<meta property="article:tag" content="Python, Ansible">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://solaim.github.io/images/AnsibleArchitecture.png">
+    
+
+    
+        <link rel="alternate" href="/" title="Coronarium" type="application/atom+xml" />
+    
+
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">主页</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Python/">Python</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Golang/">Golang</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Js/">Js</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/music/">音乐</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/food/">食物</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/dust/">尘埃</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Python/">Python</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-ansible" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        ansible
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2019/04/10/ansible/" class="article-date">
+            <time datetime="2019-04-10T11:55:58.000Z" itemprop="datePublished">2019-04-10</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <h2 id="1、-What-is-ansible"><a href="#1、-What-is-ansible" class="headerlink" title="1、 What is ansible?"></a>1、 What is ansible?</h2><blockquote>
+<p>Ansible is a radically simple IT automation engine that automates <em>cloud provisioning</em>, <em>configuration management</em>, <em>application deployment</em>, <em>intra-service orchestration</em>, and many other IT needs.</p>
+</blockquote>
+<p>Ansible是一个颠覆性的运维工具，支持云配置、配置管理、应用部署、服务编配等运维工作。</p>
+<blockquote>
+<p>Designed for multi-tier deployments since day one, Ansible models your IT infrastructure by describing how all of your systems inter-relate, rather than just managing one system at a time.</p>
+</blockquote>
+<p>Ansible一开始就是为多层架构设计的，因此Ansible通过描述系统内部关系，进行整体建模。</p>
+<p><img src="/images/AnsibleArchitecture.png" alt="AnsibleArchitecture"></p>
+<blockquote>
+<p>It uses no agents and no additional custom security infrastructure, so it’s easy to deploy - and most importantly, it uses a very simple language (YAML, in the form of Ansible Playbooks) that allow you to describe your automation jobs in a way that approaches plain English.</p>
+</blockquote>
+<ul>
+<li>Ansible  no agents</li>
+<li>no additional custom security infrastucture, it use ssh</li>
+<li>describe  automation jobs by yaml</li>
+</ul>
+<h2 id="2、How-to-Ansible"><a href="#2、How-to-Ansible" class="headerlink" title="2、How to Ansible?"></a>2、How to Ansible?</h2><p>尽管各种平台的管理工具都可以安装Ansible，但是Ansible是Python开发的，所以Ansible的安装建议尽量使用pip:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install ansible</span><br></pre></td></tr></table></figure>
+
+<p>如果想使用平台管理工具安装，具体查询<a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html">官网</a>。</p>
+<p>检查安装结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible --version</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ansible 2.7.6</span><br><span class="line">  config file = None</span><br><span class="line">  configured module search path = [u<span class="string">&#x27;/root/.ansible/plugins/modules&#x27;</span>, u<span class="string">&#x27;/usr/share/ansible/plugins/modules&#x27;</span>]</span><br><span class="line">  ansible python module location = /usr/lib/python2.7/site-packages/ansible</span><br><span class="line">  executable location = /usr/bin/ansible</span><br><span class="line">  python version = 2.7.5 (default, Nov  6 2016, 00:28:07) [GCC 4.8.5 20150623 (Red Hat 4.8.5-11)]</span><br></pre></td></tr></table></figure>
+
+<p>使用pip安装的Ansible没有自动生成配置文件，需要手动生成。使用平台工具安装会自动生成Ansible配置文件。</p>
+<p>Ansible的核心是<strong>Playbooks</strong>。<strong>Playbooks</strong>是一个yaml格式的文本文件，用于描述事务状态。<strong>Playbooks</strong>的使用变量<em>Variables</em>描述，<em>Variables</em>可以在Playbooks、File、Inventories、Command line、Discovered variables、Ansible Tower等中定义。</p>
+<p><strong>Inventories</strong>类似中药药方，中药药方基本是这么写的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">当归莲子汤</span><br><span class="line"></span><br><span class="line">当归 两钱</span><br><span class="line">莲子 四钱</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p><strong>Inventories</strong>描述服务器的Host列表、范围、动态范围以及自定义。</p>
+<blockquote>
+<p><strong>Playbooks</strong> contain <strong>plays</strong></p>
+<p><strong>Plays</strong> contain <strong>tasks</strong></p>
+<p><strong>Tasks</strong> call <strong>modules</strong></p>
+<p><strong>Tasks</strong> run sequentially</p>
+<p><strong>Handlers</strong> are triggered by <strong>Tasks</strong>, and are run once, at the end of <strong>Plays</strong></p>
+</blockquote>
+<p>高级Playbooks支持条件触发以及role等特征。定义好Playbooks之后，具体怎么运行Ansible呢？</p>
+<p>运行Ansible有三种主流的方式：</p>
+<ul>
+<li>Ad-Hoc：ansible <inventory> -m </li>
+<li>Playbooks：ansible-playbook</li>
+<li>Automation Framework：Ansible Tower(AWX)</li>
+</ul>
+<h2 id="3、Could-you-give-me-a-demo"><a href="#3、Could-you-give-me-a-demo" class="headerlink" title="3、Could you give me a demo?"></a>3、Could you give me a demo?</h2><ul>
+<li><input disabled="" type="checkbox"> 创建ansible目录</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /etc/ansible</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> 创建ansible.cfg</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch /etc/ansible/ansible.cfg</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> 编辑ansible.cfg</li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># config file for ansible -- https://ansible.com/</span></span><br><span class="line"><span class="comment"># ===============================================</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># nearly all parameters can be overridden in ansible-playbook</span></span><br><span class="line"><span class="comment"># or with command line flags. ansible will read ANSIBLE_CONFIG,</span></span><br><span class="line"><span class="comment"># ansible.cfg in the current working directory, .ansible.cfg in</span></span><br><span class="line"><span class="comment"># the home directory or /etc/ansible/ansible.cfg, whichever it</span></span><br><span class="line"><span class="comment"># finds first</span></span><br><span class="line"></span><br><span class="line"><span class="section">[defaults]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># some basic default values...</span></span><br><span class="line"></span><br><span class="line"><span class="attr">inventory</span>      = /etc/ansible/hosts</span><br><span class="line"><span class="attr">library</span>        = /usr/share/ansible/</span><br><span class="line"><span class="comment">#module_utils   = /usr/share/my_module_utils/</span></span><br><span class="line"><span class="comment">#remote_tmp     = ~/.ansible/tmp</span></span><br><span class="line"><span class="comment">#local_tmp      = ~/.ansible/tmp</span></span><br><span class="line"><span class="comment">#plugin_filters_cfg = /etc/ansible/plugin_filters.yml</span></span><br><span class="line"><span class="attr">forks</span>          = <span class="number">5</span></span><br><span class="line"><span class="comment">#poll_interval  = 15</span></span><br><span class="line"><span class="attr">sudo_user</span>      = root</span><br><span class="line"><span class="comment">#ask_sudo_pass = True</span></span><br><span class="line"><span class="comment">#ask_pass      = True</span></span><br><span class="line"><span class="comment">#transport      = smart</span></span><br><span class="line"><span class="attr">remote_port</span>    = <span class="number">22</span></span><br><span class="line"><span class="comment">#module_lang    = C</span></span><br><span class="line"><span class="comment">#module_set_locale = False</span></span><br><span class="line"></span><br><span class="line"><span class="section">[inventory]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[privilege_escalation]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[paramiko_connection]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[ssh_connection]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[persistent_connection]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[accelerate]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[selinux]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[colors]</span></span><br><span class="line"></span><br><span class="line"><span class="section">[diff]</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>详细配置文件，请参考Github<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg">网页</a>。</p>
+<ul>
+<li><input disabled="" type="checkbox"> 编辑Inventory /etc/ansible/hosts</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.0.142</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><input disabled="" type="checkbox"> 使用Ad-hoc方式运行命令：</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible all -m ping</span><br><span class="line"></span><br><span class="line">ansible all -a <span class="string">&quot;/bin/echo hello&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4、Yelp-but-how-to-do-with-complex-deployment"><a href="#4、Yelp-but-how-to-do-with-complex-deployment" class="headerlink" title="4、Yelp, but how to do with complex deployment?"></a>4、Yelp, but how to do with complex deployment?</h2><p><strong>Playbooks</strong> is really good!!!</p>
+<p><strong>Playbooks</strong> is really good!!!</p>
+<p><strong>Playbooks</strong> is really good!!!</p>
+<p>病比较复杂，就需要一系列工具来辅助治疗。最常用的工具有ansible和ansible-playbook。但是还有很多其他工具，比如：</p>
+<blockquote>
+<p><strong>ansible-config</strong>: 用于查看、编辑、和管理ansible配置。</p>
+</blockquote>
+<blockquote>
+<p><strong>ansible-console</strong>：用于执行ansible ad-hoc 的repl console。</p>
+</blockquote>
+<blockquote>
+<p><strong>ansible-doc</strong>：插件文档工具，用于查看ansible modules的描述信息。</p>
+</blockquote>
+<blockquote>
+<p><strong>ansible-galaxy</strong>：ansible执行角色相关的操作。</p>
+</blockquote>
+<blockquote>
+<p><strong>ansible-inventory</strong>：用于查看inventory。</p>
+</blockquote>
+<blockquote>
+<p><strong>ansible-pull</strong>：从VCS仓库拉取playbooks并在本地执行。</p>
+</blockquote>
+<blockquote>
+<p><strong>ansible-vault</strong>：用于ansible数据文件加解密。</p>
+</blockquote>
+<p>工具用的熟就好，但是主要工具不仅要用的熟，还得用的巧。ansible和ansible-playbook就是这样的工具。</p>
+<blockquote>
+<p><strong>ansible</strong>：用于定义和执行单一任务</p>
+</blockquote>
+<blockquote>
+<p><strong>ansible-playbook</strong>：运行ansible playbook，在目标主机群上执行定义的任务。</p>
+</blockquote>
+<p>来看两个简单的ansible使用示例：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ansible all -a <span class="string">&quot;/sbin/reboot&quot;</span> -f 10</span><br><span class="line">ansible all -m shell -a <span class="string">&#x27;echo $TERM&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>第一个例子开启10个进程，让所有主机重启。当然，如果all中定义的主机数目小于10，比如5，那么有5个进程就是空闲的。如果all中有12个主机，那么有两个任务会等待。参数 -f 10 用来指定进程数目。</p>
+<p>第二个例子打印TERM参数，但是使用-m指定了模块，一般默认的模块是’command’。</p>
+<p>这两个都是简单的例子，ansible的模块支持更加复杂的任务。比如文件操作：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible all -m copy -a <span class="string">&quot;src=/etc/hosts dest=/tmp/hosts&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 类似于scp</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible all -m file -a <span class="string">&quot;dest=/srv/foo/a.txt mode=600&quot;</span></span><br><span class="line">ansible all -m file -a <span class="string">&quot;dest=/srv/foo/b.txt mode=600 owner=mdehaan group=mdehaan&quot;</span></span><br><span class="line"><span class="comment"># 类似于chmod等命令</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible webservers -m file -a <span class="string">&quot;dest=/path/to/c mode=755 owner=mdehaan group=mdehaan state=directory&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 类似于mkdir -p</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible webservers -m file -a <span class="string">&quot;dest=/path/to/c state=absent&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 类似于rm</span></span><br></pre></td></tr></table></figure>
+
+<p>比如管理包：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ansible webservers -m yum -a <span class="string">&quot;name=acme state=present&quot;</span></span><br><span class="line"><span class="comment"># 确保安装，但是不升级</span></span><br><span class="line">ansible webservers -m yum -a <span class="string">&quot;name=acme-1.5 state=present&quot;</span></span><br><span class="line"><span class="comment"># 确保安装指定版本</span></span><br><span class="line">ansible webservers -m yum -a <span class="string">&quot;name=acme state=latest&quot;</span></span><br><span class="line"><span class="comment"># 确保安装最新版本</span></span><br><span class="line">ansible webservers -m yum -a <span class="string">&quot;name=acme state=absent&quot;</span></span><br><span class="line"><span class="comment"># 确保未安装</span></span><br></pre></td></tr></table></figure>
+
+<p>比如用户和组的管理：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ansible all -m user -a <span class="string">&quot;name=foo password=&lt;crypted password here&gt;&quot;</span></span><br><span class="line"><span class="comment"># 创建用户</span></span><br><span class="line">ansible all -m user -a <span class="string">&quot;name=foo state=absent&quot;</span></span><br><span class="line"><span class="comment"># 删除用户</span></span><br></pre></td></tr></table></figure>
+
+<p>比如源码部署：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible webservers -m git -a <span class="string">&quot;repo=https://foo.example.org/repo.git dest=/srv/myapp version=HEAD&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>比如服务管理：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ansible webservers -m service -a <span class="string">&quot;name=httpd state=started&quot;</span></span><br><span class="line"><span class="comment"># 开启</span></span><br><span class="line">ansible webservers -m service -a <span class="string">&quot;name=httpd state=restarted&quot;</span></span><br><span class="line"><span class="comment"># 重启</span></span><br><span class="line">ansible webservers -m service -a <span class="string">&quot;name=httpd state=stopped&quot;</span></span><br><span class="line"><span class="comment"># 关闭</span></span><br></pre></td></tr></table></figure>
+
+<p>比如限时后台任务：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ansible all -B 3600 -P 0 -a <span class="string">&quot;/usr/bin/long_running_operation --do-stuff&quot;</span></span><br><span class="line"><span class="comment"># /usr/bin/long_running_operation一个后台任务，-B表示超时时间，-P表示轮询polling</span></span><br><span class="line">ansible web1.example.com -m async_status -a <span class="string">&quot;jid=488359678239.2844&quot;</span></span><br><span class="line"><span class="comment"># 使用async_status检查异步任务状态</span></span><br><span class="line">ansible all -B 1800 -P 60 -a <span class="string">&quot;/usr/bin/long_running_operation --do-stuff&quot;</span></span><br><span class="line"><span class="comment"># 在启动任务的同时开启轮询模式，任务执行30分钟，每60秒检查一次状态</span></span><br></pre></td></tr></table></figure>
+
+<p>比如获取系统信息：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible all -m setup</span><br></pre></td></tr></table></figure>
+
+<p>嗯，ansible ad-hoc是很好用，但是我想把任务记录下来，下次直接执行，怎么办呢？</p>
+<p>这个就要用到ansible-playbook了，不过我们先来看看inventory。</p>
+<p>ansible运行在复杂环境架构中，为了任务管理、运行方便，可以从inventory list中选取需要操作的主机组进行操作。inventory默认的存储文件是<code>/etc/ansible/hosts</code>，不过可以使用<code>-i path</code>进行指定。</p>
+<p>inventory支持多文件同时配置，支持动态拉取，支持不同格式的文件。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mail.example.com</span><br><span class="line"></span><br><span class="line"><span class="section">[webservers]</span></span><br><span class="line">foo.example.com</span><br><span class="line">bar.example.com</span><br><span class="line"></span><br><span class="line"><span class="section">[dbservers]</span></span><br><span class="line">one.example.com</span><br><span class="line">two.example.com</span><br><span class="line">three.example.com</span><br></pre></td></tr></table></figure>
+
+<p>这是一个ini格式的inventory，[webservers]表示group，可以方便的选取执行相关任务的主机，并且表明主机的用途。yaml格式的像这样：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">all:</span></span><br><span class="line">  <span class="attr">hosts:</span></span><br><span class="line">    <span class="attr">mail.example.com:</span></span><br><span class="line">  <span class="attr">children:</span></span><br><span class="line">    <span class="attr">webservers:</span></span><br><span class="line">      <span class="attr">hosts:</span></span><br><span class="line">        <span class="attr">foo.example.com:</span></span><br><span class="line">        <span class="attr">bar.example.com:</span></span><br><span class="line">    <span class="attr">dbservers:</span></span><br><span class="line">      <span class="attr">hosts:</span></span><br><span class="line">        <span class="attr">one.example.com:</span></span><br><span class="line">        <span class="attr">two.example.com:</span></span><br><span class="line">        <span class="attr">three.example.com:</span></span><br></pre></td></tr></table></figure>
+
+<p>如果ssh使用的不是标准端口，需要在inventory中标明：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">badwolf.example.com:5309</span><br></pre></td></tr></table></figure>
+
+<p>inventory支持使用变量定义主机：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jumper ansible_port=5555 ansible_host=192.0.2.50</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">...</span></span><br><span class="line">  <span class="attr">hosts:</span></span><br><span class="line">    <span class="attr">jumper:</span></span><br><span class="line">      <span class="attr">ansible_port:</span> <span class="number">5555</span></span><br><span class="line">      <span class="attr">ansible_host:</span> <span class="number">192.0</span><span class="number">.2</span><span class="number">.50</span></span><br></pre></td></tr></table></figure>
+
+<p>inventory支持模式匹配，如果主机类型模式类似，可以像这样：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[webservers]</span></span><br><span class="line">www[01:50].example.com</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[databases]</span></span><br><span class="line">db-[a:f].example.com</span><br></pre></td></tr></table></figure>
+
+<p>inventory支持定义连接类型和用户：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[targets]</span></span><br><span class="line"></span><br><span class="line">localhost              ansible_connection=local</span><br><span class="line">other1.example.com     ansible_connection=ssh        ansible_user=mpdehaan</span><br><span class="line">other2.example.com     ansible_connection=ssh        ansible_user=mdehaan</span><br></pre></td></tr></table></figure>
+
+<p>可以在inventory中直接定义变量，但是更常用的方法是在host_vars目录的单独文件中进行定义，然后在inventory中进行引用：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[atlanta]</span></span><br><span class="line">host1 http_port=80 maxRequestsPerChild=808</span><br><span class="line">host2 http_port=303 maxRequestsPerChild=909</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[atlanta]</span></span><br><span class="line">host1</span><br><span class="line">host2</span><br><span class="line"></span><br><span class="line"><span class="section">[atlanta:vars]</span></span><br><span class="line"><span class="attr">ntp_server</span>=ntp.atlanta.example.com</span><br><span class="line"><span class="attr">proxy</span>=proxy.atlanta.example.com</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">atlanta</span>]</span><br><span class="line"><span class="string">host1</span></span><br><span class="line"><span class="string">host2</span></span><br><span class="line"></span><br><span class="line">[<span class="string">atlanta:vars</span>]</span><br><span class="line"><span class="string">ntp_server=ntp.atlanta.example.com</span></span><br><span class="line"><span class="string">proxy=proxy.atlanta.example.com</span></span><br></pre></td></tr></table></figure>
+
+<p>host和group均支持变量。但是切记，这只是一种表示方法，实际执行的时候会用literal替代。</p>
+<p>inventory有两个默认组：all和ungrouped。all包含所有主机，ungrouped包含没有分组的主机。当然inventory支持更复杂的定义方式，但是，这只是入门级使用手册，不一一赘述。快点进入重点吧，怎么用Playbooks呢？</p>
+<p>如果你有一间作坊，那么modules就是你的工具，Playbooks就是你的操作手册，inventory就是原料。</p>
+<p>记住，Playbooks是ansible的语言、的语言、的语言…</p>
+<h2 id="5、Oh，No！sophisticated-Playbooks…"><a href="#5、Oh，No！sophisticated-Playbooks…" class="headerlink" title="5、Oh，No！sophisticated Playbooks…"></a>5、Oh，No！sophisticated Playbooks…</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">webservers</span></span><br><span class="line">  <span class="attr">remote_user:</span> <span class="string">root</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">ensure</span> <span class="string">apache</span> <span class="string">is</span> <span class="string">at</span> <span class="string">the</span> <span class="string">latest</span> <span class="string">version</span></span><br><span class="line">    <span class="attr">yum:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">httpd</span></span><br><span class="line">      <span class="attr">state:</span> <span class="string">latest</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">write</span> <span class="string">the</span> <span class="string">apache</span> <span class="string">config</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">template:</span></span><br><span class="line">      <span class="attr">src:</span> <span class="string">/srv/httpd.j2</span></span><br><span class="line">      <span class="attr">dest:</span> <span class="string">/etc/httpd.conf</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">databases</span></span><br><span class="line">  <span class="attr">remote_user:</span> <span class="string">root</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">ensure</span> <span class="string">postgresql</span> <span class="string">is</span> <span class="string">at</span> <span class="string">the</span> <span class="string">latest</span> <span class="string">version</span></span><br><span class="line">    <span class="attr">yum:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">postgresql</span></span><br><span class="line">      <span class="attr">state:</span> <span class="string">latest</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">ensure</span> <span class="string">that</span> <span class="string">postgresql</span> <span class="string">is</span> <span class="string">started</span></span><br><span class="line">    <span class="attr">service:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">postgresql</span></span><br><span class="line">      <span class="attr">state:</span> <span class="string">started</span></span><br></pre></td></tr></table></figure>
+
+<p>这个Playbooks示例中，有两个play，第一个现在webservers group执行apache安装和配置，第二个在databases group执行postgresql安装和启动。Playbooks顺序执行。</p>
+<blockquote>
+<p><strong>Playbooks</strong> contain <strong>plays</strong></p>
+<p><strong>Plays</strong> contain <strong>tasks</strong></p>
+<p><strong>Tasks</strong> call <strong>modules</strong></p>
+<p><strong>Tasks</strong> run sequentially</p>
+<p><strong>Handlers</strong> are triggered by <strong>Tasks</strong>, and are run once, at the end of <strong>Plays</strong></p>
+</blockquote>
+<p>一个play必须指定目标主机和操作用户，注意是远程操作用户。目标主机通过<code>-hosts</code>指定，操作用户使用<code>remote_user</code>指定，支持细分task指定不同操作用户，支持用户切换。hosts是目标主机的列表，若有多组目标主机，使用冒号分割。一个play可以有多个task，每个task必须指定任务名称，任务调用模块，模块的调用格式为<code>module: options</code>。options分为key-value形式和非key-value形式的。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">make</span> <span class="string">sure</span> <span class="string">apache</span> <span class="string">is</span> <span class="string">running</span></span><br><span class="line">    <span class="attr">service:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">httpd</span></span><br><span class="line">      <span class="attr">state:</span> <span class="string">started</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># key-value</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">enable</span> <span class="string">selinux</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">/sbin/setenforce</span> <span class="number">1</span></span><br><span class="line">    </span><br><span class="line"><span class="comment"># non key-value</span></span><br></pre></td></tr></table></figure>
+
+<p>根据上面的两个例子，可以看出options的格式根据modules发生变化。任务可以出发handler，比如两个任务task均涉及到nginx配置文件的修改，在task 的notify中均定义了handler，那么在play执行的最后，将只执行一次handler，避免nginx重复重启。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">template</span> <span class="string">configuration</span> <span class="string">file</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">src:</span> <span class="string">template.j2</span></span><br><span class="line">    <span class="attr">dest:</span> <span class="string">/etc/foo.conf</span></span><br><span class="line">  <span class="attr">notify:</span></span><br><span class="line">     <span class="bullet">-</span> <span class="string">restart</span> <span class="string">memcached</span></span><br><span class="line">     <span class="bullet">-</span> <span class="string">restart</span> <span class="string">apache</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">handlers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">restart</span> <span class="string">memcached</span></span><br><span class="line">      <span class="attr">service:</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">memcached</span></span><br><span class="line">        <span class="attr">state:</span> <span class="string">restarted</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">restart</span> <span class="string">apache</span></span><br><span class="line">      <span class="attr">service:</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">apache</span></span><br><span class="line">        <span class="attr">state:</span> <span class="string">restarted</span></span><br></pre></td></tr></table></figure>
+
+<p>执行Playbooks的命令行：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook playbook.yml</span><br></pre></td></tr></table></figure>
+
+<p>一个简单的nginx安装示例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">all</span></span><br><span class="line">  <span class="attr">remote_user:</span> <span class="string">root</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">yum</span> <span class="string">install</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">yum:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">      <span class="attr">state:</span> <span class="string">latest</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://solaim.github.io/2019/04/10/ansible/" data-id="cl40qj48p000pr6gl7u2jg677" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="valine-thread"></div>
+
+    
+    </section>
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>关注我 :</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/solaim/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/" target="_blank">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/04/10/about/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">下一篇</strong>
+        <p class="article-nav-title">
+        
+            about
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2017/12/19/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">上一篇</strong>
+        <p class="article-nav-title">人工智能</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/k8s.svg)" alt="说说k8s网络" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="title">说说k8s网络</a></p>
+                            <p class="item-date"><time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(四)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="title">Prometheus内部实现(四)</a></p>
+                            <p class="item-date"><time datetime="2021-03-22T15:33:57.000Z" itemprop="datePublished">2021-03-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(三)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="title">Prometheus内部实现(三)</a></p>
+                            <p class="item-date"><time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(二)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="title">Prometheus内部实现(二)</a></p>
+                            <p class="item-date"><time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(一)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="title">Prometheus内部实现(一)</a></p>
+                            <p class="item-date"><time datetime="2021-03-14T10:21:00.000Z" itemprop="datePublished">2021-03-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dust/">dust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/Golang-Kubernetes-Service/" style="font-size: 10px;">Golang, Kubernetes, Service</a> <a href="/tags/Golang-Prometheus-Observability/" style="font-size: 20px;">Golang, Prometheus, Observability</a> <a href="/tags/Python-Ansible/" style="font-size: 10px;">Python, Ansible</a> <a href="/tags/Python-Flask-SocketIO/" style="font-size: 10px;">Python, Flask, SocketIO</a> <a href="/tags/life/" style="font-size: 10px;">life</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">消息队列</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2022 Jerry Wang</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7-rc3/dist/Valine.min.js"></script>
+    <script>
+        new Valine({
+            el: '#valine-thread' ,
+            notify:false,
+            verify:false,
+            app_id: 'Rn2Eyd6fRyStAHXD8g6u9g8L-gzGzoHsz',
+            app_key: '3BINIB2VixkCjtbo7JsOohuu',
+            placeholder: 'Just Do It'
+        });
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>人工智能 | Coronarium</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="AI" />
+    
+    <meta name="description" content="本文是李开复先生《人工智能》一书的摘录，结合自己的感想而成。若对人工智能具有兴趣，请移步李开复先生的书籍，或者人工智能专业书籍。 人工智能就在我们生活的每一处人工智能来了！人工智能来了！人工智能来了！重要的事情必须说三遍！ 恐惧不？害怕失业不？有没有可能下一秒被人工智能干掉？ 是不是各种担心充满心头？ 扯一句韩国电视剧《一起用餐吧》中的台词，“担心又不会解决所有问题，还不如开心的活着。”没有去翻具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="人工智能">
+<meta property="og:url" content="https://solaim.github.io/2017/12/19/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/index.html">
+<meta property="og:site_name" content="Coronarium">
+<meta property="og:description" content="本文是李开复先生《人工智能》一书的摘录，结合自己的感想而成。若对人工智能具有兴趣，请移步李开复先生的书籍，或者人工智能专业书籍。 人工智能就在我们生活的每一处人工智能来了！人工智能来了！人工智能来了！重要的事情必须说三遍！ 恐惧不？害怕失业不？有没有可能下一秒被人工智能干掉？ 是不是各种担心充满心头？ 扯一句韩国电视剧《一起用餐吧》中的台词，“担心又不会解决所有问题，还不如开心的活着。”没有去翻具">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://solaim.github.io/images/ai.jpeg">
+<meta property="article:published_time" content="2017-12-19T12:44:16.000Z">
+<meta property="article:modified_time" content="2019-04-10T13:29:43.484Z">
+<meta property="article:author" content="Jerry Wang">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://solaim.github.io/images/ai.jpeg">
+    
+
+    
+        <link rel="alternate" href="/" title="Coronarium" type="application/atom+xml" />
+    
+
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">主页</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Python/">Python</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Golang/">Golang</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Js/">Js</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/music/">音乐</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/food/">食物</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/dust/">尘埃</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/dust/">dust</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-人工智能" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        人工智能
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2017/12/19/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" class="article-date">
+            <time datetime="2017-12-19T12:44:16.000Z" itemprop="datePublished">2017-12-19</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/AI/" rel="tag">AI</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p>本文是李开复先生《人工智能》一书的摘录，结合自己的感想而成。若对人工智能具有兴趣，请移步李开复先生的书籍，或者人工智能专业书籍。</p>
+<h2 id="人工智能就在我们生活的每一处"><a href="#人工智能就在我们生活的每一处" class="headerlink" title="人工智能就在我们生活的每一处"></a>人工智能就在我们生活的每一处</h2><p>人工智能来了！<br>人工智能来了！<br>人工智能来了！<br>重要的事情必须说三遍！</p>
+<p>恐惧不？害怕失业不？有没有可能下一秒被人工智能干掉？</p>
+<p>是不是各种担心充满心头？</p>
+<p>扯一句韩国电视剧《一起用餐吧》中的台词，“担心又不会解决所有问题，还不如开心的活着。”没有去翻具体的台词，大意如此。</p>
+<p>人工智能开始真实的进入人类的生活，对于各个层级的人，具有不同的意义。但是什么是人工智能？</p>
+<p>人工智能必须长得像人吗？答案来的很简单，不是。</p>
+<p>我们做好与人工智能共同发展的准备了吗？答案不是很明晰。</p>
+<p>我们做好接受人工智能产品与我们一起生活、工作了吗？答案是不知道。</p>
+<p>感觉不靠谱？</p>
+<p>人类对出现的新事物具有本能的好奇心和探索欲，以及多多少少的恐惧。</p>
+<p>赶快打开你的手机，看看你的手机看看有多少个app使用了人工智能技术？让我猜猜，0个，3个，7个…</p>
+<p>滴滴出行、谷歌翻译、手机淘宝、今日头条、美图秀秀等等。什么，看着不像啊？不就是个app么？</p>
+<p>“很多时候人工智能都是藏在底下，因此人们并不知道有很多东西已经是机器学习的系统在驱动…“，谷歌大脑开发团队带头人杰夫·迪恩如是说。</p>
+<p>那么到底什么是人工智能？该如何定义？作者介绍了五种定义，让我们来看看：</p>
+<ul>
+<li>定义一：AI就是让人觉得不可思议的计算机程序</li>
+<li>定义二：AI就是与人类思考方式相似的计算机程序</li>
+<li>定义三：AI就是与人类行为相似的计算机程序</li>
+<li>定义四：AI就是会学习的计算机程序</li>
+<li>定义五：AI就是根据对环境的感知，做出合理的行动，并获得最大收益的计算机程序</li>
+</ul>
+<p>有什么想法？</p>
+<p>Nothing？管它该怎么定义，有这个时间，还不如鼓捣鼓捣程序。原谅程序猿的fan。</p>
+<h2 id="人工智能的三生三世"><a href="#人工智能的三生三世" class="headerlink" title="人工智能的三生三世"></a>人工智能的三生三世</h2><p>三盘棋象征了人工智能的三生三世。没看过这个电视剧，只是借用一下。</p>
+<p>第一盘棋是1962年，IBM的西洋跳棋程序战胜一位人类盲人跳棋高手。跳棋是什么，没玩过。</p>
+<p>第二盘是1997年，IBM的深蓝战胜国际象棋高手卡斯帕罗夫。</p>
+<p>第三盘是2016年，AlphaGo战胜围棋大师李世石。</p>
+<p>三盘棋，象征着人工智能的三个时代。三个时代，又有什么不同？先来回答一下相同之处，每次人工智能胜利之后，人类会燃起看似无尽的热情，但是深入了解之后，由发出不过尔尔的叹慨。</p>
+<p>高德纳的技术成熟度曲线倒是很有意思。几乎每项技术，在成熟之前，都会在起起伏伏中发展，当然有些被彻底抛弃了，幸存下来的，经过冰与火的洗礼，成为对人类有用的工具。是的，只是工具。是不是太绝对了？</p>
+<p>那么人类如何确定某事物是不是有用了？</p>
+<p>根据心理学，人们接受一件新事物，就像人们感受一种外界刺激一样，是有一个心理阀值的。只有强于这个阀值的刺激，才会被人类明确感受。</p>
+<p>而人工智能的第三世，已经在机器视觉、语音识别、数据挖掘、自动驾驶等具体领域突破人类的心理阀值，并且在人类社会生活中发挥重要作用。在这一过程中，深度学习，居功甚伟。可以说，目前没有深度学习做不了的。深度学习这么厉害，那人工智能的发展又经历了那几个阶段呢？</p>
+<p>人工智能的第一生：图灵测试与人机对话</p>
+<p>人工智能的第二生：语音识别</p>
+<p>“计算机的思维方法与人类的思维方法之间，似乎存在着非常微妙的差异，以至于在计算机科学的实践中，越是抛弃人类既有的经验知识，依赖于问题本身的数据特征，越是容易得到更好的结果。”</p>
+<p>人工智能的第三生：深度学习携手大数据</p>
+<p>深度学习代表了第三代人工智能。深度学习是什么？为什么在人工智能的第三代独占鳌头？</p>
+<p>千古神兵，重出江湖，必定“腥风血雨”。除去宝剑的鞘，才能看见宝剑的锋利。深度学习说到底就是人工神经网络。可惜啊，三年前，与这大宝剑失之交臂，玩了三年的遗传算法和粒子群算法，不甚了了。</p>
+<p>“有时对问题领域的扩展可以让问题变得更简单！”，马文·闵斯基说。</p>
+<p>为什么深度学习在人工智能的第三代才开始发力？有三个原因，深度学习在1986年开始流行时，深度学习的理论无法解决网络层次加深带来的诸多问题，其次当时的计算能力远远达不到深度神经网络的需要，最重要的是深度学习大展神威的祭品-大规模海量数据没有准备好。</p>
+<h2 id="人机PK，奇点是否真的来临"><a href="#人机PK，奇点是否真的来临" class="headerlink" title="人机PK，奇点是否真的来临"></a>人机PK，奇点是否真的来临</h2><p>人机PK，AlphaGo赢了。又怎样？</p>
+<p>更多的是一种警示：“如果计算机可以在2年内实现大多数人此前预测要花20年或更长时间才能完成的进步，那么，还有哪些突破会以远超常人预期的速度来临？这些突破会不会超出我们对人工智能的想象，颠覆人类预想中的未来？我们已为这些即将到来的技术突破做好准备了吗？”</p>
+<p>AlphaGo给了人类一个机会，重新思考人工智能的机会。人工智能是什么？人工智能之于人类的意义？人工智能会怎样影响人类的生活与工作？人工智能会不会在未来将人类挑落马下？</p>
+<p>先不论AI与人类的PK，AI与AI之间的竞赛，会不断促进AI提高。人类虽望尘莫及，但可以不断从AI中学习新的思想。其实，在现阶段，担忧AI将人类挑落马下，有些操之过急。为何如此说？因为AI现阶段处于弱人工智能、强人工智能和超人工智能的三部曲的弱人工智能，专注于解决特定领域的问题。而强人工智能将能胜任人类所有的工作，发展到超人工智能，人工智能的智能将远胜人类。谁知道，超人工智能是个什么鬼样子？</p>
+<p>奇点是否来临？</p>
+<p>谁知道了，反正很多事，我都是后知后觉。</p>
+<p>反正AI在跨领域推理、抽象能力、知其然知其所以然、常识、自我意识、审美和情感等方面还很稚嫩。</p>
+<p>但是提早规划又有什么错呢？</p>
+<h2 id="AI时代的变革"><a href="#AI时代的变革" class="headerlink" title="AI时代的变革"></a>AI时代的变革</h2><p>每一项重大的技术变革，都将引起社会生活的改变，或大或小。那么人工智能给人类的社会生活带来的是什么呢？</p>
+<p>牛津大学的伊安·戈尔丁认为世界面临三个挑战：</p>
+<p>1、人类赶不上科技发展的速度，来不及调整适应；</p>
+<p>2、人脉之间的相互连接以及信息的迅速传播，即有好的一面，也有危险的一面；</p>
+<p>3、对个人和国家短期有益的事情，有可能伤及世界的整体利益。</p>
+<p>“技术不仅仅是技术。技术的未来必将与社会的未来、经济的未来、文学艺术的未来、人类全球化的未来紧密联系在一起。”</p>
+<p>单独谈论人工智能的未来，没有实际意义。“人工智能的未来必将与重大的社会经济变革、教育变革、思想变革、文化变革等同步。”</p>
+<p>人工智能快速发展迎来的第一个诘问是：“人工智能会不会引起大面积失业”？</p>
+<p>肯定会的。由于人工智能的快速发展，一些简单重复性的、不具备创造性的工作将会被替代。但是工作会消失吗？</p>
+<p>肯定不会。新的产业将会替代旧的产业。所以，作为一名职场工作者，必须学会分析那些工作不会被轻易替代，考虑如何利用人工智能技术提高自己的战斗力，在人机协作的新工作氛围中找到自己的位置。</p>
+<p>”AI只是人类的工具。技术本身不是问题，问题是我们如何使用技术以及如何围绕人工智能这样一种革命性的新科技，建立与之配合的社会和经济结构，用制度来保证人人都可享有人工智能大的巨大收益，同时不必担心失业等潜在风险。“</p>
+<p>变革毫无疑问，问题是人类将会迎来什么样的变革。过去到现在，人类一直在寻找金字塔结构的平衡，不管是皇权时代还是民主时代。但是人工智能时代到来之后，简单可重复、毫无创造性的工作将会被大面积取代，这会不会引起社会结构的变革？</p>
+<p>”AI的未来掌握在哪些创造、开发和使用者的手中。无疑地，AI会改变世界，但这里真正的问题是，改变AI的又是谁呢？“李飞飞抛出的这个问题又该如何解答？</p>
+<p>或许更好的答案就是作者提到的：增加人工智能研究者的多样性，社会结构螺旋上升到一个新的平衡状态。</p>
+<h2 id="AI先行"><a href="#AI先行" class="headerlink" title="AI先行"></a>AI先行</h2><p>AI先行，是时代的选择，就像每个时代都有每个时代的标志，每个时代都将留下自己的烙印。AI重在提升效率，而非发明新的流程、新的业务。</p>
+<p>AI时代，最大的风口就是人工智能本身。</p>
+<p>肯定不是所有猪都能在风口上飞起来，但要做一飞冲天的创业英雄，就一定要看准科技大势，选择最正确的时机做最正确的事。</p>
+<p>但是当猪都飞起来之后，猪与猪的相互摩擦会不会引起一片火海，将猪都做成烤猪呢？</p>
+<h2 id="AI时代"><a href="#AI时代" class="headerlink" title="AI时代"></a>AI时代</h2><p>AI时代，必将与往不同。那么，个人如何迎接AI时代的冲击与挑战呢？我们势必需要从三个方面来回答。首先是怎么学的问题，其次是学什么的问题，最后最难回答的问题：有了AI，人生还有意义吗？</p>
+<p>李开复先生建议的AI时代的学习方法包括：</p>
+<ul>
+<li>主动挑战极限</li>
+<li>从实践中学习</li>
+<li>关注启发式教育，培养创造力和独立解决问题的能力</li>
+<li>在线学习</li>
+<li>主动向机器学习</li>
+<li>既学习人-人合作，也学习人-机写作</li>
+<li>学习要追随兴趣</li>
+</ul>
+<p>一一列举AI时代该学什么是很难的，但是李开复先生给出了一个基本思路：</p>
+<p>“人工智能时代，程式化的、重复性的、仅靠记忆与练习就可以掌握的技能将是最没有价值的技能，几乎一定可以由机器来完成；反之，那些最能体现人的综合素质的技能，例如，人对于复杂系统的综合分析、决策能力，对于艺术和文化的审美能力和创造性思维，有生活经验及文化熏陶产生的直觉、常识，基于人自身的情感与他人互动的能力…这就是人工智能时代最有价值，最值得培养、学习的技能。而且这些技能中，大多数都是因人而异，需要“定制化”教育和培养，不可能从传统的批量教育中获取。”</p>
+<p>浮生碌碌，汲汲营营，我们身为万物之灵，到底该怎样活着？</p>
+<p>人生在世，无论是理性还是感性，我们所能知、能见、能感的实在太有限了。</p>
+<p>人只不过是一根苇草，但却是一根能思想的苇草。</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://solaim.github.io/2017/12/19/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" data-id="cl40qj48u000ur6glforjc2rj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="valine-thread"></div>
+
+    
+    </section>
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>关注我 :</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/solaim/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/" target="_blank">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/04/10/ansible/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">下一篇</strong>
+        <p class="article-nav-title">
+        
+            ansible
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/k8s.svg)" alt="说说k8s网络" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="title">说说k8s网络</a></p>
+                            <p class="item-date"><time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(四)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="title">Prometheus内部实现(四)</a></p>
+                            <p class="item-date"><time datetime="2021-03-22T15:33:57.000Z" itemprop="datePublished">2021-03-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(三)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="title">Prometheus内部实现(三)</a></p>
+                            <p class="item-date"><time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(二)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="title">Prometheus内部实现(二)</a></p>
+                            <p class="item-date"><time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(一)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="title">Prometheus内部实现(一)</a></p>
+                            <p class="item-date"><time datetime="2021-03-14T10:21:00.000Z" itemprop="datePublished">2021-03-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dust/">dust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/Golang-Kubernetes-Service/" style="font-size: 10px;">Golang, Kubernetes, Service</a> <a href="/tags/Golang-Prometheus-Observability/" style="font-size: 20px;">Golang, Prometheus, Observability</a> <a href="/tags/Python-Ansible/" style="font-size: 10px;">Python, Ansible</a> <a href="/tags/Python-Flask-SocketIO/" style="font-size: 10px;">Python, Flask, SocketIO</a> <a href="/tags/life/" style="font-size: 10px;">life</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">消息队列</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2022 Jerry Wang</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7-rc3/dist/Valine.min.js"></script>
+    <script>
+        new Valine({
+            el: '#valine-thread' ,
+            notify:false,
+            verify:false,
+            app_id: 'Rn2Eyd6fRyStAHXD8g6u9g8L-gzGzoHsz',
+            app_key: '3BINIB2VixkCjtbo7JsOohuu',
+            placeholder: 'Just Do It'
+        });
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>

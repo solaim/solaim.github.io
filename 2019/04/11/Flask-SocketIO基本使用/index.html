@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Flask-SocketIO基本使用 | Coronarium</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="Python, Flask, SocketIO" />
+    
+    <meta name="description" content="Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。 1.安装 pip install flask-socketio   Flask-SocketIO提供三种异步服务机制：  eventlet：支持长轮询和websocket gevent：需使用第三方库 Werkzeug">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask-SocketIO基本使用">
+<meta property="og:url" content="https://solaim.github.io/2019/04/11/Flask-SocketIO%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Coronarium">
+<meta property="og:description" content="Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。 1.安装 pip install flask-socketio   Flask-SocketIO提供三种异步服务机制：  eventlet：支持长轮询和websocket gevent：需使用第三方库 Werkzeug">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://solaim.github.io/images/web.jpg">
+<meta property="article:published_time" content="2019-04-11T13:10:04.000Z">
+<meta property="article:modified_time" content="2019-10-20T10:37:44.486Z">
+<meta property="article:author" content="Jerry Wang">
+<meta property="article:tag" content="Python, Flask, SocketIO">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://solaim.github.io/images/web.jpg">
+    
+
+    
+        <link rel="alternate" href="/" title="Coronarium" type="application/atom+xml" />
+    
+
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">主页</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Python/">Python</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Golang/">Golang</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Js/">Js</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/music/">音乐</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/food/">食物</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/dust/">尘埃</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Python/">Python</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-Flask-SocketIO基本使用" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Flask-SocketIO基本使用
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2019/04/11/Flask-SocketIO%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" class="article-date">
+            <time datetime="2019-04-11T13:10:04.000Z" itemprop="datePublished">2019-04-11</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <p>Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。</p>
+<h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1.安装"></a>1.安装</h2><blockquote>
+<p>pip install flask-socketio</p>
+</blockquote>
+<p> Flask-SocketIO提供三种异步服务机制：</p>
+<ul>
+<li>eventlet：支持长轮询和websocket</li>
+<li>gevent：需使用第三方库</li>
+<li>Werkzeug：仅支持长轮询</li>
+</ul>
+<h2 id="2-初始化"><a href="#2-初始化" class="headerlink" title="2.初始化"></a>2.初始化</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template</span><br><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> SocketIO</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;secret!&#x27;</span></span><br><span class="line">socketio = SocketIO(app)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    socketio.run(app)</span><br></pre></td></tr></table></figure>
+
+<p>应用必须给客户端返回一个html页面加载SocketIO库，并且建立连接：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span> src=<span class="string">&quot;//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js&quot;</span>&gt;&lt;/script&gt;</span><br><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span> charset=<span class="string">&quot;utf-8&quot;</span>&gt;</span><br><span class="line">    <span class="keyword">var</span> socket = io.connect(<span class="string">&#x27;http://&#x27;</span> + <span class="built_in">document</span>.domain + <span class="string">&#x27;:&#x27;</span> + location.port);</span><br><span class="line">    socket.on(<span class="string">&#x27;connect&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        socket.emit(<span class="string">&#x27;my event&#x27;</span>, &#123;<span class="attr">data</span>: <span class="string">&#x27;I\&#x27;m connected!&#x27;</span>&#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-接收消息"><a href="#3-接收消息" class="headerlink" title="3.接收消息"></a>3.接收消息</h2><p>使用SocketIO时，客户端和服务端以事件的方式接收消息-事件驱动。在客户端，javascript使用回调函数。在服务端，Flask-SocketIO需要注册事件处理函数，类似于路由-视图函数机制。</p>
+<p>下面的例子创建服务端无名事件处理函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;message&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_message</span>(<span class="params">message</span>):</span></span><br><span class="line">    print(<span class="string">&#x27;received message: &#x27;</span> + message)</span><br></pre></td></tr></table></figure>
+
+<p>上面的例子使用字符串消息，也可以使用json格式的消息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;json&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_json</span>(<span class="params">json</span>):</span></span><br><span class="line">    print(<span class="string">&#x27;received json: &#x27;</span> + <span class="built_in">str</span>(json))</span><br></pre></td></tr></table></figure>
+
+<p>最灵活的事件类型是使用定制事件名称。这些事件的消息数据格式可以是字符串、字节、整数或者json：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_event</span>(<span class="params">json</span>):</span></span><br><span class="line">    print(<span class="string">&#x27;received json: &#x27;</span> + <span class="built_in">str</span>(json))</span><br></pre></td></tr></table></figure>
+
+<p>定制的命名事件支持多参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_event</span>(<span class="params">arg1, arg2, arg3</span>):</span></span><br><span class="line">    print(<span class="string">&#x27;received args: &#x27;</span> + arg1 + arg2 + arg3)</span><br></pre></td></tr></table></figure>
+
+<p>命名事件是最灵活的，因为命名事件消除了包含附加元数据（描述消息类型）的需要。Flask-socketIO也支持SocketIO命名域，SocketIO命名域允许客户端复用socket（多个连接建立在同一物理socket）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span>, namespace=<span class="string">&#x27;/test&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_namespace_event</span>(<span class="params">json</span>):</span></span><br><span class="line">    print(<span class="string">&#x27;received json: &#x27;</span> + <span class="built_in">str</span>(json))</span><br></pre></td></tr></table></figure>
+
+<p>当SocketIO没有显式指定命名域，全局命名域‘／’将会被使用。</p>
+<p>当装饰器语法不太合适时，on_event方法可被使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">my_function_handler</span>(<span class="params">data</span>):</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">socketio.on_event(<span class="string">&#x27;my event&#x27;</span>, my_function_handler, namespace=<span class="string">&#x27;/test&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>客户端可能请求一个承认的回调函数，该函数确认接收发送的消息。处理函数的任何返回值将会作为参数递送给客户端的回调函数：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@socketio.on(&#x27;my event&#x27;)</span><br><span class="line"><span class="function">def <span class="title">handle_my_custom_event</span><span class="params">(json)</span>:</span></span><br><span class="line">    print(&#x27;received json: &#x27; + str(json))</span><br><span class="line">    return &#x27;one&#x27;, 2</span><br></pre></td></tr></table></figure>
+
+<p>上例中，客户端回调函数将会被传递两个参数：‘one’和2。</p>
+<h2 id="4、发送消息"><a href="#4、发送消息" class="headerlink" title="4、发送消息"></a>4、发送消息</h2><p>Socket IO事件处理函数可以发送回复消息至连接的客户端，方法包括send()和emit()。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> send, emit</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;message&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_message</span>(<span class="params">message</span>):</span></span><br><span class="line">    send(message)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;json&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_json</span>(<span class="params">json</span>):</span></span><br><span class="line">    send(json, json=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_event</span>(<span class="params">json</span>):</span></span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, json)</span><br></pre></td></tr></table></figure>
+
+<p>当使用命名域时，send和emit默认使用接收消息的命名域。不同的命名域可以通过namespace参数指定。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;message&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_message</span>(<span class="params">message</span>):</span></span><br><span class="line">    send(message, namespace=<span class="string">&#x27;/chat&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_event</span>(<span class="params">json</span>):</span></span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, json, namespace=<span class="string">&#x27;/chat&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>当使用多个参数回复一个事件时，发送一个tuple：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_event</span>(<span class="params">json</span>):</span></span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, (<span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;bar&#x27;</span>, json), namespace=<span class="string">&#x27;/chat&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>SocketIO支持回调函数，该函数用于证实客户端成功接收了消息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ack</span>():</span></span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;message was received!&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_event</span>(<span class="params">json</span>):</span></span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, json, callback=ack)</span><br></pre></td></tr></table></figure>
+
+<p>当使用回调函数时，js客户端从接收的消息中获取回调函数，客户端回调函数唤起之后服务端的回调函数相应地被唤起。如歌客户端回调函数具有参数，服务端的回调函数具有相同的参数。</p>
+<h2 id="5、广播"><a href="#5、广播" class="headerlink" title="5、广播"></a>5、广播</h2><p>Flask-SocketIO支持广播，只需在send和emit函数中添加关键字参数broadcast=True：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_my_custom_event</span>(<span class="params">data</span>):</span></span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, data, broadcast=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>对于服务端主动发起的广播，socketio.send()和socketio.emit()方法可以用来广播消息至所有连接的客户端。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">some_function</span>():</span></span><br><span class="line">    socketio.emit(<span class="string">&#x27;some event&#x27;</span>, &#123;<span class="string">&#x27;data&#x27;</span>: <span class="number">42</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="6、Rooms"><a href="#6、Rooms" class="headerlink" title="6、Rooms"></a>6、Rooms</h2><p>Flask-SocketIO通过join_room和leave_room函数支持room概念。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> join_room, leave_room</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;join&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_join</span>(<span class="params">data</span>):</span></span><br><span class="line">    username = data[<span class="string">&#x27;username&#x27;</span>]</span><br><span class="line">    room = data[<span class="string">&#x27;room&#x27;</span>]</span><br><span class="line">    join_room(room)</span><br><span class="line">    send(username + <span class="string">&#x27; has entered the room.&#x27;</span>, room=room)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;leave&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_leave</span>(<span class="params">data</span>):</span></span><br><span class="line">    username = data[<span class="string">&#x27;username&#x27;</span>]</span><br><span class="line">    room = data[<span class="string">&#x27;room&#x27;</span>]</span><br><span class="line">    leave_room(room)</span><br><span class="line">    send(username + <span class="string">&#x27; has left the room.&#x27;</span>, room=room)</span><br></pre></td></tr></table></figure>
+
+<p>send和emit函数接收关键字参数room，将消息发送至连接对应room的客户端。</p>
+<p>所有的客户端连接room时用session ID命名，可以使用request.sid获取。</p>
+<h2 id="7、连接事件"><a href="#7、连接事件" class="headerlink" title="7、连接事件"></a>7、连接事件</h2><p>Flask-SocketIO也支持连接和连接断开事件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;connect&#x27;</span>, namespace=<span class="string">&#x27;/chat&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_connect</span>():</span></span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, &#123;<span class="string">&#x27;data&#x27;</span>: <span class="string">&#x27;Connected&#x27;</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;disconnect&#x27;</span>, namespace=<span class="string">&#x27;/chat&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_disconnect</span>():</span></span><br><span class="line">    print(<span class="string">&#x27;Client disconnected&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="8、基于类的命名域"><a href="#8、基于类的命名域" class="headerlink" title="8、基于类的命名域"></a>8、基于类的命名域</h2><p>上面描述的是基于装饰器的处理函数，也可以使用基于类的命名域处理函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> Namespace, emit</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyCustomNamespace</span>(<span class="params">Namespace</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_connect</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_disconnect</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_my_event</span>(<span class="params">self, data</span>):</span></span><br><span class="line">        emit(<span class="string">&#x27;my_response&#x27;</span>, data)</span><br><span class="line"></span><br><span class="line">socketio.on_namespace(MyCustomNamespace(<span class="string">&#x27;/test&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<h2 id="9、错误处理"><a href="#9、错误处理" class="headerlink" title="9、错误处理"></a>9、错误处理</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on_error()        </span><span class="comment"># Handles the default namespace</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">error_handler</span>(<span class="params">e</span>):</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on_error(<span class="params"><span class="string">&#x27;/chat&#x27;</span></span>) </span><span class="comment"># handles the &#x27;/chat&#x27; namespace</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">error_handler_chat</span>(<span class="params">e</span>):</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on_error_default  </span><span class="comment"># handles all namespaces without an explicit error handler</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">default_error_handler</span>(<span class="params">e</span>):</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://solaim.github.io/2019/04/11/Flask-SocketIO%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" data-id="cl40qj4840000r6gl8sdyfv57" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="valine-thread"></div>
+
+    
+    </section>
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>关注我 :</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/solaim/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/" target="_blank">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/10/15/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">下一篇</strong>
+        <p class="article-nav-title">
+        
+            k8s集群搭建
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2019/04/11/%E6%9C%80%E5%A5%BD%E7%9A%84%E5%91%8A%E5%88%AB/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">上一篇</strong>
+        <p class="article-nav-title">最好的告别</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/k8s.svg)" alt="说说k8s网络" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="title">说说k8s网络</a></p>
+                            <p class="item-date"><time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(四)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="title">Prometheus内部实现(四)</a></p>
+                            <p class="item-date"><time datetime="2021-03-22T15:33:57.000Z" itemprop="datePublished">2021-03-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(三)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="title">Prometheus内部实现(三)</a></p>
+                            <p class="item-date"><time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(二)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="title">Prometheus内部实现(二)</a></p>
+                            <p class="item-date"><time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(一)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="title">Prometheus内部实现(一)</a></p>
+                            <p class="item-date"><time datetime="2021-03-14T10:21:00.000Z" itemprop="datePublished">2021-03-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dust/">dust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/Golang-Kubernetes-Service/" style="font-size: 10px;">Golang, Kubernetes, Service</a> <a href="/tags/Golang-Prometheus-Observability/" style="font-size: 20px;">Golang, Prometheus, Observability</a> <a href="/tags/Python-Ansible/" style="font-size: 10px;">Python, Ansible</a> <a href="/tags/Python-Flask-SocketIO/" style="font-size: 10px;">Python, Flask, SocketIO</a> <a href="/tags/life/" style="font-size: 10px;">life</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">消息队列</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2022 Jerry Wang</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7-rc3/dist/Valine.min.js"></script>
+    <script>
+        new Valine({
+            el: '#valine-thread' ,
+            notify:false,
+            verify:false,
+            app_id: 'Rn2Eyd6fRyStAHXD8g6u9g8L-gzGzoHsz',
+            app_key: '3BINIB2VixkCjtbo7JsOohuu',
+            placeholder: 'Just Do It'
+        });
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>

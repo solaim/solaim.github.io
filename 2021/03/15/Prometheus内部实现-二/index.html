@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Prometheus内部实现(二) | Coronarium</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+        <meta name="keywords" content="Golang, Prometheus, Observability" />
+    
+    <meta name="description" content="观察事物，需要提纲挈领！软件的启动是观察软件最好的入口！  Prometheus server实现入口文件在cmd&#x2F;prometheus&#x2F;main.go。 Prometheus的配置由两个部分构成：  配置文件：prometheus.yml 启动flag：启动时指定  入口函数如下： 123func main() &amp;#123;    ...&amp;#125;  初始化一个flagConfig，这个配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prometheus内部实现(二)">
+<meta property="og:url" content="https://solaim.github.io/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/index.html">
+<meta property="og:site_name" content="Coronarium">
+<meta property="og:description" content="观察事物，需要提纲挈领！软件的启动是观察软件最好的入口！  Prometheus server实现入口文件在cmd&#x2F;prometheus&#x2F;main.go。 Prometheus的配置由两个部分构成：  配置文件：prometheus.yml 启动flag：启动时指定  入口函数如下： 123func main() &amp;#123;    ...&amp;#125;  初始化一个flagConfig，这个配置">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://solaim.github.io/images/prom.png">
+<meta property="article:published_time" content="2021-03-15T14:46:41.000Z">
+<meta property="article:modified_time" content="2021-03-22T15:31:00.211Z">
+<meta property="article:author" content="Jerry Wang">
+<meta property="article:tag" content="Golang, Prometheus, Observability">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://solaim.github.io/images/prom.png">
+    
+
+    
+        <link rel="alternate" href="/" title="Coronarium" type="application/atom+xml" />
+    
+
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/titillium-web/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+<script src="/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body>
+    <div id="wrap">
+        <header id="header">
+    <div id="header-outer" class="outer">
+        <div class="container">
+            <div class="container-inner">
+                <div id="header-title">
+                    <h1 class="logo-wrap">
+                        <a href="/" class="logo"></a>
+                    </h1>
+                    
+                </div>
+                <div id="header-inner" class="nav-container">
+                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
+                    <div class="nav-container-inner">
+                        <ul id="main-nav">
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/">主页</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Python/">Python</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Golang/">Golang</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/Js/">Js</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/music/">音乐</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/food/">食物</a>
+                                </li>
+                            
+                                <li class="main-nav-list-item" >
+                                    <a class="main-nav-list-link" href="/categories/dust/">尘埃</a>
+                                </li>
+                            
+                        </ul>
+                        <nav id="sub-nav">
+                            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+        <div class="container">
+            <div class="main-body container-inner">
+                <div class="main-body-inner">
+                    <section id="main">
+                        <div class="main-body-header">
+    <h1 class="header">
+    
+    <a class="page-title-link" href="/categories/Golang/">Golang</a>
+    </h1>
+</div>
+                        <div class="main-body-content">
+                            <article id="post-Prometheus内部实现-二" class="article article-single article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+        Prometheus内部实现(二)
+        </h1>
+    
+
+            </header>
+        
+        
+            <div class="article-meta">
+                
+    <div class="article-date">
+        <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="article-date">
+            <time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time>
+        </a>
+    </div>
+
+                
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a>
+    </div>
+
+            </div>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+            <blockquote>
+<p>观察事物，需要提纲挈领！软件的启动是观察软件最好的入口！</p>
+</blockquote>
+<p>Prometheus server实现入口文件在<code>cmd/prometheus/main.go</code>。</p>
+<p>Prometheus的配置由两个部分构成：</p>
+<ol>
+<li>配置文件：prometheus.yml</li>
+<li>启动flag：启动时指定</li>
+</ol>
+<p>入口函数如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>初始化一个flagConfig，这个配置贯穿了整个程序</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cfg := flagConfig&#123;</span><br><span class="line">  notifier: notifier.Options&#123;</span><br><span class="line">    Registerer: prometheus.DefaultRegisterer,</span><br><span class="line">  &#125;,</span><br><span class="line">  web: web.Options&#123;</span><br><span class="line">    Registerer: prometheus.DefaultRegisterer,</span><br><span class="line">    Gatherer:   prometheus.DefaultGatherer,</span><br><span class="line">  &#125;,</span><br><span class="line">  promlogConfig: promlog.Config&#123;&#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用kingpin注册flag</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">a := kingpin.New(filepath.Base(os.Args[<span class="number">0</span>]), <span class="string">&quot;The Prometheus monitoring server&quot;</span>).UsageWriter(os.Stdout)</span><br><span class="line"></span><br><span class="line">a.Version(version.Print(<span class="string">&quot;prometheus&quot;</span>))</span><br><span class="line"></span><br><span class="line">a.HelpFlag.Short(<span class="string">&#x27;h&#x27;</span>)</span><br><span class="line"></span><br><span class="line">a.Flag(<span class="string">&quot;config.file&quot;</span>, <span class="string">&quot;Prometheus configuration file path.&quot;</span>).</span><br><span class="line">Default(<span class="string">&quot;prometheus.yml&quot;</span>).StringVar(&amp;cfg.configFile)</span><br><span class="line"></span><br><span class="line">a.Flag(<span class="string">&quot;web.listen-address&quot;</span>, <span class="string">&quot;Address to listen on for UI, API, and telemetry.&quot;</span>).</span><br><span class="line">Default(<span class="string">&quot;0.0.0.0:9090&quot;</span>).StringVar(&amp;cfg.web.ListenAddress)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">_, err := a.Parse(os.Args[<span class="number">1</span>:])</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  fmt.Fprintln(os.Stderr, errors.Wrapf(err, <span class="string">&quot;Error parsing commandline arguments&quot;</span>))</span><br><span class="line">  a.Usage(os.Args[<span class="number">1</span>:])</span><br><span class="line">  os.Exit(<span class="number">2</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加载配置文件，检查配置合法性</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> _, err := config.LoadFile(cfg.configFile); err != <span class="literal">nil</span> &#123;</span><br><span class="line">  level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, fmt.Sprintf(<span class="string">&quot;Error loading config (--config.file=%s)&quot;</span>, cfg.configFile), <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  os.Exit(<span class="number">2</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>初始化各种组件</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">  localStorage  = &amp;readyStorage&#123;&#125;</span><br><span class="line">  scraper       = &amp;readyScrapeManager&#123;&#125;</span><br><span class="line">  remoteStorage = remote.NewStorage(log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;remote&quot;</span>), prometheus.DefaultRegisterer, localStorage.StartTime, cfg.localStoragePath, time.Duration(cfg.RemoteFlushDeadline), scraper)</span><br><span class="line">  fanoutStorage = storage.NewFanout(logger, localStorage, remoteStorage)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">  ctxWeb, cancelWeb = context.WithCancel(context.Background())</span><br><span class="line">  ctxRule           = context.Background()</span><br><span class="line"></span><br><span class="line">  notifierManager = notifier.NewManager(&amp;cfg.notifier, log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;notifier&quot;</span>))</span><br><span class="line"></span><br><span class="line">  ctxScrape, cancelScrape = context.WithCancel(context.Background())</span><br><span class="line">  discoveryManagerScrape  = discovery.NewManager(ctxScrape, log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;discovery manager scrape&quot;</span>), discovery.Name(<span class="string">&quot;scrape&quot;</span>))</span><br><span class="line"></span><br><span class="line">  ctxNotify, cancelNotify = context.WithCancel(context.Background())</span><br><span class="line">  discoveryManagerNotify  = discovery.NewManager(ctxNotify, log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;discovery manager notify&quot;</span>), discovery.Name(<span class="string">&quot;notify&quot;</span>))</span><br><span class="line"></span><br><span class="line">  scrapeManager = scrape.NewManager(log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;scrape manager&quot;</span>), fanoutStorage)</span><br><span class="line"></span><br><span class="line">  opts = promql.EngineOpts&#123;</span><br><span class="line">    Logger:                   log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;query engine&quot;</span>),</span><br><span class="line">    Reg:                      prometheus.DefaultRegisterer,</span><br><span class="line">    MaxSamples:               cfg.queryMaxSamples,</span><br><span class="line">    Timeout:                  time.Duration(cfg.queryTimeout),</span><br><span class="line">    ActiveQueryTracker:       promql.NewActiveQueryTracker(cfg.localStoragePath, cfg.queryConcurrency, log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;activeQueryTracker&quot;</span>)),</span><br><span class="line">    LookbackDelta:            time.Duration(cfg.lookbackDelta),</span><br><span class="line">    NoStepSubqueryIntervalFn: noStepSubqueryInterval.Get,</span><br><span class="line">    EnableAtModifier:         cfg.enablePromQLAtModifier,</span><br><span class="line">    EnableNegativeOffset:     cfg.enablePromQLNegativeOffset,</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  queryEngine = promql.NewEngine(opts)</span><br><span class="line"></span><br><span class="line">  ruleManager = rules.NewManager(&amp;rules.ManagerOptions&#123;</span><br><span class="line">    Appendable:      fanoutStorage,</span><br><span class="line">    Queryable:       localStorage,</span><br><span class="line">    QueryFunc:       rules.EngineQueryFunc(queryEngine, fanoutStorage),</span><br><span class="line">    NotifyFunc:      sendAlerts(notifierManager, cfg.web.ExternalURL.String()),</span><br><span class="line">    Context:         ctxRule,</span><br><span class="line">    ExternalURL:     cfg.web.ExternalURL,</span><br><span class="line">    Registerer:      prometheus.DefaultRegisterer,</span><br><span class="line">    Logger:          log.With(logger, <span class="string">&quot;component&quot;</span>, <span class="string">&quot;rule manager&quot;</span>),</span><br><span class="line">    OutageTolerance: time.Duration(cfg.outageTolerance),</span><br><span class="line">    ForGracePeriod:  time.Duration(cfg.forGracePeriod),</span><br><span class="line">    ResendDelay:     time.Duration(cfg.resendDelay),</span><br><span class="line">  &#125;)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">scraper.Set(scrapeManager)</span><br></pre></td></tr></table></figure>
+
+<p>将配置更新到flagConfig</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">cfg.web.Context = ctxWeb</span><br><span class="line">cfg.web.TSDBRetentionDuration = cfg.tsdb.RetentionDuration</span><br><span class="line">cfg.web.TSDBMaxBytes = cfg.tsdb.MaxBytes</span><br><span class="line">cfg.web.TSDBDir = cfg.localStoragePath</span><br><span class="line">cfg.web.LocalStorage = localStorage</span><br><span class="line">cfg.web.Storage = fanoutStorage</span><br><span class="line">cfg.web.QueryEngine = queryEngine</span><br><span class="line">cfg.web.ScrapeManager = scrapeManager</span><br><span class="line">cfg.web.RuleManager = ruleManager</span><br><span class="line">cfg.web.Notifier = notifierManager</span><br><span class="line">cfg.web.LookbackDelta = time.Duration(cfg.lookbackDelta)</span><br><span class="line"></span><br><span class="line">cfg.web.Version = &amp;web.PrometheusVersion&#123;</span><br><span class="line">  Version:   version.Version,</span><br><span class="line">  Revision:  version.Revision,</span><br><span class="line">  Branch:    version.Branch,</span><br><span class="line">  BuildUser: version.BuildUser,</span><br><span class="line">  BuildDate: version.BuildDate,</span><br><span class="line">  GoVersion: version.GoVersion,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注册各种组件的reload函数，main函数的实现精彩之一，结合后面的各种组件启动，非常巧妙的实现了加载操作，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">reloaders := []reloader&#123;</span><br><span class="line">  &#123;</span><br><span class="line">    name:     <span class="string">&quot;remote_storage&quot;</span>,</span><br><span class="line">    reloader: remoteStorage.ApplyConfig,</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    name:     <span class="string">&quot;web_handler&quot;</span>,</span><br><span class="line">    reloader: webHandler.ApplyConfig,</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    name: <span class="string">&quot;query_engine&quot;</span>,</span><br><span class="line">    reloader: <span class="function"><span class="keyword">func</span><span class="params">(cfg *config.Config)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="keyword">if</span> cfg.GlobalConfig.QueryLogFile == <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">        queryEngine.SetQueryLogger(<span class="literal">nil</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      l, err := logging.NewJSONFileLogger(cfg.GlobalConfig.QueryLogFile)</span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">      &#125;</span><br><span class="line">      queryEngine.SetQueryLogger(l)</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    <span class="comment">// The Scrape and notifier managers need to reload before the Discovery manager as</span></span><br><span class="line">    <span class="comment">// they need to read the most updated config when receiving the new targets list.</span></span><br><span class="line">    name:     <span class="string">&quot;scrape&quot;</span>,</span><br><span class="line">    reloader: scrapeManager.ApplyConfig,</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    name: <span class="string">&quot;scrape_sd&quot;</span>,</span><br><span class="line">    reloader: <span class="function"><span class="keyword">func</span><span class="params">(cfg *config.Config)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      c := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]discovery.Configs)</span><br><span class="line">      <span class="keyword">for</span> _, v := <span class="keyword">range</span> cfg.ScrapeConfigs &#123;</span><br><span class="line">        c[v.JobName] = v.ServiceDiscoveryConfigs</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> discoveryManagerScrape.ApplyConfig(c)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    name:     <span class="string">&quot;notify&quot;</span>,</span><br><span class="line">    reloader: notifierManager.ApplyConfig,</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    name: <span class="string">&quot;notify_sd&quot;</span>,</span><br><span class="line">    reloader: <span class="function"><span class="keyword">func</span><span class="params">(cfg *config.Config)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      c := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]discovery.Configs)</span><br><span class="line">      <span class="keyword">for</span> k, v := <span class="keyword">range</span> cfg.AlertingConfig.AlertmanagerConfigs.ToMap() &#123;</span><br><span class="line">        c[k] = v.ServiceDiscoveryConfigs</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> discoveryManagerNotify.ApplyConfig(c)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;, &#123;</span><br><span class="line">    name: <span class="string">&quot;rules&quot;</span>,</span><br><span class="line">    reloader: <span class="function"><span class="keyword">func</span><span class="params">(cfg *config.Config)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="comment">// Get all rule files matching the configuration paths.</span></span><br><span class="line">      <span class="keyword">var</span> files []<span class="keyword">string</span></span><br><span class="line">      <span class="keyword">for</span> _, pat := <span class="keyword">range</span> cfg.RuleFiles &#123;</span><br><span class="line">        fs, err := filepath.Glob(pat)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">          <span class="comment">// The only error can be a bad pattern.</span></span><br><span class="line">          <span class="keyword">return</span> errors.Wrapf(err, <span class="string">&quot;error retrieving rule files for %s&quot;</span>, pat)</span><br><span class="line">        &#125;</span><br><span class="line">        files = <span class="built_in">append</span>(files, fs...)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> ruleManager.Update(</span><br><span class="line">        time.Duration(cfg.GlobalConfig.EvaluationInterval),</span><br><span class="line">        files,</span><br><span class="line">        cfg.GlobalConfig.ExternalLabels,</span><br><span class="line">      )</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里声明TSDB、配置加载等的通知channel，用于控制组件启动的顺序</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Start all components while we wait for TSDB to open but only load</span></span><br><span class="line"><span class="comment">// initial config and mark ourselves as ready after it completed.</span></span><br><span class="line">dbOpen := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// sync.Once is used to make sure we can close the channel at different execution stages(SIGTERM or when the config is loaded).</span></span><br><span class="line"><span class="keyword">type</span> closeOnce <span class="keyword">struct</span> &#123;</span><br><span class="line">  C     <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">  once  sync.Once</span><br><span class="line">  Close <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Wait until the server is ready to handle reloading.</span></span><br><span class="line">reloadReady := &amp;closeOnce&#123;</span><br><span class="line">  C: <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;),</span><br><span class="line">&#125;</span><br><span class="line">reloadReady.Close = <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">  reloadReady.once.Do(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">close</span>(reloadReady.C)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用jaeger，进行链路追踪</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">closer, err := initTracing(logger)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Unable to init tracing&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  os.Exit(<span class="number">2</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">defer</span> closer.Close()</span><br></pre></td></tr></table></figure>
+
+<p>设置web listener以及验证web的配置</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">listener, err := webHandler.Listener()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Unable to start web listener&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  os.Exit(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">err = toolkit_web.Validate(*webConfig)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Unable to validate web configuration file&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  os.Exit(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，来到main函数的高潮，设置各个组件，底层使用了oklog/run，便于一组goroutine的控制，</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> g run.Group</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Termination handler.</span></span><br><span class="line">  term := <span class="built_in">make</span>(<span class="keyword">chan</span> os.Signal, <span class="number">1</span>)</span><br><span class="line">  signal.Notify(term, os.Interrupt, syscall.SIGTERM)</span><br><span class="line">  cancel := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="comment">// Don&#x27;t forget to release the reloadReady channel so that waiting blocks can exit normally.</span></span><br><span class="line">      <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> &lt;-term:</span><br><span class="line">        level.Warn(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Received SIGTERM, exiting gracefully...&quot;</span>)</span><br><span class="line">        reloadReady.Close()</span><br><span class="line">        <span class="keyword">case</span> &lt;-webHandler.Quit():</span><br><span class="line">        level.Warn(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Received termination request via web service, exiting gracefully...&quot;</span>)</span><br><span class="line">        <span class="keyword">case</span> &lt;-cancel:</span><br><span class="line">        reloadReady.Close()</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      <span class="built_in">close</span>(cancel)</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Scrape discovery manager.</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      err := discoveryManagerScrape.Run()</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Scrape discovery manager stopped&quot;</span>)</span><br><span class="line">      <span class="keyword">return</span> err</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Stopping scrape discovery manager...&quot;</span>)</span><br><span class="line">      cancelScrape()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Notify discovery manager.</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      err := discoveryManagerNotify.Run()</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Notify discovery manager stopped&quot;</span>)</span><br><span class="line">      <span class="keyword">return</span> err</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Stopping notify discovery manager...&quot;</span>)</span><br><span class="line">      cancelNotify()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Scrape manager.</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="comment">// When the scrape manager receives a new targets list</span></span><br><span class="line">      <span class="comment">// it needs to read a valid config for each job.</span></span><br><span class="line">      <span class="comment">// It depends on the config being in sync with the discovery manager so</span></span><br><span class="line">      <span class="comment">// we wait until the config is fully loaded.</span></span><br><span class="line">      &lt;-reloadReady.C</span><br><span class="line"></span><br><span class="line">      err := scrapeManager.Run(discoveryManagerScrape.SyncCh())</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Scrape manager stopped&quot;</span>)</span><br><span class="line">      <span class="keyword">return</span> err</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      <span class="comment">// Scrape manager needs to be stopped before closing the local TSDB</span></span><br><span class="line">      <span class="comment">// so that it doesn&#x27;t try to write samples to a closed storage.</span></span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Stopping scrape manager...&quot;</span>)</span><br><span class="line">      scrapeManager.Stop()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Reload handler.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Make sure that sighup handler is registered with a redirect to the channel before the potentially</span></span><br><span class="line">  <span class="comment">// long and synchronous tsdb init.</span></span><br><span class="line">  hup := <span class="built_in">make</span>(<span class="keyword">chan</span> os.Signal, <span class="number">1</span>)</span><br><span class="line">  signal.Notify(hup, syscall.SIGHUP)</span><br><span class="line">  cancel := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      &lt;-reloadReady.C</span><br><span class="line"></span><br><span class="line">      <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="keyword">select</span> &#123;</span><br><span class="line">          <span class="keyword">case</span> &lt;-hup:</span><br><span class="line">          <span class="keyword">if</span> err := reloadConfig(cfg.configFile, logger, noStepSubqueryInterval, reloaders...); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Error reloading config&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">case</span> rc := &lt;-webHandler.Reload():</span><br><span class="line">          <span class="keyword">if</span> err := reloadConfig(cfg.configFile, logger, noStepSubqueryInterval, reloaders...); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Error reloading config&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">            rc &lt;- err</span><br><span class="line">          &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            rc &lt;- <span class="literal">nil</span></span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">case</span> &lt;-cancel:</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      <span class="comment">// Wait for any in-progress reloads to complete to avoid</span></span><br><span class="line">      <span class="comment">// reloading things after they have been shutdown.</span></span><br><span class="line">      cancel &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Initial configuration loading.</span></span><br><span class="line">  cancel := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="keyword">select</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> &lt;-dbOpen:</span><br><span class="line">        <span class="comment">// In case a shutdown is initiated before the dbOpen is released</span></span><br><span class="line">        <span class="keyword">case</span> &lt;-cancel:</span><br><span class="line">        reloadReady.Close()</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> err := reloadConfig(cfg.configFile, logger, noStepSubqueryInterval, reloaders...); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> errors.Wrapf(err, <span class="string">&quot;error loading config from %q&quot;</span>, cfg.configFile)</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      reloadReady.Close()</span><br><span class="line"></span><br><span class="line">      webHandler.Ready()</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Server is ready to receive web requests.&quot;</span>)</span><br><span class="line">      &lt;-cancel</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      <span class="built_in">close</span>(cancel)</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Rule manager.</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      &lt;-reloadReady.C</span><br><span class="line">      ruleManager.Run()</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      ruleManager.Stop()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// TSDB.</span></span><br><span class="line">  opts := cfg.tsdb.ToTSDBOptions()</span><br><span class="line">  cancel := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Starting TSDB ...&quot;</span>)</span><br><span class="line">      <span class="keyword">if</span> cfg.tsdb.WALSegmentSize != <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> cfg.tsdb.WALSegmentSize &lt; <span class="number">10</span>*<span class="number">1024</span>*<span class="number">1024</span> || cfg.tsdb.WALSegmentSize &gt; <span class="number">256</span>*<span class="number">1024</span>*<span class="number">1024</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> errors.New(<span class="string">&quot;flag &#x27;storage.tsdb.wal-segment-size&#x27; must be set between 10MB and 256MB&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      db, err := openDBWithMetrics(</span><br><span class="line">        cfg.localStoragePath,</span><br><span class="line">        logger,</span><br><span class="line">        prometheus.DefaultRegisterer,</span><br><span class="line">        &amp;opts,</span><br><span class="line">      )</span><br><span class="line">      <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> errors.Wrapf(err, <span class="string">&quot;opening storage failed&quot;</span>)</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">switch</span> fsType := prom_runtime.Statfs(cfg.localStoragePath); fsType &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">&quot;NFS_SUPER_MAGIC&quot;</span>:</span><br><span class="line">        level.Warn(logger).Log(<span class="string">&quot;fs_type&quot;</span>, fsType, <span class="string">&quot;msg&quot;</span>, <span class="string">&quot;This filesystem is not supported and may lead to data corruption and data loss. Please carefully read https://prometheus.io/docs/prometheus/latest/storage/ to learn more about supported filesystems.&quot;</span>)</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">        level.Info(logger).Log(<span class="string">&quot;fs_type&quot;</span>, fsType)</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;TSDB started&quot;</span>)</span><br><span class="line">      level.Debug(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;TSDB options&quot;</span>,</span><br><span class="line">                              <span class="string">&quot;MinBlockDuration&quot;</span>, cfg.tsdb.MinBlockDuration,</span><br><span class="line">                              <span class="string">&quot;MaxBlockDuration&quot;</span>, cfg.tsdb.MaxBlockDuration,</span><br><span class="line">                              <span class="string">&quot;MaxBytes&quot;</span>, cfg.tsdb.MaxBytes,</span><br><span class="line">                              <span class="string">&quot;NoLockfile&quot;</span>, cfg.tsdb.NoLockfile,</span><br><span class="line">                              <span class="string">&quot;RetentionDuration&quot;</span>, cfg.tsdb.RetentionDuration,</span><br><span class="line">                              <span class="string">&quot;WALSegmentSize&quot;</span>, cfg.tsdb.WALSegmentSize,</span><br><span class="line">                              <span class="string">&quot;AllowOverlappingBlocks&quot;</span>, cfg.tsdb.AllowOverlappingBlocks,</span><br><span class="line">                              <span class="string">&quot;WALCompression&quot;</span>, cfg.tsdb.WALCompression,</span><br><span class="line">                             )</span><br><span class="line"></span><br><span class="line">      startTimeMargin := <span class="keyword">int64</span>(<span class="number">2</span> * time.Duration(cfg.tsdb.MinBlockDuration).Seconds() * <span class="number">1000</span>)</span><br><span class="line">      localStorage.Set(db, startTimeMargin)</span><br><span class="line">      <span class="built_in">close</span>(dbOpen)</span><br><span class="line">      &lt;-cancel</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      <span class="keyword">if</span> err := fanoutStorage.Close(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        level.Error(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Error stopping storage&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">close</span>(cancel)</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Web handler.</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="keyword">if</span> err := webHandler.Run(ctxWeb, listener, *webConfig); err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> errors.Wrapf(err, <span class="string">&quot;error starting web server&quot;</span>)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      cancelWeb()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Notifier.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Calling notifier.Stop() before ruleManager.Stop() will cause a panic if the ruleManager isn&#x27;t running,</span></span><br><span class="line">  <span class="comment">// so keep this interrupt after the ruleManager.Stop().</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">      <span class="comment">// When the notifier manager receives a new targets list</span></span><br><span class="line">      <span class="comment">// it needs to read a valid config for each job.</span></span><br><span class="line">      <span class="comment">// It depends on the config being in sync with the discovery manager</span></span><br><span class="line">      <span class="comment">// so we wait until the config is fully loaded.</span></span><br><span class="line">      &lt;-reloadReady.C</span><br><span class="line"></span><br><span class="line">      notifierManager.Run(discoveryManagerNotify.SyncCh())</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Notifier manager stopped&quot;</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err error)</span></span> &#123;</span><br><span class="line">      notifierManager.Stop()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后启动g，整体程序就运行起来了，g.Run正常运行期间不会返回，一旦上面注册的一个goroutine失败，整体退出</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> err := g.Run(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">  level.Error(logger).Log(<span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">  os.Exit(<span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line">level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;See you next time!&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>下一篇我们开始研究Prometheus server的Initial configuration loading代码。</p>
+
+        </div>
+        <footer class="article-footer">
+            
+
+
+
+    <a data-url="https://solaim.github.io/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" data-id="cl40qj48d0004r6glb6nlgwqt" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+        </footer>
+    </div>
+</article>
+
+    <section id="comments">
+    
+        
+    <div id="valine-thread"></div>
+
+    
+    </section>
+
+
+                        </div>
+                    </section>
+                    <aside id="sidebar">
+    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
+    <div class="sidebar-top">
+        <p>关注我 :</p>
+        <ul class="social-links">
+            
+                
+                <li>
+                    <a class="social-tooltip" title="github" href="https://github.com/solaim/" target="_blank">
+                        <i class="icon fa fa-github"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="weibo" href="/" target="_blank">
+                        <i class="icon fa fa-weibo"></i>
+                    </a>
+                </li>
+                
+            
+                
+                <li>
+                    <a class="social-tooltip" title="rss" href="/" target="_blank">
+                        <i class="icon fa fa-rss"></i>
+                    </a>
+                </li>
+                
+            
+        </ul>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" id="article-nav-newer" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">下一篇</strong>
+        <p class="article-nav-title">
+        
+            Prometheus内部实现(三)
+        
+        </p>
+        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
+    </a>
+    
+    
+        <a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" id="article-nav-older" class="article-nav-link-wrap">
+        <strong class="article-nav-caption">上一篇</strong>
+        <p class="article-nav-title">Prometheus内部实现(一)</p>
+        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
+        </a>
+    
+</nav>
+
+    
+    <div class="widgets-container">
+        
+            
+                
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/k8s.svg)" alt="说说k8s网络" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="title">说说k8s网络</a></p>
+                            <p class="item-date"><time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(四)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="title">Prometheus内部实现(四)</a></p>
+                            <p class="item-date"><time datetime="2021-03-22T15:33:57.000Z" itemprop="datePublished">2021-03-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(三)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="title">Prometheus内部实现(三)</a></p>
+                            <p class="item-date"><time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(二)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="title">Prometheus内部实现(二)</a></p>
+                            <p class="item-date"><time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="thumbnail">
+    
+    
+        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(一)" class="thumbnail-image"></span>
+    
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
+                            <p class="item-title"><a href="/2021/03/14/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%80/" class="title">Prometheus内部实现(一)</a></p>
+                            <p class="item-date"><time datetime="2021-03-14T10:21:00.000Z" itemprop="datePublished">2021-03-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dust/">dust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-float">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/Golang-Kubernetes-Service/" style="font-size: 10px;">Golang, Kubernetes, Service</a> <a href="/tags/Golang-Prometheus-Observability/" style="font-size: 20px;">Golang, Prometheus, Observability</a> <a href="/tags/Python-Ansible/" style="font-size: 10px;">Python, Ansible</a> <a href="/tags/Python-Flask-SocketIO/" style="font-size: 10px;">Python, Flask, SocketIO</a> <a href="/tags/life/" style="font-size: 10px;">life</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">消息队列</a>
+        </div>
+    </div>
+
+
+            
+                
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+            
+        
+    </div>
+</aside>
+                </div>
+            </div>
+        </div>
+        <footer id="footer">
+    <div class="container">
+        <div class="container-inner">
+            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
+            <div class="credit">
+                <h1 class="logo-wrap">
+                    <a href="/" class="logo"></a>
+                </h1>
+                <p>&copy; 2022 Jerry Wang</p>
+                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7-rc3/dist/Valine.min.js"></script>
+    <script>
+        new Valine({
+            el: '#valine-thread' ,
+            notify:false,
+            verify:false,
+            app_id: 'Rn2Eyd6fRyStAHXD8g6u9g8L-gzGzoHsz',
+            app_key: '3BINIB2VixkCjtbo7JsOohuu',
+            placeholder: 'Just Do It'
+        });
+    </script>
+
+
+
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+
+    </div>
+</body>
+</html>
