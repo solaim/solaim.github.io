@@ -27,7 +27,7 @@
     
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 7.0.0-rc2"></head>
     
     <body>
         <div class="paper">
@@ -61,10 +61,6 @@
             
         
             
-                <li><a href="/tags/">标签</a></li>
-            
-        
-            
                 <li><a href="/about/">关于</a></li>
             
         
@@ -93,20 +89,24 @@
             <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RabbitMQ"><span class="post-toc-text">RabbitMQ</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#1%E3%80%81RabbitMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="post-toc-text">1、RabbitMQ消息队列</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#2%E3%80%81RabbitMQ%E5%AE%89%E8%A3%85"><span class="post-toc-text">2、RabbitMQ安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-Mac%E5%AE%89%E8%A3%85"><span class="post-toc-text">1| Mac安装</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-Centos%E5%AE%89%E8%A3%85"><span class="post-toc-text">2|Centos安装</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-ubuntu%E5%AE%89%E8%A3%85"><span class="post-toc-text">3|ubuntu安装</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#3%E3%80%81RabbitMQ%E4%BD%BF%E7%94%A8"><span class="post-toc-text">3、RabbitMQ使用</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#rabbitmq%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7"><span class="post-toc-text">rabbitmq添加用户</span></a></li></ol>
         
         <h1 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h1><h2 id="1、RabbitMQ消息队列"><a href="#1、RabbitMQ消息队列" class="headerlink" title="1、RabbitMQ消息队列"></a>1、RabbitMQ消息队列</h2><p>RabbitMQ是一个消息队列：用于接收和转发消息。</p>
-<p><img src="/images/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.jpg"></p>
+<p><img src="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.jpg"></p>
 <h2 id="2、RabbitMQ安装"><a href="#2、RabbitMQ安装" class="headerlink" title="2、RabbitMQ安装"></a>2、RabbitMQ安装</h2><h3 id="1-Mac安装"><a href="#1-Mac安装" class="headerlink" title="1| Mac安装"></a>1| Mac安装</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew install rabbitmq</span><br><span class="line"></span><br><span class="line">rabbitmq-server</span><br></pre></td></tr></table></figure>
 
 
 
 <h3 id="2-Centos安装"><a href="#2-Centos安装" class="headerlink" title="2|Centos安装"></a>2|Centos安装</h3><ul>
 <li><p>安装epel源-解决erlang依赖wxGTK</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.rpmfind.net/linux/centos/7.4.1708/extras/x86_64/Packages/epel-release-7-9.noarch.rpm</span><br><span class="line"></span><br><span class="line">yum install epel-release-7-9.noarch.rpm</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.rpmfind.net/linux/centos/7.4.1708/extras/x86_64/Packages/epel-release-7-9.noarch.rpm</span><br><span class="line"></span><br><span class="line">yum install epel-release-7-9.noarch.rpm</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>添加erlang仓库-支持最新版erlang</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm</span><br><span class="line"></span><br><span class="line">rpm -Uvh erlang-solutions-1.0-1.noarch.rpm</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm</span><br><span class="line"></span><br><span class="line">rpm -Uvh erlang-solutions-1.0-1.noarch.rpm</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>安装erlang</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># yum install erlang			# 精简版</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># yum install esl-erlang     # 完整版</span></span><br><span class="line"><span class="comment"># 实际使用yum连网安装RabbitMQ时，会自动下载安装依赖，此步骤不进行，否则后期会引起冲突</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># yum install erlang			# 精简版</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># yum install esl-erlang     # 完整版</span></span><br><span class="line"><span class="comment"># 实际使用yum连网安装RabbitMQ时，会自动下载安装依赖，此步骤不进行，否则后期会引起冲突</span></span><br></pre></td></tr></table></figure>
+</li>
 <li><p>安装RabbitMQ</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc</span><br><span class="line"></span><br><span class="line">yum install rabbitmq-server-3.7.2-1.el7.noarch.rpm</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc</span><br><span class="line"></span><br><span class="line">yum install rabbitmq-server-3.7.2-1.el7.noarch.rpm</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>启动Rabbit MQ</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> rabbitmq-server</span><br><span class="line">systemctl start rabbitmq-server</span><br></pre></td></tr></table></figure>
 
@@ -123,7 +123,7 @@
 <ul>
 <li>安装rabbitmq</li>
 </ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;deb https://dl.bintray.com/rabbitmq/debian xenial main&quot;</span> | sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list</span><br><span class="line"></span><br><span class="line">wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc |</span><br><span class="line">     sudo apt-key add -</span><br><span class="line">     </span><br><span class="line">apt update</span><br><span class="line">apt install rabbitmq-server</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;deb https://dl.bintray.com/rabbitmq/debian xenial main&quot;</span> | sudo <span class="built_in">tee</span> /etc/apt/sources.list.d/bintray.rabbitmq.list</span><br><span class="line"></span><br><span class="line">wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc |</span><br><span class="line">     sudo apt-key add -</span><br><span class="line">     </span><br><span class="line">apt update</span><br><span class="line">apt install rabbitmq-server</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h2 id="3、RabbitMQ使用"><a href="#3、RabbitMQ使用" class="headerlink" title="3、RabbitMQ使用"></a>3、RabbitMQ使用</h2><p><a target="_blank" rel="noopener" href="http://blog.csdn.net/column/details/rabbitmq.html">http://blog.csdn.net/column/details/rabbitmq.html</a></p>
 <p><strong>问题</strong>：消息队列解决编程中的什么问题？或者不使用消息队列，可能存在哪些问题？</p>
@@ -141,7 +141,7 @@
 <p>AMQP协议定义了解决这些问题的方案，RabbitMQ是一种具体实现。</p>
 <p>生产者指任何产生数据的程序。</p>
 <p>消费者指任何接收数据的程序。</p>
-<p><img src="/images/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E7%BB%86%E6%A8%A1%E5%9E%8B.jpg" alt=" 消息队列模型"></p>
+<p><img src="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E7%BB%86%E6%A8%A1%E5%9E%8B.jpg" alt=" 消息队列模型"></p>
 <blockquote>
 <p>queue:A <em>queue</em> is only bound by the host’s memory &amp; disk limits, it’s essentially a large message buffer.</p>
 </blockquote>
@@ -166,10 +166,10 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl start_app</span><br><span class="line">rabbitmq-plugins <span class="built_in">enable</span> rabbitmq_management</span><br><span class="line">rabbitmqctl stop</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <h1 id="rabbitmq添加用户"><a href="#rabbitmq添加用户" class="headerlink" title="rabbitmq添加用户"></a>rabbitmq添加用户</h1><p>现添加admin，密码admin，管理员权限</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl add_user admin admin</span><br><span class="line">rabbitmqctl list_users</span><br><span class="line">rabbitmqctl set_user_tags admin administrator</span><br><span class="line">rabbitmqctl list_users</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl add_user admin admin</span><br><span class="line">rabbitmqctl list_users</span><br><span class="line">rabbitmqctl set_user_tags admin administrator</span><br><span class="line">rabbitmqctl list_users</span><br></pre></td></tr></table></figure>
 
 <p>添加成功后赋权限</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl set_permissions -p &#x2F; myuser &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl set_permissions -p / myuser &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br></pre></td></tr></table></figure>
     </div>
 
     <div class="post-meta">

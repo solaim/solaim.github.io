@@ -27,7 +27,7 @@
     
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 7.0.0-rc2"></head>
     
     <body>
         <div class="paper">
@@ -58,10 +58,6 @@
         
             
                 <li><a href="/list/">文章</a></li>
-            
-        
-            
-                <li><a href="/tags/">标签</a></li>
             
         
             
@@ -100,7 +96,7 @@
 <p>Designed for multi-tier deployments since day one, Ansible models your IT infrastructure by describing how all of your systems inter-relate, rather than just managing one system at a time.</p>
 </blockquote>
 <p>Ansible一开始就是为多层架构设计的，因此Ansible通过描述系统内部关系，进行整体建模。</p>
-<p><img src="/images/AnsibleArchitecture.png" alt="AnsibleArchitecture"></p>
+<p><img src="/img/AnsibleArchitecture.png" alt="AnsibleArchitecture"></p>
 <blockquote>
 <p>It uses no agents and no additional custom security infrastructure, so it’s easy to deploy - and most importantly, it uses a very simple language (YAML, in the form of Ansible Playbooks) that allow you to describe your automation jobs in a way that approaches plain English.</p>
 </blockquote>
@@ -122,7 +118,7 @@
 <p>使用pip安装的Ansible没有自动生成配置文件，需要手动生成。使用平台工具安装会自动生成Ansible配置文件。</p>
 <p>Ansible的核心是<strong>Playbooks</strong>。<strong>Playbooks</strong>是一个yaml格式的文本文件，用于描述事务状态。<strong>Playbooks</strong>的使用变量<em>Variables</em>描述，<em>Variables</em>可以在Playbooks、File、Inventories、Command line、Discovered variables、Ansible Tower等中定义。</p>
 <p><strong>Inventories</strong>类似中药药方，中药药方基本是这么写的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">当归莲子汤</span><br><span class="line"></span><br><span class="line">当归 两钱</span><br><span class="line">莲子 四钱</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">当归莲子汤</span><br><span class="line"></span><br><span class="line">当归 两钱</span><br><span class="line">莲子 四钱</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <p><strong>Inventories</strong>描述服务器的Host列表、范围、动态范围以及自定义。</p>
 <blockquote>
@@ -142,12 +138,12 @@
 <h2 id="3、Could-you-give-me-a-demo"><a href="#3、Could-you-give-me-a-demo" class="headerlink" title="3、Could you give me a demo?"></a>3、Could you give me a demo?</h2><ul>
 <li><input disabled="" type="checkbox"> 创建ansible目录</li>
 </ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /etc/ansible</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /etc/ansible</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><input disabled="" type="checkbox"> 创建ansible.cfg</li>
 </ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch /etc/ansible/ansible.cfg</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> /etc/ansible/ansible.cfg</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><input disabled="" type="checkbox"> 编辑ansible.cfg</li>
@@ -156,9 +152,9 @@
 
 <p>详细配置文件，请参考Github<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/ansible/ansible/devel/examples/ansible.cfg">网页</a>。</p>
 <ul>
-<li><input disabled="" type="checkbox"> 编辑Inventory /etc/ansible/hosts</li>
+<li><input disabled="" type="checkbox"> 编辑Inventory &#x2F;etc&#x2F;ansible&#x2F;hosts</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.0.142</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.0.142</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><input disabled="" type="checkbox"> 使用Ad-hoc方式运行命令：</li>
@@ -233,7 +229,7 @@
 <p>这个就要用到ansible-playbook了，不过我们先来看看inventory。</p>
 <p>ansible运行在复杂环境架构中，为了任务管理、运行方便，可以从inventory list中选取需要操作的主机组进行操作。inventory默认的存储文件是<code>/etc/ansible/hosts</code>，不过可以使用<code>-i path</code>进行指定。</p>
 <p>inventory支持多文件同时配置，支持动态拉取，支持不同格式的文件。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mail.example.com</span><br><span class="line"></span><br><span class="line"><span class="section">[webservers]</span></span><br><span class="line">foo.example.com</span><br><span class="line">bar.example.com</span><br><span class="line"></span><br><span class="line"><span class="section">[dbservers]</span></span><br><span class="line">one.example.com</span><br><span class="line">two.example.com</span><br><span class="line">three.example.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mail.example.com</span><br><span class="line"></span><br><span class="line"><span class="section">[webservers]</span></span><br><span class="line">foo.example.com</span><br><span class="line">bar.example.com</span><br><span class="line"></span><br><span class="line"><span class="section">[dbservers]</span></span><br><span class="line">one.example.com</span><br><span class="line">two.example.com</span><br><span class="line">three.example.com</span><br></pre></td></tr></table></figure>
 
 <p>这是一个ini格式的inventory，[webservers]表示group，可以方便的选取执行相关任务的主机，并且表明主机的用途。yaml格式的像这样：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">all:</span></span><br><span class="line">  <span class="attr">hosts:</span></span><br><span class="line">    <span class="attr">mail.example.com:</span></span><br><span class="line">  <span class="attr">children:</span></span><br><span class="line">    <span class="attr">webservers:</span></span><br><span class="line">      <span class="attr">hosts:</span></span><br><span class="line">        <span class="attr">foo.example.com:</span></span><br><span class="line">        <span class="attr">bar.example.com:</span></span><br><span class="line">    <span class="attr">dbservers:</span></span><br><span class="line">      <span class="attr">hosts:</span></span><br><span class="line">        <span class="attr">one.example.com:</span></span><br><span class="line">        <span class="attr">two.example.com:</span></span><br><span class="line">        <span class="attr">three.example.com:</span></span><br></pre></td></tr></table></figure>
@@ -242,20 +238,20 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">badwolf.example.com:5309</span><br></pre></td></tr></table></figure>
 
 <p>inventory支持使用变量定义主机：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jumper ansible_port=5555 ansible_host=192.0.2.50</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jumper <span class="attr">ansible_port</span>=<span class="number">5555</span> ansible_host=<span class="number">192.0</span>.<span class="number">2.50</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">...</span></span><br><span class="line">  <span class="attr">hosts:</span></span><br><span class="line">    <span class="attr">jumper:</span></span><br><span class="line">      <span class="attr">ansible_port:</span> <span class="number">5555</span></span><br><span class="line">      <span class="attr">ansible_host:</span> <span class="number">192.0</span><span class="number">.2</span><span class="number">.50</span></span><br></pre></td></tr></table></figure>
 
 <p>inventory支持模式匹配，如果主机类型模式类似，可以像这样：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[webservers]</span></span><br><span class="line">www[01:50].example.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[webservers]</span></span><br><span class="line">www<span class="section">[01:50]</span>.example.com</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[databases]</span></span><br><span class="line">db-[a:f].example.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[databases]</span></span><br><span class="line">db-<span class="section">[a:f]</span>.example.com</span><br></pre></td></tr></table></figure>
 
 <p>inventory支持定义连接类型和用户：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[targets]</span></span><br><span class="line"></span><br><span class="line">localhost              ansible_connection=local</span><br><span class="line">other1.example.com     ansible_connection=ssh        ansible_user=mpdehaan</span><br><span class="line">other2.example.com     ansible_connection=ssh        ansible_user=mdehaan</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[targets]</span></span><br><span class="line"></span><br><span class="line">localhost              <span class="attr">ansible_connection</span>=local</span><br><span class="line">other1.example.com     <span class="attr">ansible_connection</span>=ssh        ansible_user=mpdehaan</span><br><span class="line">other2.example.com     <span class="attr">ansible_connection</span>=ssh        ansible_user=mdehaan</span><br></pre></td></tr></table></figure>
 
 <p>可以在inventory中直接定义变量，但是更常用的方法是在host_vars目录的单独文件中进行定义，然后在inventory中进行引用：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[atlanta]</span></span><br><span class="line">host1 http_port=80 maxRequestsPerChild=808</span><br><span class="line">host2 http_port=303 maxRequestsPerChild=909</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[atlanta]</span></span><br><span class="line">host1 <span class="attr">http_port</span>=<span class="number">80</span> maxRequestsPerChild=<span class="number">808</span></span><br><span class="line">host2 <span class="attr">http_port</span>=<span class="number">303</span> maxRequestsPerChild=<span class="number">909</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[atlanta]</span></span><br><span class="line">host1</span><br><span class="line">host2</span><br><span class="line"></span><br><span class="line"><span class="section">[atlanta:vars]</span></span><br><span class="line"><span class="attr">ntp_server</span>=ntp.atlanta.example.com</span><br><span class="line"><span class="attr">proxy</span>=proxy.atlanta.example.com</span><br></pre></td></tr></table></figure>
 

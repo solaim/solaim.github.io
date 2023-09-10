@@ -27,7 +27,7 @@
     
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 7.0.0-rc2"></head>
     
     <body>
         <div class="paper">
@@ -58,10 +58,6 @@
         
             
                 <li><a href="/list/">文章</a></li>
-            
-        
-            
-                <li><a href="/tags/">标签</a></li>
             
         
             
@@ -104,7 +100,7 @@
 <li>简单易用：架构简单，配置简单，上下游打通。</li>
 </ol>
 <p>大家都在用，而且用起来很方便的确是我们选择产品的方法，但是作为开发人员，还是需要了解一下其内部的实现。这个系列，主要根据Prometheus的代码和文档，梳理Prometheus的内部实现。</p>
-<h2 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h2><p><img src="/images/prometheus_architecture.png" alt="prometheus_architecture"></p>
+<h2 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h2><p><img src="/img/prometheus_architecture.png" alt="prometheus_architecture"></p>
 <p>Prometheus从配置的jobs中抓取metrics，存储在本地存储或者外部存储中，在metrics上运行规则聚合多维度的数据或者生成告警。Grafana或者自带的web UI能够方便的展示数据。</p>
 <p>Prometheus的组件包括：</p>
 <ul>
@@ -115,7 +111,7 @@
 <li>alertmanager：alertmanager负责告警的发送</li>
 </ul>
 <p>从总体架构，我们可以了解各种组件，以及数据的流向，现在我们开始研究Prometheus server的内部实现。</p>
-<h2 id="Server实现架构"><a href="#Server实现架构" class="headerlink" title="Server实现架构"></a>Server实现架构</h2><p><img src="/images/prometheus_internal_architecture.svg" alt="prometheus_internal_architecture"></p>
+<h2 id="Server实现架构"><a href="#Server实现架构" class="headerlink" title="Server实现架构"></a>Server实现架构</h2><p><img src="/img/prometheus_internal_architecture.svg" alt="prometheus_internal_architecture"></p>
 <p>server启动的时候，根据配置文件prometheus.yml和flag决定各种配置，配置文件包括全局配置、抓取目标配置和规则配置等等。scrape_configs配置了抓取的目标，Prometheus支持动态获取目标，Service discovery读取静态配置的目标或者周期更新动态目标，添加到scrape manager，scrape manager负责抓取目标，抓取实际是一个HTTP请求，即各种exporters实际上就是一个简单的HTTP服务，负责暴露各种应用的指标。scrape manager抓取指标后，将数据交给fanout storage，fanout storage负责数据存储，支持本地存储和外部存储。rule manager根据规则，聚合指标存储到fanout storage，或者生成告警发送给alert manager。Prometheus也实现了各种web接口，使用promQL进行数据的查询。</p>
 <p>server的组件包括：</p>
 <ul>

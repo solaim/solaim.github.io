@@ -27,7 +27,7 @@
     
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 7.0.0-rc2"></head>
     
     <body>
         <div class="paper">
@@ -58,10 +58,6 @@
         
             
                 <li><a href="/list/">文章</a></li>
-            
-        
-            
-                <li><a href="/tags/">标签</a></li>
             
         
             
@@ -129,9 +125,9 @@
 </tr>
 </tbody></table>
 <p>为了扩展k8s api方便，开发人员实现了API groups。API groups在rest路径中指定，而在apiVersion中是一个序列化的对象。目前使用的API groups包含：</p>
-<p>1、核心组：rest路径是/api/v1，apiVersion中是v1</p>
-<p>2、命名组：rest路径是/apis/$GROUP_NAME/$VERSION,apiVersion中是$GROUP_NAME/$VERSION</p>
-<p>有老铁可能发现了，你这示例给的apps/v1,apps是啥了？apps就是一个命名组的名称，表示功能和k8s运行的应用有关联，比如说Deployments, RollingUpdates, and ReplicaSets。当然同一个路径下可能包含多种类型的资源，所以k8s为了区别具体的区别，使用了kind标识具体的资源类型。</p>
+<p>1、核心组：rest路径是&#x2F;api&#x2F;v1，apiVersion中是v1</p>
+<p>2、命名组：rest路径是&#x2F;apis&#x2F;$GROUP_NAME&#x2F;$VERSION,apiVersion中是$GROUP_NAME&#x2F;$VERSION</p>
+<p>有老铁可能发现了，你这示例给的apps&#x2F;v1,apps是啥了？apps就是一个命名组的名称，表示功能和k8s运行的应用有关联，比如说Deployments, RollingUpdates, and ReplicaSets。当然同一个路径下可能包含多种类型的资源，所以k8s为了区别具体的区别，使用了kind标识具体的资源类型。</p>
 <h2 id="3、kind模块"><a href="#3、kind模块" class="headerlink" title="3、kind模块"></a>3、kind模块</h2><p>kind字段用于标识资源类型，那么k8s支持的资源类型有哪些了？</p>
 <p>太多了，不一一列举了。提几个常用的，比如Deployment、ReplicaController、Pod和Service等等。现在我们创建了一个对象，我们想给她一个名字，怎么办？</p>
 <h2 id="4、metadata模块"><a href="#4、metadata模块" class="headerlink" title="4、metadata模块"></a>4、metadata模块</h2><p>显示，metadata模块可以满足我们的这个需求，metadata.name就是描述我们刚刚创建的对象的名称，当然k8s还有其他的metadata需要描述，比如metadata.namespace，默认为default，metadata.uid不需要手动填写，系统自动生成。这几个要么必须填写，要么系统生成，是必备硬货。为了方便用户组织资源，metadata提供labels字段，可以组织和分类对象。label是一个键值对，labels可以同时又多个label，逗号分隔。还有其他字段，就不细说了。</p>
