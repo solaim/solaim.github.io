@@ -1,207 +1,98 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="zh-CN">
+    <head>
     <meta charset="utf-8">
-    
-    <title>Prometheus内部实现(三) | Coronarium</title>
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    
-        <meta name="keywords" content="Golang, Prometheus, Observability" />
-    
-    <meta name="description" content="非线性 &#x3D;&gt; 线性，混乱 &#x3D;&gt; 秩序  上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。 Prometheus server的main函数有两个很精彩的实现，一个是reloader的注册，一个是组件启动。但是有个问题，所有的组件都是同时启动的吗？还是">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Prometheus内部实现(三)">
-<meta property="og:url" content="https://solaim.github.io/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/index.html">
-<meta property="og:site_name" content="Coronarium">
-<meta property="og:description" content="非线性 &#x3D;&gt; 线性，混乱 &#x3D;&gt; 秩序  上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。 Prometheus server的main函数有两个很精彩的实现，一个是reloader的注册，一个是组件启动。但是有个问题，所有的组件都是同时启动的吗？还是">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://solaim.github.io/images/prom.png">
-<meta property="article:published_time" content="2021-03-20T09:43:10.000Z">
-<meta property="article:modified_time" content="2021-03-22T15:23:23.380Z">
-<meta property="article:author" content="Jerry Wang">
-<meta property="article:tag" content="Golang, Prometheus, Observability">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://solaim.github.io/images/prom.png">
-    
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0,  viewport-fit=cover" name="viewport" />
+    <meta name="description" content="Prometheus内部实现(三)" />
+    <meta name="hexo-theme-A4" content="v1.7.1" />
+    <link rel="alternate icon" type="image/webp" href="/img/favicon.webp">
+    <title>Coronarium | Drill down</title>
 
     
-        <link rel="alternate" href="/" title="Coronarium" type="application/atom+xml" />
+        
+<link rel="stylesheet" href="/css/reset.css">
+
+        
+<link rel="stylesheet" href="/css/markdown.css">
+
+        
+<link rel="stylesheet" href="/css/fonts.css">
+ 
+         <!--注意：首页既不是post也不是page-->
+        
     
-
     
-
-    
-<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
-
-    
-<link rel="stylesheet" href="/libs/titillium-web/styles.css">
-
-    
-<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
-
-
+<link rel="stylesheet" href="/css/ui.css">
+ 
     
 <link rel="stylesheet" href="/css/style.css">
 
-
-    
-<script src="/libs/jquery/2.0.3/jquery.min.js"></script>
-
-    
-    
-        
-<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
-
-    
-    
-        
-<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
-
-    
-    
-    
-
-
 <meta name="generator" content="Hexo 5.4.2"></head>
-
-<body>
-    <div id="wrap">
-        <header id="header">
-    <div id="header-outer" class="outer">
-        <div class="container">
-            <div class="container-inner">
-                <div id="header-title">
-                    <h1 class="logo-wrap">
-                        <a href="/" class="logo"></a>
-                    </h1>
+    
+    <body>
+        <div class="paper">
+            
+            
+            
+            
+                <div class="shadow-drop-2-bottom paper-main">
                     
-                </div>
-                <div id="header-inner" class="nav-container">
-                    <a id="main-nav-toggle" class="nav-icon fa fa-bars"></a>
-                    <div class="nav-container-inner">
-                        <ul id="main-nav">
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/">主页</a>
-                                </li>
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/categories/Python/">Python</a>
-                                </li>
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/categories/Golang/">Golang</a>
-                                </li>
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/categories/Js/">Js</a>
-                                </li>
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/categories/music/">音乐</a>
-                                </li>
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/categories/food/">食物</a>
-                                </li>
-                            
-                                <li class="main-nav-list-item" >
-                                    <a class="main-nav-list-link" href="/categories/dust/">尘埃</a>
-                                </li>
-                            
-                        </ul>
-                        <nav id="sub-nav">
-                            <div id="search-form-wrap">
-
-    <form class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
-        <button type="submit" class="search-form-submit"></button>
-    </form>
-    <div class="ins-search">
-    <div class="ins-search-mask"></div>
-    <div class="ins-search-container">
-        <div class="ins-input-wrapper">
-            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
-            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+<div class="header">
+    <div class="header-container">
+        <img style="
+        width: 56px;
+        height: auto;" alt="^-^" cache-control="max-age=86400" class="header-img" src="/img/favicon.webp" width="10%"></img>
+        <div class="header-content">
+            <a class="logo" href="/">Coronarium</a> 
+            <span class="description">专注、探索、积累</span> 
         </div>
-        <div class="ins-section-wrapper">
-            <div class="ins-section-container"></div>
-        </div>
-    </div>
-</div>
-<script>
-(function (window) {
-    var INSIGHT_CONFIG = {
-        TRANSLATION: {
-            POSTS: '文章',
-            PAGES: '页面',
-            CATEGORIES: '分类',
-            TAGS: '标签',
-            UNTITLED: '(未命名)',
-        },
-        ROOT_URL: '/',
-        CONTENT_URL: '/content.json',
-    };
-    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
-})(window);
-</script>
-
-<script src="/js/insight.js"></script>
-
-
-</div>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-        <div class="container">
-            <div class="main-body container-inner">
-                <div class="main-body-inner">
-                    <section id="main">
-                        <div class="main-body-header">
-    <h1 class="header">
-    
-    <a class="page-title-link" href="/categories/Golang/">Golang</a>
-    </h1>
-</div>
-                        <div class="main-body-content">
-                            <article id="post-Prometheus内部实现-三" class="article article-single article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
         
-            <header class="article-header">
-                
+    </div>
     
-        <h1 class="article-title" itemprop="name">
-        Prometheus内部实现(三)
-        </h1>
+   
+    <ul class="nav">
+        
+            
+                <li><a href="/">首页</a></li>
+            
+        
+            
+                <li><a href="/list/">文章</a></li>
+            
+        
+            
+                <li><a href="/tags/">标签</a></li>
+            
+        
+            
+                <li><a href="/about/">关于</a></li>
+            
+        
+    </ul>
+</div> 
+        
+                    
+                    
+
+                    
+                    
+                    
+                    <!--说明是文章post页面-->
+                    
+                        <div class="post-main">
+
+    
+        <div class="post-main-title">
+            Prometheus内部实现(三)
+        </div>
+      
     
 
-            </header>
+    <div class="post-md">
         
+            
         
-            <div class="article-meta">
-                
-    <div class="article-date">
-        <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="article-date">
-            <time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time>
-        </a>
-    </div>
-
-                
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a>
-    </div>
-
-            </div>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-            <blockquote>
+        <blockquote>
 <p>非线性 =&gt; 线性，混乱 =&gt; 秩序</p>
 </blockquote>
 <p>上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。</p>
@@ -261,394 +152,87 @@
 <p>厉害了厉害了，我们终于解析完了scrape config，终于知道可以去抓取哪些目标metrics了。嗯，又有新目标，了解yaml底层解析的原理！！！</p>
 <p>下一篇我们接着研究Prometheus server的scrape实现。</p>
 
-        </div>
-        <footer class="article-footer">
+    </div>
+
+    <div class="post-meta">
+        <i>
+        
+            <span>2021-03-20</span>
             
+                <span>该篇文章被 Bray Wang</span>
+            
+            
+                <span>打上标签:
+                    
+                    
+                        <a href='/tags/Golang-Prometheus-Observability/'>
+                            Golang, Prometheus, Observability
+                        </a>
+                    
+                </span>
+             
+             
+                <span>归为分类:
+                    
+                    
+                        <a href='/categories/Golang/'>
+                            Golang
+                        </a>
+                    
+                </span>
+            
+        
+        </i>
+    </div>
+    
+        
+
+     
+</div>
 
 
 
-    <a data-url="https://solaim.github.io/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" data-id="cl40qj48y0013r6gl185ofm94" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+                    
+                    
+                    <div class="footer">
+    
+        <span> 
+            © Bray Wang 
+
+            
+                
+
+            
+        </span>
+    
+</div>
+<!--这是指一条线往下的内容-->
+<div class="footer-last">
+    
+            <span>☀️白驹过隙,时光荏苒🌛</span>
+            
+                <span class="footer-last-span-right"><i>本站由<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/index.html">Hexo</a>驱动｜使用<a target="_blank" rel="noopener" href="https://github.com/HiNinoJay/hexo-theme-A4">Hexo-theme-A4</a>主题</i></span>
+            
+    
+</div>
+
+
+    
+<link rel="stylesheet" href="/css/a11y-dark.min.css">
+
+    
+<script src="/js/highlight.min.js"></script>
+
+    
+<script src="/js/highlightjs-line-numbers.js"></script>
+
+
+
 <script>
-    (function ($) {
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
 </script>
-
-        </footer>
-    </div>
-</article>
-
-    <section id="comments">
-    
-        
-    <div id="valine-thread"></div>
-
-    
-    </section>
-
-
-                        </div>
-                    </section>
-                    <aside id="sidebar">
-    <a class="sidebar-toggle" title="Expand Sidebar"><i class="toggle icon"></i></a>
-    <div class="sidebar-top">
-        <p>关注我 :</p>
-        <ul class="social-links">
-            
-                
-                <li>
-                    <a class="social-tooltip" title="github" href="https://github.com/solaim/" target="_blank">
-                        <i class="icon fa fa-github"></i>
-                    </a>
-                </li>
-                
-            
-                
-                <li>
-                    <a class="social-tooltip" title="weibo" href="/" target="_blank">
-                        <i class="icon fa fa-weibo"></i>
-                    </a>
-                </li>
-                
-            
-                
-                <li>
-                    <a class="social-tooltip" title="rss" href="/" target="_blank">
-                        <i class="icon fa fa-rss"></i>
-                    </a>
-                </li>
-                
-            
-        </ul>
-    </div>
-    
-        
-<nav id="article-nav">
-    
-        <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" id="article-nav-newer" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">下一篇</strong>
-        <p class="article-nav-title">
-        
-            Prometheus内部实现(四)
-        
-        </p>
-        <i class="icon fa fa-chevron-right" id="icon-chevron-right"></i>
-    </a>
-    
-    
-        <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" id="article-nav-older" class="article-nav-link-wrap">
-        <strong class="article-nav-caption">上一篇</strong>
-        <p class="article-nav-title">Prometheus内部实现(二)</p>
-        <i class="icon fa fa-chevron-left" id="icon-chevron-left"></i>
-        </a>
-    
-</nav>
-
-    
-    <div class="widgets-container">
-        
-            
-                
-    <div class="widget-wrap">
-        <h3 class="widget-title">最新文章</h3>
-        <div class="widget">
-            <ul id="recent-post" class="">
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2022/10/30/%E4%B8%83%E7%89%9B%E4%BA%912023%E5%AE%9E%E4%B9%A0%E7%94%9F%E6%8B%9B%E8%81%98/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/qiniu.png)" alt="七牛云2023实习生招聘" class="thumbnail-image"></span>
-    
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
-                            <p class="item-title"><a href="/2022/10/30/%E4%B8%83%E7%89%9B%E4%BA%912023%E5%AE%9E%E4%B9%A0%E7%94%9F%E6%8B%9B%E8%81%98/" class="title">七牛云2023实习生招聘</a></p>
-                            <p class="item-date"><time datetime="2022-10-30T06:14:38.000Z" itemprop="datePublished">2022-10-30</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/components-of-kubernetes.svg)" alt="说说k8s网络" class="thumbnail-image"></span>
-    
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
-                            <p class="item-title"><a href="/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/" class="title">说说k8s网络</a></p>
-                            <p class="item-date"><time datetime="2021-06-06T03:17:45.000Z" itemprop="datePublished">2021-06-06</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(四)" class="thumbnail-image"></span>
-    
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
-                            <p class="item-title"><a href="/2021/03/22/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E5%9B%9B/" class="title">Prometheus内部实现(四)</a></p>
-                            <p class="item-date"><time datetime="2021-03-22T15:33:57.000Z" itemprop="datePublished">2021-03-22</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(三)" class="thumbnail-image"></span>
-    
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
-                            <p class="item-title"><a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/" class="title">Prometheus内部实现(三)</a></p>
-                            <p class="item-date"><time datetime="2021-03-20T09:43:10.000Z" itemprop="datePublished">2021-03-20</time></p>
-                        </div>
-                    </li>
-                
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="thumbnail">
-    
-    
-        <span style="background-image:url(/images/prom.png)" alt="Prometheus内部实现(二)" class="thumbnail-image"></span>
-    
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"><a class="article-category-link" href="/categories/Golang/">Golang</a></p>
-                            <p class="item-title"><a href="/2021/03/15/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%BA%8C/" class="title">Prometheus内部实现(二)</a></p>
-                            <p class="item-date"><time datetime="2021-03-15T14:46:41.000Z" itemprop="datePublished">2021-03-15</time></p>
-                        </div>
-                    </li>
-                
-            </ul>
-        </div>
-    </div>
-
-            
-                
-    <div class="widget-wrap widget-list">
-        <h3 class="widget-title">分类</h3>
-        <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Golang/">Golang</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/dust/">dust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/k8s/">k8s</a><span class="category-list-count">3</span></li></ul>
-        </div>
-    </div>
-
-
-            
-                
-    <div class="widget-wrap widget-list">
-        <h3 class="widget-title">归档</h3>
-        <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-
-            
-                
-    <div class="widget-wrap widget-list">
-        <h3 class="widget-title">标签</h3>
-        <div class="widget">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag">AI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Job/" rel="tag">Golang, Job</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Kubernetes-Service/" rel="tag">Golang, Kubernetes, Service</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Golang-Prometheus-Observability/" rel="tag">Golang, Prometheus, Observability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Ansible/" rel="tag">Python, Ansible</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python-Flask-SocketIO/" rel="tag">Python, Flask, SocketIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/life/" rel="tag">life</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li></ul>
-        </div>
-    </div>
-
-
-            
-                
-    <div class="widget-wrap widget-float">
-        <h3 class="widget-title">标签云</h3>
-        <div class="widget tagcloud">
-            <a href="/tags/AI/" style="font-size: 10px;">AI</a> <a href="/tags/Golang-Job/" style="font-size: 10px;">Golang, Job</a> <a href="/tags/Golang-Kubernetes-Service/" style="font-size: 10px;">Golang, Kubernetes, Service</a> <a href="/tags/Golang-Prometheus-Observability/" style="font-size: 20px;">Golang, Prometheus, Observability</a> <a href="/tags/Python-Ansible/" style="font-size: 10px;">Python, Ansible</a> <a href="/tags/Python-Flask-SocketIO/" style="font-size: 10px;">Python, Flask, SocketIO</a> <a href="/tags/life/" style="font-size: 10px;">life</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 10px;">消息队列</a>
-        </div>
-    </div>
-
-
-            
-                
-    <div class="widget-wrap widget-list">
-        <h3 class="widget-title">链接</h3>
-        <div class="widget">
-            <ul>
-                
-                    <li>
-                        <a target="_blank" rel="noopener" href="http://hexo.io">Hexo</a>
-                    </li>
-                
-            </ul>
-        </div>
-    </div>
-
-
-            
-        
-    </div>
-</aside>
                 </div>
-            </div>
-        </div>
-        <footer id="footer">
-    <div class="container">
-        <div class="container-inner">
-            <a id="back-to-top" href="javascript:;"><i class="icon fa fa-angle-up"></i></a>
-            <div class="credit">
-                <h1 class="logo-wrap">
-                    <a href="/" class="logo"></a>
-                </h1>
-                <p>&copy; 2022 Jerry Wang</p>
-                <p>Powered by <a href="//hexo.io/" target="_blank">Hexo</a>. Theme by <a href="//github.com/ppoffice" target="_blank">PPOffice</a></p>
-            </div>
-        </div>
-    </div>
-</footer>
-        
-    
-    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-    <script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7-rc3/dist/Valine.min.js"></script>
-    <script>
-        new Valine({
-            el: '#valine-thread' ,
-            notify:false,
-            verify:false,
-            app_id: 'Rn2Eyd6fRyStAHXD8g6u9g8L-gzGzoHsz',
-            app_key: '3BINIB2VixkCjtbo7JsOohuu',
-            placeholder: 'Just Do It'
-        });
-    </script>
-
-
-
-
-    
-        
-<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-share.min.js"></script>
-
-        
-<script src="/libs/lightgallery/js/lg-video.min.js"></script>
-
-    
-    
-        
-<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
-
-    
-    
-
-
-
-<!-- Custom Scripts -->
-
-<script src="/js/main.js"></script>
-
-
-    </div>
-</body>
+            
+    </body>
 </html>
