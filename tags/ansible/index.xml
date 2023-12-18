@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ansible on 日月为白</title>
+    <link>https://solaim.github.io/tags/ansible/</link>
+    <description>Recent content in Ansible on 日月为白</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 10 Apr 2019 21:21:23 +0800</lastBuildDate>
+    <atom:link href="https://solaim.github.io/tags/ansible/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible</title>
+      <link>https://solaim.github.io/posts/ansible/</link>
+      <pubDate>Wed, 10 Apr 2019 21:21:23 +0800</pubDate>
+      <guid>https://solaim.github.io/posts/ansible/</guid>
+      <description>1、 What is ansible? Ansible is a radically simple IT automation engine that automates cloud provisioning, configuration management, application deployment, intra-service orchestration, and many other IT needs.&#xA;Ansible是一个颠覆性的运维工具，支持云配置、配置管理、应用部署、服务编配等运维工作。&#xA;Designed for multi-tier deployments since day one, Ansible models your IT infrastructure by describing how all of your systems inter-relate, rather than just managing one system at a time.&#xA;Ansible一开始就是为多层架构设计的，因此Ansible通过描述系统内部关系，进行整体建模。&#xA;It uses no agents and no additional custom security infrastructure, so it&amp;rsquo;s easy to deploy - and most importantly, it uses a very simple language (YAML, in the form of Ansible Playbooks) that allow you to describe your automation jobs in a way that approaches plain English.</description>
+    </item>
+  </channel>
+</rss>

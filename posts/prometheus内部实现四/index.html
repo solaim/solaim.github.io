@@ -1,0 +1,400 @@
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=en-us><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Prometheus内部实现(四) - 日月为白</title>
+<meta name=theme-color><meta name=description content="目标该怎么管理？静态还是动态发现？
+目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！
+目前，企业应用部署有两种选项：
+基于虚拟机 基于容器 当然，更多的是虚拟机里装docker，算是两者的结合，节省成本。
+那么基于虚拟机部署应用有什么特点呢？就是变化小，你的预期和实际情况是相对静止的，在虚拟机上部署一套应用，一套流程走下来，大概得小半天吧，这种情况把要监控的目标写到Prometheus的配置文件，再重启Prometheus server，完全玩得转！
+然而，当公司的应用开始基于容器部署，特别是管控平面使用了k8s，那么手动配置Prometheus、重启就成为了噩梦一样的存在！运维会疲于奔命，开发会吐槽运维。
+所以监控目标的配置，取决于使用的底层技术！
+题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。
+那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：
+{ // Scrape discovery manager. g.Add( func() error { err := discoveryManagerScrape.Run() level.Info(logger).Log(&#34;msg&#34;, &#34;Scrape discovery manager stopped&#34;) return err }, func(err error) { level.Info(logger).Log(&#34;msg&#34;, &#34;Stopping scrape discovery manager...&#34;) cancelScrape() }, ) } { // Notify discovery manager. ... } { // Scrape manager. g.Add( func() error { // When the scrape manager receives a new targets list // it needs to read a valid config for each job."><meta name=author content="日月为白"><link rel="preload stylesheet" as=style href=https://solaim.github.io/main.min.css><link rel=preload as=image href=https://solaim.github.io/theme.png><script defer src=https://solaim.github.io/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://solaim.github.io/favicon.ico><link rel=apple-touch-icon href=https://solaim.github.io/apple-touch-icon.png><meta name=generator content="Hugo 0.121.1"><meta itemprop=name content="Prometheus内部实现(四)"><meta itemprop=description content="目标该怎么管理？静态还是动态发现？
+目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！
+目前，企业应用部署有两种选项：
+基于虚拟机 基于容器 当然，更多的是虚拟机里装docker，算是两者的结合，节省成本。
+那么基于虚拟机部署应用有什么特点呢？就是变化小，你的预期和实际情况是相对静止的，在虚拟机上部署一套应用，一套流程走下来，大概得小半天吧，这种情况把要监控的目标写到Prometheus的配置文件，再重启Prometheus server，完全玩得转！
+然而，当公司的应用开始基于容器部署，特别是管控平面使用了k8s，那么手动配置Prometheus、重启就成为了噩梦一样的存在！运维会疲于奔命，开发会吐槽运维。
+所以监控目标的配置，取决于使用的底层技术！
+题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。
+那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：
+{ // Scrape discovery manager. g.Add( func() error { err := discoveryManagerScrape.Run() level.Info(logger).Log(&#34;msg&#34;, &#34;Scrape discovery manager stopped&#34;) return err }, func(err error) { level.Info(logger).Log(&#34;msg&#34;, &#34;Stopping scrape discovery manager...&#34;) cancelScrape() }, ) } { // Notify discovery manager. ... } { // Scrape manager. g.Add( func() error { // When the scrape manager receives a new targets list // it needs to read a valid config for each job."><meta itemprop=datePublished content="2021-03-22T21:31:03+08:00"><meta itemprop=dateModified content="2021-03-22T21:31:03+08:00"><meta itemprop=wordCount content="1148"><meta itemprop=image content="https://solaim.github.io/img/favicon.webp"><meta itemprop=keywords content="Golang,Prometheus,Observability,"><meta property="og:title" content="Prometheus内部实现(四)"><meta property="og:description" content="目标该怎么管理？静态还是动态发现？
+目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！
+目前，企业应用部署有两种选项：
+基于虚拟机 基于容器 当然，更多的是虚拟机里装docker，算是两者的结合，节省成本。
+那么基于虚拟机部署应用有什么特点呢？就是变化小，你的预期和实际情况是相对静止的，在虚拟机上部署一套应用，一套流程走下来，大概得小半天吧，这种情况把要监控的目标写到Prometheus的配置文件，再重启Prometheus server，完全玩得转！
+然而，当公司的应用开始基于容器部署，特别是管控平面使用了k8s，那么手动配置Prometheus、重启就成为了噩梦一样的存在！运维会疲于奔命，开发会吐槽运维。
+所以监控目标的配置，取决于使用的底层技术！
+题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。
+那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：
+{ // Scrape discovery manager. g.Add( func() error { err := discoveryManagerScrape.Run() level.Info(logger).Log(&#34;msg&#34;, &#34;Scrape discovery manager stopped&#34;) return err }, func(err error) { level.Info(logger).Log(&#34;msg&#34;, &#34;Stopping scrape discovery manager...&#34;) cancelScrape() }, ) } { // Notify discovery manager. ... } { // Scrape manager. g.Add( func() error { // When the scrape manager receives a new targets list // it needs to read a valid config for each job."><meta property="og:type" content="article"><meta property="og:url" content="https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E5%9B%9B/"><meta property="og:image" content="https://solaim.github.io/img/favicon.webp"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-03-22T21:31:03+08:00"><meta property="article:modified_time" content="2021-03-22T21:31:03+08:00"><meta property="og:site_name" content="Coronarium"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://solaim.github.io/img/favicon.webp"><meta name=twitter:title content="Prometheus内部实现(四)"><meta name=twitter:description content="目标该怎么管理？静态还是动态发现？
+目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！
+目前，企业应用部署有两种选项：
+基于虚拟机 基于容器 当然，更多的是虚拟机里装docker，算是两者的结合，节省成本。
+那么基于虚拟机部署应用有什么特点呢？就是变化小，你的预期和实际情况是相对静止的，在虚拟机上部署一套应用，一套流程走下来，大概得小半天吧，这种情况把要监控的目标写到Prometheus的配置文件，再重启Prometheus server，完全玩得转！
+然而，当公司的应用开始基于容器部署，特别是管控平面使用了k8s，那么手动配置Prometheus、重启就成为了噩梦一样的存在！运维会疲于奔命，开发会吐槽运维。
+所以监控目标的配置，取决于使用的底层技术！
+题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。
+那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：
+{ // Scrape discovery manager. g.Add( func() error { err := discoveryManagerScrape.Run() level.Info(logger).Log(&#34;msg&#34;, &#34;Scrape discovery manager stopped&#34;) return err }, func(err error) { level.Info(logger).Log(&#34;msg&#34;, &#34;Stopping scrape discovery manager...&#34;) cancelScrape() }, ) } { // Notify discovery manager. ... } { // Scrape manager. g.Add( func() error { // When the scrape manager receives a new targets list // it needs to read a valid config for each job."><link rel=canonical href=https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E5%9B%9B/></head><body class="text-black duration-200 ease-out dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center"><div class="relative z-50 mr-auto flex items-center"><a class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold" href=https://solaim.github.io>日月为白</a><div class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6"><a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/categories/>🕸分类</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/tags/>🐚标签</a>
+<a class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal" href=/about/>🌏关于</a></nav></div></header><main class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"><article><header class=mb-16><h1 class="!my-0 pb-2.5">Prometheus内部实现(四)</h1><div class="text-sm antialiased opacity-60"><time>Mar 22, 2021</time></div></header><section><blockquote><p>目标该怎么管理？静态还是动态发现？</p></blockquote><p>目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！</p><p><img src=/img/virtual-container.webp alt=virtual-container></p><p>目前，企业应用部署有两种选项：</p><ol><li>基于虚拟机</li><li>基于容器</li></ol><p>当然，更多的是虚拟机里装docker，算是两者的结合，节省成本。</p><p>那么基于虚拟机部署应用有什么特点呢？就是变化小，你的预期和实际情况是相对静止的，在虚拟机上部署一套应用，一套流程走下来，大概得小半天吧，这种情况把要监控的目标写到Prometheus的配置文件，再重启Prometheus server，完全玩得转！</p><p>然而，当公司的应用开始基于容器部署，特别是管控平面使用了k8s，那么手动配置Prometheus、重启就成为了噩梦一样的存在！运维会疲于奔命，开发会吐槽运维。</p><p>所以监控目标的配置，取决于使用的底层技术！</p><blockquote><p>题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。</p></blockquote><p>那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// Scrape discovery manager.
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>g</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=kd>func</span><span class=p>()</span> <span class=kt>error</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nx>err</span> <span class=o>:=</span> <span class=nx>discoveryManagerScrape</span><span class=p>.</span><span class=nf>Run</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>      <span class=nx>level</span><span class=p>.</span><span class=nf>Info</span><span class=p>(</span><span class=nx>logger</span><span class=p>).</span><span class=nf>Log</span><span class=p>(</span><span class=s>&#34;msg&#34;</span><span class=p>,</span> <span class=s>&#34;Scrape discovery manager stopped&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=kd>func</span><span class=p>(</span><span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nx>level</span><span class=p>.</span><span class=nf>Info</span><span class=p>(</span><span class=nx>logger</span><span class=p>).</span><span class=nf>Log</span><span class=p>(</span><span class=s>&#34;msg&#34;</span><span class=p>,</span> <span class=s>&#34;Stopping scrape discovery manager...&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=nf>cancelScrape</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// Notify discovery manager.
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=o>...</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// Scrape manager.
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>g</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=kd>func</span><span class=p>()</span> <span class=kt>error</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=c1>// When the scrape manager receives a new targets list
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=c1>// it needs to read a valid config for each job.
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=c1>// It depends on the config being in sync with the discovery manager so
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=c1>// we wait until the config is fully loaded.
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=o>&lt;-</span><span class=nx>reloadReady</span><span class=p>.</span><span class=nx>C</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>      <span class=nx>err</span> <span class=o>:=</span> <span class=nx>scrapeManager</span><span class=p>.</span><span class=nf>Run</span><span class=p>(</span><span class=nx>discoveryManagerScrape</span><span class=p>.</span><span class=nf>SyncCh</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>      <span class=nx>level</span><span class=p>.</span><span class=nf>Info</span><span class=p>(</span><span class=nx>logger</span><span class=p>).</span><span class=nf>Log</span><span class=p>(</span><span class=s>&#34;msg&#34;</span><span class=p>,</span> <span class=s>&#34;Scrape manager stopped&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=kd>func</span><span class=p>(</span><span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=c1>// Scrape manager needs to be stopped before closing the local TSDB
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=c1>// so that it doesn&#39;t try to write samples to a closed storage.
+</span></span></span><span class=line><span class=cl><span class=c1></span>      <span class=nx>level</span><span class=p>.</span><span class=nf>Info</span><span class=p>(</span><span class=nx>logger</span><span class=p>).</span><span class=nf>Log</span><span class=p>(</span><span class=s>&#34;msg&#34;</span><span class=p>,</span> <span class=s>&#34;Stopping scrape manager...&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=nx>scrapeManager</span><span class=p>.</span><span class=nf>Stop</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>启动的核心语句：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=err>#</span> <span class=nx>启动动态发现</span>
+</span></span><span class=line><span class=cl><span class=nx>discoveryManagerScrape</span><span class=p>.</span><span class=nf>Run</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>#</span> <span class=nx>启动目标抓取</span>
+</span></span><span class=line><span class=cl><span class=nx>scrapeManager</span><span class=p>.</span><span class=nf>Run</span><span class=p>(</span><span class=nx>discoveryManagerScrape</span><span class=p>.</span><span class=nf>SyncCh</span><span class=p>())</span>
+</span></span></code></pre></div><p><code>discoveryManagerScrape.SyncCh()</code>作为参数传递给<code>scrapeManager.Run</code>，来看看它的实现：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// SyncCh returns a read only channel used by all the clients to receive target updates.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=p>(</span><span class=nx>m</span> <span class=o>*</span><span class=nx>Manager</span><span class=p>)</span> <span class=nf>SyncCh</span><span class=p>()</span> <span class=o>&lt;-</span><span class=kd>chan</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>][]</span><span class=o>*</span><span class=nx>targetgroup</span><span class=p>.</span><span class=nx>Group</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>m</span><span class=p>.</span><span class=nx>syncCh</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>实际上，是将discoveryManagerScrape和scrapeManager通过<code>map[string][]*targetgroup.Group</code>channel 连接了起来，也就是discoveryManagerScrape动态发现的目标通过这个channel，同步给scrapeManager，scrapeManager负责抓取。</p><p>我们来做一个小结：</p><p><img src=/img/dsm.jpg alt=dsm></p><p>其实，就是两个goroutine之间通过channel通信。</p><p>接下来，让我们看看<code>scrapeManager.Run</code>里面的实现：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Run receives and saves target set updates and triggers the scraping loops reloading.
+</span></span></span><span class=line><span class=cl><span class=c1>// Reloading happens in the background so that it doesn&#39;t block receiving targets updates.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=p>(</span><span class=nx>m</span> <span class=o>*</span><span class=nx>Manager</span><span class=p>)</span> <span class=nf>Run</span><span class=p>(</span><span class=nx>tsets</span> <span class=o>&lt;-</span><span class=kd>chan</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>][]</span><span class=o>*</span><span class=nx>targetgroup</span><span class=p>.</span><span class=nx>Group</span><span class=p>)</span> <span class=kt>error</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>go</span> <span class=nx>m</span><span class=p>.</span><span class=nf>reloader</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>select</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>case</span> <span class=nx>ts</span> <span class=o>:=</span> <span class=o>&lt;-</span><span class=nx>tsets</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>			<span class=nx>m</span><span class=p>.</span><span class=nf>updateTsets</span><span class=p>(</span><span class=nx>ts</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>			<span class=k>select</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>case</span> <span class=nx>m</span><span class=p>.</span><span class=nx>triggerReload</span> <span class=o>&lt;-</span> <span class=kd>struct</span><span class=p>{}{}:</span>
+</span></span><span class=line><span class=cl>			<span class=k>default</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=k>case</span> <span class=o>&lt;-</span><span class=nx>m</span><span class=p>.</span><span class=nx>graceShut</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span> <span class=kc>nil</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>核心是一个for循环，channel tsets(map[string][]*targetgroup.Group)等待动态发现传递的目标，调用<code>m.updateTsets(ts)</code>更新抓取的目标，设置reload信号<code>m.triggerReload &lt;- struct{}{}</code>，周而复始，先来看看<code>m.updateTsets(ts)</code>坐了什么操作：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>m</span> <span class=o>*</span><span class=nx>Manager</span><span class=p>)</span> <span class=nf>updateTsets</span><span class=p>(</span><span class=nx>tsets</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>][]</span><span class=o>*</span><span class=nx>targetgroup</span><span class=p>.</span><span class=nx>Group</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>m</span><span class=p>.</span><span class=nx>mtxScrape</span><span class=p>.</span><span class=nf>Lock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>m</span><span class=p>.</span><span class=nx>targetSets</span> <span class=p>=</span> <span class=nx>tsets</span>
+</span></span><span class=line><span class=cl>	<span class=nx>m</span><span class=p>.</span><span class=nx>mtxScrape</span><span class=p>.</span><span class=nf>Unlock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>没错，很简单，将监控的目标进行了更新。再来，看看Manager结构体的定义：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>Manager</span> <span class=kd>struct</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>logger</span>    <span class=nx>log</span><span class=p>.</span><span class=nx>Logger</span>
+</span></span><span class=line><span class=cl>	<span class=nx>append</span>    <span class=nx>storage</span><span class=p>.</span><span class=nx>Appendable</span>
+</span></span><span class=line><span class=cl>	<span class=nx>graceShut</span> <span class=kd>chan</span> <span class=kd>struct</span><span class=p>{}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>jitterSeed</span>    <span class=kt>uint64</span>     <span class=c1>// Global jitterSeed seed is used to spread scrape workload across HA setup.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>mtxScrape</span>     <span class=nx>sync</span><span class=p>.</span><span class=nx>Mutex</span> <span class=c1>// Guards the fields below.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>scrapeConfigs</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=o>*</span><span class=nx>config</span><span class=p>.</span><span class=nx>ScrapeConfig</span>
+</span></span><span class=line><span class=cl>	<span class=nx>scrapePools</span>   <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=o>*</span><span class=nx>scrapePool</span>
+</span></span><span class=line><span class=cl>	<span class=nx>targetSets</span>    <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>][]</span><span class=o>*</span><span class=nx>targetgroup</span><span class=p>.</span><span class=nx>Group</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>triggerReload</span> <span class=kd>chan</span> <span class=kd>struct</span><span class=p>{}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>可以看到跟抓取有关的三个字段为：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl>	<span class=nx>scrapeConfigs</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=o>*</span><span class=nx>config</span><span class=p>.</span><span class=nx>ScrapeConfig</span>
+</span></span><span class=line><span class=cl>	<span class=nx>scrapePools</span>   <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=o>*</span><span class=nx>scrapePool</span>
+</span></span><span class=line><span class=cl>	<span class=nx>targetSets</span>    <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>][]</span><span class=o>*</span><span class=nx>targetgroup</span><span class=p>.</span><span class=nx>Group</span>
+</span></span></code></pre></div><p>现在，discoveryManagerScrape通过channel将抓取的目标传递过来，scrapeManager内部到底是怎样转化成最后的HTTP请求呢？</p><p>scrapeManager.Run有一个重要的语句<code>go m.reloader()</code>，并在接收目标后设置了<code>triggerReload</code></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>m</span> <span class=o>*</span><span class=nx>Manager</span><span class=p>)</span> <span class=nf>reloader</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>ticker</span> <span class=o>:=</span> <span class=nx>time</span><span class=p>.</span><span class=nf>NewTicker</span><span class=p>(</span><span class=mi>5</span> <span class=o>*</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Second</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=k>defer</span> <span class=nx>ticker</span><span class=p>.</span><span class=nf>Stop</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>select</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>case</span> <span class=o>&lt;-</span><span class=nx>m</span><span class=p>.</span><span class=nx>graceShut</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span>
+</span></span><span class=line><span class=cl>		<span class=k>case</span> <span class=o>&lt;-</span><span class=nx>ticker</span><span class=p>.</span><span class=nx>C</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>			<span class=k>select</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>case</span> <span class=o>&lt;-</span><span class=nx>m</span><span class=p>.</span><span class=nx>triggerReload</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>				<span class=nx>m</span><span class=p>.</span><span class=nf>reload</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>			<span class=k>case</span> <span class=o>&lt;-</span><span class=nx>m</span><span class=p>.</span><span class=nx>graceShut</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>				<span class=k>return</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>Prometheus server每隔5秒，检查triggerReload channel，调用<code>m.reload()</code></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>m</span> <span class=o>*</span><span class=nx>Manager</span><span class=p>)</span> <span class=nf>reload</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>m</span><span class=p>.</span><span class=nx>mtxScrape</span><span class=p>.</span><span class=nf>Lock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=kd>var</span> <span class=nx>wg</span> <span class=nx>sync</span><span class=p>.</span><span class=nx>WaitGroup</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>setName</span><span class=p>,</span> <span class=nx>groups</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>m</span><span class=p>.</span><span class=nx>targetSets</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nx>m</span><span class=p>.</span><span class=nx>scrapePools</span><span class=p>[</span><span class=nx>setName</span><span class=p>];</span> <span class=p>!</span><span class=nx>ok</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>scrapeConfig</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nx>m</span><span class=p>.</span><span class=nx>scrapeConfigs</span><span class=p>[</span><span class=nx>setName</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>			<span class=k>if</span> <span class=p>!</span><span class=nx>ok</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>level</span><span class=p>.</span><span class=nf>Error</span><span class=p>(</span><span class=nx>m</span><span class=p>.</span><span class=nx>logger</span><span class=p>).</span><span class=nf>Log</span><span class=p>(</span><span class=s>&#34;msg&#34;</span><span class=p>,</span> <span class=s>&#34;error reloading target set&#34;</span><span class=p>,</span> <span class=s>&#34;err&#34;</span><span class=p>,</span> <span class=s>&#34;invalid config id:&#34;</span><span class=o>+</span><span class=nx>setName</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>				<span class=k>continue</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=nx>sp</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>newScrapePool</span><span class=p>(</span><span class=nx>scrapeConfig</span><span class=p>,</span> <span class=nx>m</span><span class=p>.</span><span class=nx>append</span><span class=p>,</span> <span class=nx>m</span><span class=p>.</span><span class=nx>jitterSeed</span><span class=p>,</span> <span class=nx>log</span><span class=p>.</span><span class=nf>With</span><span class=p>(</span><span class=nx>m</span><span class=p>.</span><span class=nx>logger</span><span class=p>,</span> <span class=s>&#34;scrape_pool&#34;</span><span class=p>,</span> <span class=nx>setName</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>			<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>level</span><span class=p>.</span><span class=nf>Error</span><span class=p>(</span><span class=nx>m</span><span class=p>.</span><span class=nx>logger</span><span class=p>).</span><span class=nf>Log</span><span class=p>(</span><span class=s>&#34;msg&#34;</span><span class=p>,</span> <span class=s>&#34;error creating new scrape pool&#34;</span><span class=p>,</span> <span class=s>&#34;err&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>,</span> <span class=s>&#34;scrape_pool&#34;</span><span class=p>,</span> <span class=nx>setName</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>				<span class=k>continue</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=nx>m</span><span class=p>.</span><span class=nx>scrapePools</span><span class=p>[</span><span class=nx>setName</span><span class=p>]</span> <span class=p>=</span> <span class=nx>sp</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=nx>wg</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=c1>// Run the sync in parallel as these take a while and at high load can&#39;t catch up.
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=k>go</span> <span class=kd>func</span><span class=p>(</span><span class=nx>sp</span> <span class=o>*</span><span class=nx>scrapePool</span><span class=p>,</span> <span class=nx>groups</span> <span class=p>[]</span><span class=o>*</span><span class=nx>targetgroup</span><span class=p>.</span><span class=nx>Group</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>sp</span><span class=p>.</span><span class=nf>Sync</span><span class=p>(</span><span class=nx>groups</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=nx>wg</span><span class=p>.</span><span class=nf>Done</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>		<span class=p>}(</span><span class=nx>m</span><span class=p>.</span><span class=nx>scrapePools</span><span class=p>[</span><span class=nx>setName</span><span class=p>],</span> <span class=nx>groups</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nx>m</span><span class=p>.</span><span class=nx>mtxScrape</span><span class=p>.</span><span class=nf>Unlock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>wg</span><span class=p>.</span><span class=nf>Wait</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>这个方法完成了核心的转换，将目标转换成可以执行的任务，抽出核心业务我们可以得到这样的范式：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>wg</span> <span class=nx>sync</span><span class=p>.</span><span class=nx>WaitGroup</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>t</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>tsets</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>wg</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=k>go</span> <span class=kd>func</span><span class=p>(</span><span class=nx>t</span> <span class=kt>int</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>wg</span><span class=p>.</span><span class=nf>Done</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>  <span class=p>}(</span><span class=nx>t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nx>wg</span><span class=p>.</span><span class=nf>Wait</span><span class=p>()</span>
+</span></span></code></pre></div><p>回到业务上，我们发现targetSets、scrapeConfigs和scrapePools进行了完美的转换，如果scrapePools没有setName，并且scrapeConfigs有相应的配置，则调用<code>newScrapePool</code>创建scrapePool，更新到Manager，最后将scrapePool和[]*targetgroup.Group传递给匿名函数，完成<code>sp.Sync(groups)</code>调用，然我们继续跟踪Sync方法：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>sp</span> <span class=o>*</span><span class=nx>scrapePool</span><span class=p>)</span> <span class=nf>Sync</span><span class=p>(</span><span class=nx>tgs</span> <span class=p>[]</span><span class=o>*</span><span class=nx>targetgroup</span><span class=p>.</span><span class=nx>Group</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>sp</span><span class=p>.</span><span class=nx>mtx</span><span class=p>.</span><span class=nf>Lock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=k>defer</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>mtx</span><span class=p>.</span><span class=nf>Unlock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>start</span> <span class=o>:=</span> <span class=nx>time</span><span class=p>.</span><span class=nf>Now</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>sp</span><span class=p>.</span><span class=nx>targetMtx</span><span class=p>.</span><span class=nf>Lock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=kd>var</span> <span class=nx>all</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Target</span>
+</span></span><span class=line><span class=cl>	<span class=nx>sp</span><span class=p>.</span><span class=nx>droppedTargets</span> <span class=p>=</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Target</span><span class=p>{}</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>tg</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>tgs</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>targets</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>targetsFromGroup</span><span class=p>(</span><span class=nx>tg</span><span class=p>,</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>level</span><span class=p>.</span><span class=nf>Error</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>logger</span><span class=p>).</span><span class=nf>Log</span><span class=p>(</span><span class=s>&#34;msg&#34;</span><span class=p>,</span> <span class=s>&#34;creating targets failed&#34;</span><span class=p>,</span> <span class=s>&#34;err&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=k>continue</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>t</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>targets</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>if</span> <span class=nx>t</span><span class=p>.</span><span class=nf>Labels</span><span class=p>().</span><span class=nf>Len</span><span class=p>()</span> <span class=p>&gt;</span> <span class=mi>0</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>all</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>all</span><span class=p>,</span> <span class=nx>t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=nx>t</span><span class=p>.</span><span class=nf>DiscoveredLabels</span><span class=p>().</span><span class=nf>Len</span><span class=p>()</span> <span class=p>&gt;</span> <span class=mi>0</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>sp</span><span class=p>.</span><span class=nx>droppedTargets</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>droppedTargets</span><span class=p>,</span> <span class=nx>t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nx>sp</span><span class=p>.</span><span class=nx>targetMtx</span><span class=p>.</span><span class=nf>Unlock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>sp</span><span class=p>.</span><span class=nf>sync</span><span class=p>(</span><span class=nx>all</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>targetSyncIntervalLength</span><span class=p>.</span><span class=nf>WithLabelValues</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>JobName</span><span class=p>).</span><span class=nf>Observe</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>		<span class=nx>time</span><span class=p>.</span><span class=nf>Since</span><span class=p>(</span><span class=nx>start</span><span class=p>).</span><span class=nf>Seconds</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>	<span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>targetScrapePoolSyncsCounter</span><span class=p>.</span><span class=nf>WithLabelValues</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>JobName</span><span class=p>).</span><span class=nf>Inc</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>Sync方法的核心有两个调用：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=err>#</span> <span class=nx>将Group转化成Target列表</span>
+</span></span><span class=line><span class=cl><span class=nx>targets</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>targetsFromGroup</span><span class=p>(</span><span class=nx>tg</span><span class=p>,</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>#</span> <span class=nx>同步</span>
+</span></span><span class=line><span class=cl><span class=nx>sp</span><span class=p>.</span><span class=nf>sync</span><span class=p>(</span><span class=nx>all</span><span class=p>)</span>
+</span></span></code></pre></div><p>Target的定义如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>Target</span> <span class=kd>struct</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// Labels before any processing.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>discoveredLabels</span> <span class=nx>labels</span><span class=p>.</span><span class=nx>Labels</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// Any labels that are added to this target and its metrics.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>labels</span> <span class=nx>labels</span><span class=p>.</span><span class=nx>Labels</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// Additional URL parameters that are part of the target URL.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>params</span> <span class=nx>url</span><span class=p>.</span><span class=nx>Values</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>mtx</span>                <span class=nx>sync</span><span class=p>.</span><span class=nx>RWMutex</span>
+</span></span><span class=line><span class=cl>	<span class=nx>lastError</span>          <span class=kt>error</span>
+</span></span><span class=line><span class=cl>	<span class=nx>lastScrape</span>         <span class=nx>time</span><span class=p>.</span><span class=nx>Time</span>
+</span></span><span class=line><span class=cl>	<span class=nx>lastScrapeDuration</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Duration</span>
+</span></span><span class=line><span class=cl>	<span class=nx>health</span>             <span class=nx>TargetHealth</span>
+</span></span><span class=line><span class=cl>	<span class=nx>metadata</span>           <span class=nx>MetricMetadataStore</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>这就是要抓取一个目标的所有配置，基本信息都包含在这里面了，现在配置转化成了可以执行的目标，我们看看<code>sp.sync</code>的具体实现：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// sync takes a list of potentially duplicated targets, deduplicates them, starts
+</span></span></span><span class=line><span class=cl><span class=c1>// scrape loops for new targets, and stops scrape loops for disappeared targets.
+</span></span></span><span class=line><span class=cl><span class=c1>// It returns after all stopped scrape loops terminated.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=p>(</span><span class=nx>sp</span> <span class=o>*</span><span class=nx>scrapePool</span><span class=p>)</span> <span class=nf>sync</span><span class=p>(</span><span class=nx>targets</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Target</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kd>var</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>		<span class=nx>uniqueLoops</span>     <span class=p>=</span> <span class=nb>make</span><span class=p>(</span><span class=kd>map</span><span class=p>[</span><span class=kt>uint64</span><span class=p>]</span><span class=nx>loop</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>interval</span>        <span class=p>=</span> <span class=nx>time</span><span class=p>.</span><span class=nf>Duration</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>ScrapeInterval</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>timeout</span>         <span class=p>=</span> <span class=nx>time</span><span class=p>.</span><span class=nf>Duration</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>ScrapeTimeout</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>limit</span>           <span class=p>=</span> <span class=nb>int</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>SampleLimit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>honorLabels</span>     <span class=p>=</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>HonorLabels</span>
+</span></span><span class=line><span class=cl>		<span class=nx>honorTimestamps</span> <span class=p>=</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>HonorTimestamps</span>
+</span></span><span class=line><span class=cl>		<span class=nx>mrc</span>             <span class=p>=</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>MetricRelabelConfigs</span>
+</span></span><span class=line><span class=cl>	<span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>sp</span><span class=p>.</span><span class=nx>targetMtx</span><span class=p>.</span><span class=nf>Lock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>t</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>targets</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>hash</span> <span class=o>:=</span> <span class=nx>t</span><span class=p>.</span><span class=nf>hash</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>activeTargets</span><span class=p>[</span><span class=nx>hash</span><span class=p>];</span> <span class=p>!</span><span class=nx>ok</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>s</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>targetScraper</span><span class=p>{</span><span class=nx>Target</span><span class=p>:</span> <span class=nx>t</span><span class=p>,</span> <span class=nx>client</span><span class=p>:</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>client</span><span class=p>,</span> <span class=nx>timeout</span><span class=p>:</span> <span class=nx>timeout</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=nx>l</span> <span class=o>:=</span> <span class=nx>sp</span><span class=p>.</span><span class=nf>newLoop</span><span class=p>(</span><span class=nx>scrapeLoopOptions</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>target</span><span class=p>:</span>          <span class=nx>t</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>				<span class=nx>scraper</span><span class=p>:</span>         <span class=nx>s</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>				<span class=nx>limit</span><span class=p>:</span>           <span class=nx>limit</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>				<span class=nx>honorLabels</span><span class=p>:</span>     <span class=nx>honorLabels</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>				<span class=nx>honorTimestamps</span><span class=p>:</span> <span class=nx>honorTimestamps</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>				<span class=nx>mrc</span><span class=p>:</span>             <span class=nx>mrc</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>			<span class=p>})</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>			<span class=nx>sp</span><span class=p>.</span><span class=nx>activeTargets</span><span class=p>[</span><span class=nx>hash</span><span class=p>]</span> <span class=p>=</span> <span class=nx>t</span>
+</span></span><span class=line><span class=cl>			<span class=nx>sp</span><span class=p>.</span><span class=nx>loops</span><span class=p>[</span><span class=nx>hash</span><span class=p>]</span> <span class=p>=</span> <span class=nx>l</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>			<span class=nx>uniqueLoops</span><span class=p>[</span><span class=nx>hash</span><span class=p>]</span> <span class=p>=</span> <span class=nx>l</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// This might be a duplicated target.
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=k>if</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nx>uniqueLoops</span><span class=p>[</span><span class=nx>hash</span><span class=p>];</span> <span class=p>!</span><span class=nx>ok</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>uniqueLoops</span><span class=p>[</span><span class=nx>hash</span><span class=p>]</span> <span class=p>=</span> <span class=kc>nil</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// Need to keep the most updated labels information
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=c1>// for displaying it in the Service Discovery web page.
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=nx>sp</span><span class=p>.</span><span class=nx>activeTargets</span><span class=p>[</span><span class=nx>hash</span><span class=p>].</span><span class=nf>SetDiscoveredLabels</span><span class=p>(</span><span class=nx>t</span><span class=p>.</span><span class=nf>DiscoveredLabels</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=kd>var</span> <span class=nx>wg</span> <span class=nx>sync</span><span class=p>.</span><span class=nx>WaitGroup</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=c1>// Stop and remove old targets and scraper loops.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=k>for</span> <span class=nx>hash</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>activeTargets</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nx>uniqueLoops</span><span class=p>[</span><span class=nx>hash</span><span class=p>];</span> <span class=p>!</span><span class=nx>ok</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>wg</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=k>go</span> <span class=kd>func</span><span class=p>(</span><span class=nx>l</span> <span class=nx>loop</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>l</span><span class=p>.</span><span class=nf>stop</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>				<span class=nx>wg</span><span class=p>.</span><span class=nf>Done</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>			<span class=p>}(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>loops</span><span class=p>[</span><span class=nx>hash</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>			<span class=nb>delete</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>loops</span><span class=p>,</span> <span class=nx>hash</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=nb>delete</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>activeTargets</span><span class=p>,</span> <span class=nx>hash</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>sp</span><span class=p>.</span><span class=nx>targetMtx</span><span class=p>.</span><span class=nf>Unlock</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>targetScrapePoolTargetsAdded</span><span class=p>.</span><span class=nf>WithLabelValues</span><span class=p>(</span><span class=nx>sp</span><span class=p>.</span><span class=nx>config</span><span class=p>.</span><span class=nx>JobName</span><span class=p>).</span><span class=nf>Set</span><span class=p>(</span><span class=nb>float64</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=nx>uniqueLoops</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>	<span class=nx>forcedErr</span> <span class=o>:=</span> <span class=nx>sp</span><span class=p>.</span><span class=nf>refreshTargetLimitErr</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>l</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>sp</span><span class=p>.</span><span class=nx>loops</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>l</span><span class=p>.</span><span class=nf>setForcedError</span><span class=p>(</span><span class=nx>forcedErr</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>l</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>uniqueLoops</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>l</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>go</span> <span class=nx>l</span><span class=p>.</span><span class=nf>run</span><span class=p>(</span><span class=nx>interval</span><span class=p>,</span> <span class=nx>timeout</span><span class=p>,</span> <span class=kc>nil</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// Wait for all potentially stopped scrapers to terminate.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// This covers the case of flapping targets. If the server is under high load, a new scraper
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// may be active and tries to insert. The old scraper that didn&#39;t terminate yet could still
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// be inserting a previous sample set.
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>wg</span><span class=p>.</span><span class=nf>Wait</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>这个方法现将Target转换成Loop，然后调用<code>go l.run(interval, timeout, nil)</code>开始抓取：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>loop</span> <span class=kd>interface</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nf>run</span><span class=p>(</span><span class=nx>interval</span><span class=p>,</span> <span class=nx>timeout</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Duration</span><span class=p>,</span> <span class=nx>errc</span> <span class=kd>chan</span><span class=o>&lt;-</span> <span class=kt>error</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nf>setForcedError</span><span class=p>(</span><span class=nx>err</span> <span class=kt>error</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nf>stop</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nf>getCache</span><span class=p>()</span> <span class=o>*</span><span class=nx>scrapeCache</span>
+</span></span><span class=line><span class=cl>	<span class=nf>disableEndOfRunStalenessMarkers</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>loop是一个interface，只要实现相应的方法都是loop。</p><p>run方法核心的在于调用scraper的scrape方法和report方法，scrape负责抓取，report负责数据上报，进行下一步的存储，scraper的定义如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>scraper</span> <span class=kd>interface</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nf>scrape</span><span class=p>(</span><span class=nx>ctx</span> <span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=nx>w</span> <span class=nx>io</span><span class=p>.</span><span class=nx>Writer</span><span class=p>)</span> <span class=p>(</span><span class=kt>string</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nf>Report</span><span class=p>(</span><span class=nx>start</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Time</span><span class=p>,</span> <span class=nx>dur</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Duration</span><span class=p>,</span> <span class=nx>err</span> <span class=kt>error</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nf>offset</span><span class=p>(</span><span class=nx>interval</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Duration</span><span class=p>,</span> <span class=nx>jitterSeed</span> <span class=kt>uint64</span><span class=p>)</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Duration</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>具体实现的是targetScraper，定义如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>targetScraper</span> <span class=kd>struct</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=o>*</span><span class=nx>Target</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>client</span>  <span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Client</span>
+</span></span><span class=line><span class=cl>	<span class=nx>req</span>     <span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Request</span>
+</span></span><span class=line><span class=cl>	<span class=nx>timeout</span> <span class=nx>time</span><span class=p>.</span><span class=nx>Duration</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>gzipr</span> <span class=o>*</span><span class=nx>gzip</span><span class=p>.</span><span class=nx>Reader</span>
+</span></span><span class=line><span class=cl>	<span class=nx>buf</span>   <span class=o>*</span><span class=nx>bufio</span><span class=p>.</span><span class=nx>Reader</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>s</span> <span class=o>*</span><span class=nx>targetScraper</span><span class=p>)</span> <span class=nf>scrape</span><span class=p>(</span><span class=nx>ctx</span> <span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=nx>w</span> <span class=nx>io</span><span class=p>.</span><span class=nx>Writer</span><span class=p>)</span> <span class=p>(</span><span class=kt>string</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>s</span><span class=p>.</span><span class=nx>req</span> <span class=o>==</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>req</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>http</span><span class=p>.</span><span class=nf>NewRequest</span><span class=p>(</span><span class=s>&#34;GET&#34;</span><span class=p>,</span> <span class=nx>s</span><span class=p>.</span><span class=nf>URL</span><span class=p>().</span><span class=nf>String</span><span class=p>(),</span> <span class=kc>nil</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=nx>req</span><span class=p>.</span><span class=nx>Header</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span><span class=s>&#34;Accept&#34;</span><span class=p>,</span> <span class=nx>acceptHeader</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>req</span><span class=p>.</span><span class=nx>Header</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span><span class=s>&#34;Accept-Encoding&#34;</span><span class=p>,</span> <span class=s>&#34;gzip&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>req</span><span class=p>.</span><span class=nx>Header</span><span class=p>.</span><span class=nf>Set</span><span class=p>(</span><span class=s>&#34;User-Agent&#34;</span><span class=p>,</span> <span class=nx>userAgentHeader</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>req</span><span class=p>.</span><span class=nx>Header</span><span class=p>.</span><span class=nf>Set</span><span class=p>(</span><span class=s>&#34;X-Prometheus-Scrape-Timeout-Seconds&#34;</span><span class=p>,</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>&#34;%f&#34;</span><span class=p>,</span> <span class=nx>s</span><span class=p>.</span><span class=nx>timeout</span><span class=p>.</span><span class=nf>Seconds</span><span class=p>()))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=nx>s</span><span class=p>.</span><span class=nx>req</span> <span class=p>=</span> <span class=nx>req</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>resp</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>client</span><span class=p>.</span><span class=nf>Do</span><span class=p>(</span><span class=nx>s</span><span class=p>.</span><span class=nx>req</span><span class=p>.</span><span class=nf>WithContext</span><span class=p>(</span><span class=nx>ctx</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>defer</span> <span class=kd>func</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>io</span><span class=p>.</span><span class=nf>Copy</span><span class=p>(</span><span class=nx>ioutil</span><span class=p>.</span><span class=nx>Discard</span><span class=p>,</span> <span class=nx>resp</span><span class=p>.</span><span class=nx>Body</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>resp</span><span class=p>.</span><span class=nx>Body</span><span class=p>.</span><span class=nf>Close</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=p>}()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>resp</span><span class=p>.</span><span class=nx>StatusCode</span> <span class=o>!=</span> <span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;server returned HTTP status %s&#34;</span><span class=p>,</span> <span class=nx>resp</span><span class=p>.</span><span class=nx>Status</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>resp</span><span class=p>.</span><span class=nx>Header</span><span class=p>.</span><span class=nf>Get</span><span class=p>(</span><span class=s>&#34;Content-Encoding&#34;</span><span class=p>)</span> <span class=o>!=</span> <span class=s>&#34;gzip&#34;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>_</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>io</span><span class=p>.</span><span class=nf>Copy</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=nx>resp</span><span class=p>.</span><span class=nx>Body</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=nx>resp</span><span class=p>.</span><span class=nx>Header</span><span class=p>.</span><span class=nf>Get</span><span class=p>(</span><span class=s>&#34;Content-Type&#34;</span><span class=p>),</span> <span class=kc>nil</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>s</span><span class=p>.</span><span class=nx>gzipr</span> <span class=o>==</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>s</span><span class=p>.</span><span class=nx>buf</span> <span class=p>=</span> <span class=nx>bufio</span><span class=p>.</span><span class=nf>NewReader</span><span class=p>(</span><span class=nx>resp</span><span class=p>.</span><span class=nx>Body</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>s</span><span class=p>.</span><span class=nx>gzipr</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>gzip</span><span class=p>.</span><span class=nf>NewReader</span><span class=p>(</span><span class=nx>s</span><span class=p>.</span><span class=nx>buf</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>s</span><span class=p>.</span><span class=nx>buf</span><span class=p>.</span><span class=nf>Reset</span><span class=p>(</span><span class=nx>resp</span><span class=p>.</span><span class=nx>Body</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>gzipr</span><span class=p>.</span><span class=nf>Reset</span><span class=p>(</span><span class=nx>s</span><span class=p>.</span><span class=nx>buf</span><span class=p>);</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>_</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>io</span><span class=p>.</span><span class=nf>Copy</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=nx>s</span><span class=p>.</span><span class=nx>gzipr</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>s</span><span class=p>.</span><span class=nx>gzipr</span><span class=p>.</span><span class=nf>Close</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>resp</span><span class=p>.</span><span class=nx>Header</span><span class=p>.</span><span class=nf>Get</span><span class=p>(</span><span class=s>&#34;Content-Type&#34;</span><span class=p>),</span> <span class=kc>nil</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>我们终于看到，最后的最后，抓取其实是一个HTTP请求。为了完成一个抓取，Prometheus server进行了复杂的转化过程，正是这种实现，才让Prometheus拥有动态管理抓取目标的能力，我们大概来回忆一下这个转化过程：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=nx>Group</span> <span class=o>--------</span>
+</span></span><span class=line><span class=cl>   <span class=p>|</span>           \
+</span></span><span class=line><span class=cl>   <span class=p>|</span>             <span class=o>-</span><span class=p>&gt;</span> <span class=nx>scrapePool</span> <span class=o>-</span><span class=p>&gt;</span> <span class=nx>pool</span> <span class=o>-</span><span class=p>&gt;</span> <span class=nx>scraper</span>
+</span></span><span class=line><span class=cl>   <span class=p>|</span>           <span class=o>/</span>
+</span></span><span class=line><span class=cl><span class=nx>Tatget</span> <span class=o>-------</span> 
+</span></span></code></pre></div><p>终于，我们把Prometheus server的抓取过程翻了个底朝天，裨益甚多。</p><p>那么数据抓取过来就是存储、分析和展示了，下一篇我们开始研究存储。</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://solaim.github.io/tags/golang>Golang</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://solaim.github.io/tags/prometheus>Prometheus</a>
+<a class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]" href=https://solaim.github.io/tags/observability>Observability</a></footer><nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]"><a class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://solaim.github.io/posts/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/><span class=mr-1.5>←</span><span>说说k8s网络</span></a>
+<a class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]" href=https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E4%B8%89/><span>Prometheus内部实现(三)</span><span class=ml-1.5>→</span></a></nav></article></main><footer class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"><div class=mr-auto>&copy; 2023
+<a class=link href=https://solaim.github.io>日月为白</a></div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>Powered by Hugo️️</a>️
+<a class=link href=https://github.com/nanxiaobei/hugo-paper rel=noopener target=_blank>✎ Paper</a></footer></body></html>
