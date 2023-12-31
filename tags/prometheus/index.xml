@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Prometheus on 日月为白</title>
+    <title>Prometheus on Jerry Wang</title>
     <link>https://solaim.github.io/tags/prometheus/</link>
-    <description>Recent content in Prometheus on 日月为白</description>
+    <description>Recent content in Prometheus on Jerry Wang</description>
+    <image>
+      <title>Jerry Wang</title>
+      <url>https://solaim.github.io/img/favicon.webp</url>
+      <link>https://solaim.github.io/img/favicon.webp</link>
+    </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 22 Mar 2021 21:31:03 +0800</lastBuildDate>
@@ -13,28 +18,60 @@
       <link>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E5%9B%9B/</link>
       <pubDate>Mon, 22 Mar 2021 21:31:03 +0800</pubDate>
       <guid>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E5%9B%9B/</guid>
-      <description>目标该怎么管理？静态还是动态发现？&#xA;目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！&#xA;目前，企业应用部署有两种选项：&#xA;基于虚拟机 基于容器 当然，更多的是虚拟机里装docker，算是两者的结合，节省成本。&#xA;那么基于虚拟机部署应用有什么特点呢？就是变化小，你的预期和实际情况是相对静止的，在虚拟机上部署一套应用，一套流程走下来，大概得小半天吧，这种情况把要监控的目标写到Prometheus的配置文件，再重启Prometheus server，完全玩得转！&#xA;然而，当公司的应用开始基于容器部署，特别是管控平面使用了k8s，那么手动配置Prometheus、重启就成为了噩梦一样的存在！运维会疲于奔命，开发会吐槽运维。&#xA;所以监控目标的配置，取决于使用的底层技术！&#xA;题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。&#xA;那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：&#xA;{ // Scrape discovery manager. g.Add( func() error { err := discoveryManagerScrape.Run() level.Info(logger).Log(&amp;#34;msg&amp;#34;, &amp;#34;Scrape discovery manager stopped&amp;#34;) return err }, func(err error) { level.Info(logger).Log(&amp;#34;msg&amp;#34;, &amp;#34;Stopping scrape discovery manager...&amp;#34;) cancelScrape() }, ) } { // Notify discovery manager. ... } { // Scrape manager. g.Add( func() error { // When the scrape manager receives a new targets list // it needs to read a valid config for each job.</description>
+      <description>目标该怎么管理？静态还是动态发现？
+目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！
+目前，企业应用部署有两种选项：
+基于虚拟机 基于容器 当然，更多的是虚拟机里装docker，算是两者的结合，节省成本。
+那么基于虚拟机部署应用有什么特点呢？就是变化小，你的预期和实际情况是相对静止的，在虚拟机上部署一套应用，一套流程走下来，大概得小半天吧，这种情况把要监控的目标写到Prometheus的配置文件，再重启Prometheus server，完全玩得转！
+然而，当公司的应用开始基于容器部署，特别是管控平面使用了k8s，那么手动配置Prometheus、重启就成为了噩梦一样的存在！运维会疲于奔命，开发会吐槽运维。
+所以监控目标的配置，取决于使用的底层技术！
+题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。
+那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：
+{ // Scrape discovery manager. g.Add( func() error { err := discoveryManagerScrape.Run() level.Info(logger).Log(&amp;#34;msg&amp;#34;, &amp;#34;Scrape discovery manager stopped&amp;#34;) return err }, func(err error) { level.Info(logger).Log(&amp;#34;msg&amp;#34;, &amp;#34;Stopping scrape discovery manager...&amp;#34;) cancelScrape() }, ) } { // Notify discovery manager. ... } { // Scrape manager. g.Add( func() error { // When the scrape manager receives a new targets list // it needs to read a valid config for each job.</description>
     </item>
     <item>
       <title>Prometheus内部实现(三)</title>
       <link>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E4%B8%89/</link>
       <pubDate>Sat, 20 Mar 2021 21:29:33 +0800</pubDate>
       <guid>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E4%B8%89/</guid>
-      <description>非线性 =&amp;gt; 线性，混乱 =&amp;gt; 秩序&#xA;上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。&#xA;Prometheus server的main函数有两个很精彩的实现，一个是reloader的注册，一个是组件启动。但是有个问题，所有的组件都是同时启动的吗？还是有什么顺序？&#xA;我们列一个组件清单：&#xA;- Termination handler. - Scrape discovery manager. - Notify discovery manager. - Scrape manager. - Reload handler. - Rule manager. - TSDB. - Web handler. - Notifier. 再来看一下组件启动使用的底层技术:&#xA;run.Group is a universal mechanism to manage goroutine lifecycles.&#xA;Create a zero-value run.Group, and then add actors to it. Actors are defined as a pair of functions: an execute function, which should run synchronously; and an interrupt function, which, when invoked, should cause the execute function to return.</description>
+      <description>非线性 =&amp;gt; 线性，混乱 =&amp;gt; 秩序
+上一篇博文主要写了Prometheus server的启动过程，但是并没有深入各个组件，了解其具体实现，这篇文件主要介绍Initial configuration loading部分。
+Prometheus server的main函数有两个很精彩的实现，一个是reloader的注册，一个是组件启动。但是有个问题，所有的组件都是同时启动的吗？还是有什么顺序？
+我们列一个组件清单：
+- Termination handler. - Scrape discovery manager. - Notify discovery manager. - Scrape manager. - Reload handler. - Rule manager. - TSDB. - Web handler. - Notifier. 再来看一下组件启动使用的底层技术:
+run.Group is a universal mechanism to manage goroutine lifecycles.
+Create a zero-value run.Group, and then add actors to it. Actors are defined as a pair of functions: an execute function, which should run synchronously; and an interrupt function, which, when invoked, should cause the execute function to return.</description>
     </item>
     <item>
       <title>Prometheus内部实现(二)</title>
       <link>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E4%BA%8C/</link>
       <pubDate>Mon, 15 Mar 2021 21:28:09 +0800</pubDate>
       <guid>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E4%BA%8C/</guid>
-      <description>观察事物，需要提纲挈领！软件的启动是观察软件最好的入口！&#xA;Prometheus server实现入口文件在cmd/prometheus/main.go。&#xA;Prometheus的配置由两个部分构成：&#xA;配置文件：prometheus.yml 启动flag：启动时指定 入口函数如下：&#xA;func main() { ... } 初始化一个flagConfig，这个配置贯穿了整个程序&#xA;cfg := flagConfig{ notifier: notifier.Options{ Registerer: prometheus.DefaultRegisterer, }, web: web.Options{ Registerer: prometheus.DefaultRegisterer, Gatherer: prometheus.DefaultGatherer, }, promlogConfig: promlog.Config{}, } 使用kingpin注册flag&#xA;a := kingpin.New(filepath.Base(os.Args[0]), &amp;#34;The Prometheus monitoring server&amp;#34;).UsageWriter(os.Stdout) a.Version(version.Print(&amp;#34;prometheus&amp;#34;)) a.HelpFlag.Short(&amp;#39;h&amp;#39;) a.Flag(&amp;#34;config.file&amp;#34;, &amp;#34;Prometheus configuration file path.&amp;#34;). Default(&amp;#34;prometheus.yml&amp;#34;).StringVar(&amp;amp;cfg.configFile) a.Flag(&amp;#34;web.listen-address&amp;#34;, &amp;#34;Address to listen on for UI, API, and telemetry.&amp;#34;). Default(&amp;#34;0.0.0.0:9090&amp;#34;).StringVar(&amp;amp;cfg.web.ListenAddress) ... _, err := a.Parse(os.Args[1:]) if err != nil { fmt.Fprintln(os.Stderr, errors.</description>
+      <description>观察事物，需要提纲挈领！软件的启动是观察软件最好的入口！
+Prometheus server实现入口文件在cmd/prometheus/main.go。
+Prometheus的配置由两个部分构成：
+配置文件：prometheus.yml 启动flag：启动时指定 入口函数如下：
+func main() { ... } 初始化一个flagConfig，这个配置贯穿了整个程序
+cfg := flagConfig{ notifier: notifier.Options{ Registerer: prometheus.DefaultRegisterer, }, web: web.Options{ Registerer: prometheus.DefaultRegisterer, Gatherer: prometheus.DefaultGatherer, }, promlogConfig: promlog.Config{}, } 使用kingpin注册flag
+a := kingpin.New(filepath.Base(os.Args[0]), &amp;#34;The Prometheus monitoring server&amp;#34;).UsageWriter(os.Stdout) a.Version(version.Print(&amp;#34;prometheus&amp;#34;)) a.HelpFlag.Short(&amp;#39;h&amp;#39;) a.Flag(&amp;#34;config.file&amp;#34;, &amp;#34;Prometheus configuration file path.&amp;#34;). Default(&amp;#34;prometheus.yml&amp;#34;).StringVar(&amp;amp;cfg.configFile) a.Flag(&amp;#34;web.listen-address&amp;#34;, &amp;#34;Address to listen on for UI, API, and telemetry.&amp;#34;). Default(&amp;#34;0.0.0.0:9090&amp;#34;).StringVar(&amp;amp;cfg.web.ListenAddress) ... _, err := a.Parse(os.Args[1:]) if err != nil { fmt.Fprintln(os.Stderr, errors.</description>
     </item>
     <item>
       <title>Prometheus内部实现(一)</title>
       <link>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E4%B8%80/</link>
       <pubDate>Sun, 14 Mar 2021 21:32:08 +0800</pubDate>
       <guid>https://solaim.github.io/posts/prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E4%B8%80/</guid>
-      <description>Prometheus在监控界为什么这么🔥？&#xA;Prometheus具体是怎么实现的？&#xA;人如其名，产品亦是！Prometheus就是火种，照耀在当前的监控世界！&#xA;Prometheus这把火，在我看来，火在三个方面：&#xA;系出名门：CNCF的第二个项目，CNCF的老大叫K8S，老大对老二很照顾，监控首选。 门庭若市：开源，大厂竞相争用。 简单易用：架构简单，配置简单，上下游打通。 大家都在用，而且用起来很方便的确是我们选择产品的方法，但是作为开发人员，还是需要了解一下其内部的实现。这个系列，主要根据Prometheus的代码和文档，梳理Prometheus的内部实现。&#xA;总体架构 Prometheus从配置的jobs中抓取metrics，存储在本地存储或者外部存储中，在metrics上运行规则聚合多维度的数据或者生成告警。Grafana或者自带的web UI能够方便的展示数据。&#xA;Prometheus的组件包括：&#xA;server：负责抓取metrics，存储metrics，分析、聚合metrics client library：多种语言的客户端库，方便实现 push gateway：短期存活服务metrics推送网关 exporters：比如监控节点的node_exporter，监控MySQL的mysqld_expoter等等 alertmanager：alertmanager负责告警的发送 从总体架构，我们可以了解各种组件，以及数据的流向，现在我们开始研究Prometheus server的内部实现。&#xA;Server实现架构 server启动的时候，根据配置文件prometheus.yml和flag决定各种配置，配置文件包括全局配置、抓取目标配置和规则配置等等。scrape_configs配置了抓取的目标，Prometheus支持动态获取目标，Service discovery读取静态配置的目标或者周期更新动态目标，添加到scrape manager，scrape manager负责抓取目标，抓取实际是一个HTTP请求，即各种exporters实际上就是一个简单的HTTP服务，负责暴露各种应用的指标。scrape manager抓取指标后，将数据交给fanout storage，fanout storage负责数据存储，支持本地存储和外部存储。rule manager根据规则，聚合指标存储到fanout storage，或者生成告警发送给alert manager。Prometheus也实现了各种web接口，使用promQL进行数据的查询。&#xA;server的组件包括：&#xA;Termination handler. Scrape discovery manager. Notify discovery manager. Scrape manager. Reload handler. Rule manager. TSDB. Web handler. Notifier. 了解了server的基本架构，下面开始研究server的配置。&#xA;Prometheus.yml global: scrape_interval: 15s evaluation_interval: 15s rule_files: # - &amp;#34;first.rules&amp;#34; # - &amp;#34;second.rules&amp;#34; scrape_configs: - job_name: prometheus static_configs: - targets: [&amp;#39;localhost:9090&amp;#39;] 这是官网提供的一个简单的配置文件，包含了三个部分：全局配置、规则配置和抓取配置。global包括全局的配置，rule_files配置规则文件，这里没有配置，scrape_configs配置抓取目标。抓取目标是一个列表，包括多个job，每个job有一个job_name，目标配置以及其他配置，目标配置因为支持多种目标源，所以这块在代码中的实现比较复杂。</description>
+      <description>Prometheus在监控界为什么这么🔥？
+Prometheus具体是怎么实现的？
+人如其名，产品亦是！Prometheus就是火种，照耀在当前的监控世界！
+Prometheus这把火，在我看来，火在三个方面：
+系出名门：CNCF的第二个项目，CNCF的老大叫K8S，老大对老二很照顾，监控首选。 门庭若市：开源，大厂竞相争用。 简单易用：架构简单，配置简单，上下游打通。 大家都在用，而且用起来很方便的确是我们选择产品的方法，但是作为开发人员，还是需要了解一下其内部的实现。这个系列，主要根据Prometheus的代码和文档，梳理Prometheus的内部实现。
+总体架构 Prometheus从配置的jobs中抓取metrics，存储在本地存储或者外部存储中，在metrics上运行规则聚合多维度的数据或者生成告警。Grafana或者自带的web UI能够方便的展示数据。
+Prometheus的组件包括：
+server：负责抓取metrics，存储metrics，分析、聚合metrics client library：多种语言的客户端库，方便实现 push gateway：短期存活服务metrics推送网关 exporters：比如监控节点的node_exporter，监控MySQL的mysqld_expoter等等 alertmanager：alertmanager负责告警的发送 从总体架构，我们可以了解各种组件，以及数据的流向，现在我们开始研究Prometheus server的内部实现。
+Server实现架构 server启动的时候，根据配置文件prometheus.yml和flag决定各种配置，配置文件包括全局配置、抓取目标配置和规则配置等等。scrape_configs配置了抓取的目标，Prometheus支持动态获取目标，Service discovery读取静态配置的目标或者周期更新动态目标，添加到scrape manager，scrape manager负责抓取目标，抓取实际是一个HTTP请求，即各种exporters实际上就是一个简单的HTTP服务，负责暴露各种应用的指标。scrape manager抓取指标后，将数据交给fanout storage，fanout storage负责数据存储，支持本地存储和外部存储。rule manager根据规则，聚合指标存储到fanout storage，或者生成告警发送给alert manager。Prometheus也实现了各种web接口，使用promQL进行数据的查询。
+server的组件包括：
+Termination handler. Scrape discovery manager. Notify discovery manager. Scrape manager. Reload handler. Rule manager. TSDB. Web handler. Notifier. 了解了server的基本架构，下面开始研究server的配置。
+Prometheus.yml global: scrape_interval: 15s evaluation_interval: 15s rule_files: # - &amp;#34;first.rules&amp;#34; # - &amp;#34;second.rules&amp;#34; scrape_configs: - job_name: prometheus static_configs: - targets: [&amp;#39;localhost:9090&amp;#39;] 这是官网提供的一个简单的配置文件，包含了三个部分：全局配置、规则配置和抓取配置。global包括全局的配置，rule_files配置规则文件，这里没有配置，scrape_configs配置抓取目标。抓取目标是一个列表，包括多个job，每个job有一个job_name，目标配置以及其他配置，目标配置因为支持多种目标源，所以这块在代码中的实现比较复杂。</description>
     </item>
   </channel>
 </rss>
