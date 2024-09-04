@@ -18,13 +18,30 @@
       <link>https://solaim.github.io/posts/rabbitmq%E5%AE%89%E8%A3%85%E5%92%8C%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</link>
       <pubDate>Thu, 11 Apr 2019 21:32:59 +0800</pubDate>
       <guid>https://solaim.github.io/posts/rabbitmq%E5%AE%89%E8%A3%85%E5%92%8C%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</guid>
-      <description>RabbitMQ 1、RabbitMQ消息队列 RabbitMQ是一个消息队列：用于接收和转发消息。
-2、RabbitMQ安装 1| Mac安装 brew install rabbitmq rabbitmq-server 2|Centos安装 安装epel源-解决erlang依赖wxGTK
-wget http://www.rpmfind.net/linux/centos/7.4.1708/extras/x86_64/Packages/epel-release-7-9.noarch.rpm yum install epel-release-7-9.noarch.rpm 添加erlang仓库-支持最新版erlang
-wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm rpm -Uvh erlang-solutions-1.0-1.noarch.rpm 安装erlang
-# yum install erlang	# 精简版 # yum install esl-erlang # 完整版 # 实际使用yum连网安装RabbitMQ时，会自动下载安装依赖，此步骤不进行，否则后期会引起冲突 安装RabbitMQ
-rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc yum install rabbitmq-server-3.7.2-1.el7.noarch.rpm 启动Rabbit MQ
-systemctl enable rabbitmq-server systemctl start rabbitmq-server 3|ubuntu安装 添加erlang源 wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb dpkg -i erlang-solutions_1.0_all.deb 安装erlang # apt install esl-erlang # 不进行实际安装 安装rabbitmq echo &amp;#34;deb https://dl.</description>
+      <description>&lt;h1 id=&#34;rabbitmq&#34;&gt;RabbitMQ&lt;/h1&gt;
+&lt;h2 id=&#34;1rabbitmq消息队列&#34;&gt;1、RabbitMQ消息队列&lt;/h2&gt;
+&lt;p&gt;RabbitMQ是一个消息队列：用于接收和转发消息。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/%e6%b6%88%e6%81%af%e9%98%9f%e5%88%97.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;2rabbitmq安装&#34;&gt;2、RabbitMQ安装&lt;/h2&gt;
+&lt;h3 id=&#34;1-mac安装&#34;&gt;1| Mac安装&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;brew install rabbitmq
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rabbitmq-server
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2centos安装&#34;&gt;2|Centos安装&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;安装epel源-解决erlang依赖wxGTK&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget http://www.rpmfind.net/linux/centos/7.4.1708/extras/x86_64/Packages/epel-release-7-9.noarch.rpm
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;yum install epel-release-7-9.noarch.rpm
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;添加erlang仓库-支持最新版erlang&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pr</description>
     </item>
   </channel>
 </rss>

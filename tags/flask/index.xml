@@ -18,13 +18,28 @@
       <link>https://solaim.github.io/posts/flask-socketio%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</link>
       <pubDate>Thu, 11 Apr 2019 21:22:26 +0800</pubDate>
       <guid>https://solaim.github.io/posts/flask-socketio%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</guid>
-      <description>Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。
-1.安装 pip install flask-socketio
-Flask-SocketIO提供三种异步服务机制：
-eventlet：支持长轮询和websocket gevent：需使用第三方库 Werkzeug：仅支持长轮询 2.初始化 from flask import Flask, render_template from flask_socketio import SocketIO app = Flask(__name__) app.config[&amp;#39;SECRET_KEY&amp;#39;] = &amp;#39;secret!&amp;#39; socketio = SocketIO(app) if __name__ == &amp;#39;__main__&amp;#39;: socketio.run(app) 应用必须给客户端返回一个html页面加载SocketIO库，并且建立连接：
-&amp;lt;script type=&amp;#34;text/javascript&amp;#34; src=&amp;#34;//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script type=&amp;#34;text/javascript&amp;#34; charset=&amp;#34;utf-8&amp;#34;&amp;gt; var socket = io.connect(&amp;#39;http://&amp;#39; + document.domain + &amp;#39;:&amp;#39; + location.port); socket.on(&amp;#39;connect&amp;#39;, function() { socket.emit(&amp;#39;my event&amp;#39;, {data: &amp;#39;I\&amp;#39;m connected!&amp;#39;}); }); &amp;lt;/script&amp;gt; 3.接收消息 使用SocketIO时，客户端和服务端以事件的方式接收消息-事件驱动。在客户端，javascript使用回调函数。在服务端，Flask-SocketIO需要注册事件处理函数，类似于路由-视图函数机制。
-下面的例子创建服务端无名事件处理函数：
-@socketio.on(&amp;#39;message&amp;#39;) def handle_message(message): print(&amp;#39;received message: &amp;#39; + message) 上面的例子使用字符串消息，也可以使用json格式的消息：</description>
+      <description>&lt;p&gt;Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。&lt;/p&gt;
+&lt;h2 id=&#34;1安装&#34;&gt;1.安装&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;pip install flask-socketio&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Flask-SocketIO提供三种异步服务机制：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;eventlet：支持长轮询和websocket&lt;/li&gt;
+&lt;li&gt;gevent：需使用第三方库&lt;/li&gt;
+&lt;li&gt;Werkzeug：仅支持长轮询&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2初始化&#34;&gt;2.初始化&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;flask&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Flask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;render_template&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;flask_socketio&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SocketIO&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;app&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Flask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;vm&#34;&gt;__name__&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;app&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;SECRET_KEY&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;secret!&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;socketio&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SocketIO&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;app&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;vm&#34;&gt;__name__&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;socketio&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;run&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;app&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pr</description>
     </item>
   </channel>
 </rss>
