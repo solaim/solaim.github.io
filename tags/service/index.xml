@@ -59,7 +59,29 @@
 &lt;li&gt;&lt;code&gt;Network&lt;/code&gt;: 隔离网络资源&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;User&lt;/code&gt;: 隔离用户和用户组的ID&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;网络命名空间netns存在一个root network namespace，默认情况下，Linux将每个进程的netns设置为root，以提供网络访问。&lt;/p&gt;</description>
+&lt;p&gt;网络命名空间netns存在一个root network namespace，默认情况下，Linux将每个进程的netns设置为root，以提供网络访问。&lt;/p&gt;
+&lt;p&gt;对于Docker，Pod使用同一个网络命名空间，Pod之间通过Namespace隔离，Pod内的容器共享网络命名空间，Docker负责创建网络命名空间，应用容器使用-network加入该网络命名空间，容器之间通过localhost通信。&lt;/p&gt;
+&lt;h2 id=&#34;4pod与pod的通信&#34;&gt;4、Pod与Pod的通信&lt;/h2&gt;
+&lt;p&gt;k8s中，每个Pod拥有一个真实的IP，Pod之间通过IP通信。&lt;/p&gt;
+&lt;p&gt;（本节图片来源：Kevin Sookocheff Blog）&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pods-connected-by-bridge.png&#34; alt=&#34;虚拟网桥&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pod-to-pod-same-node.gif&#34; alt=&#34;同节点Pod通信&#34;  /&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pod-to-pod-different-nodes.gif&#34; alt=&#34;跨节点Pod通信&#34;  /&gt;
+&lt;/p&gt;
+&lt;h2 id=&#34;5pod与service的通信&#34;&gt;5、Pod与Service的通信&lt;/h2&gt;
+&lt;p&gt;Pod随着时间，可能消失、重启，那么直接使用Pod IP进行访问，在动态变化的环境中会存在网络问题。k8s中使用Service解决这个问题。（本节图片来源：Kevin Sookocheff Blog）&lt;/p&gt;
+&lt;p&gt;创建一个新的Service Object，实际上是创建了一个虚拟IP和一系列网络规则。&lt;/p&gt;
+&lt;p&gt;kube-proxy负责维护、更新、删除、添加网络规则，其支持的代理模式有：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;userspace&lt;/li&gt;
+&lt;li&gt;iptables（默认）&lt;/li&gt;
+&lt;li&gt;ipvs&lt;/li&gt;
+&lt;li&gt;kernelspace (windows)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/pod-to-service.gif&#34; alt=&#34;Pod到Service通信&#34;  /&gt;
+&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

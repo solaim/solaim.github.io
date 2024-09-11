@@ -28,7 +28,9 @@
 &lt;/blockquote&gt;
 &lt;p&gt;Ansible一开始就是为多层架构设计的，因此Ansible通过描述系统内部关系，进行整体建模。&lt;/p&gt;
 &lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/AnsibleArchitecture.png&#34; alt=&#34;AnsibleArchitecture&#34;  /&gt;
-&lt;/p&gt;</description>
+&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;It uses no agents and no additional custom security infrastructure, so it&amp;rsquo;s easy to deploy - and most importantly, it uses a very simple language (YAML, in the form of Ansible Playbooks) that allow you to describe your automation jobs in a way that approaches plain English.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
