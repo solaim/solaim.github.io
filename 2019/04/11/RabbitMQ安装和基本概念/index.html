@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+    
     <head>
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0,  viewport-fit=cover" name="viewport" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
     <meta name="description" content="RabbitMQ安装和基本概念" />
-    <meta name="hexo-theme-A4" content="v1.7.1" />
+    <meta name="hexo-theme-A4" content="v1.9.7" />
     <link rel="alternate icon" type="image/webp" href="/img/favicon.webp">
     <title>Coronarium | Drill down</title>
 
     
+        
+<link rel="stylesheet" href="/css/highlight/style1.css">
+
         
 <link rel="stylesheet" href="/css/reset.css">
 
@@ -20,16 +24,249 @@
  
          <!--注意：首页既不是post也不是page-->
         
-    
-    
+        
+        
 <link rel="stylesheet" href="/css/ui.css">
  
-    
+        
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 7.0.0-rc2"></head>
+
+        
+            <!--返回顶部css-->
+            
+<link rel="stylesheet" href="/css/returnToTop.css">
+
+            
+<link rel="stylesheet" href="/css/unicons.css">
+
+        
+        
+            <!--目录-->
+            
+<link rel="stylesheet" href="/css/toc.css">
+
+        
+    
+
+    
+        
+<link rel="stylesheet" href="/css/returnToLastPage.css">
+
+    
+    
+   
+<link rel="stylesheet" href="/css/lightgallery-bundle.min.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+    
+    
+
+    
+    
+
+
+
+    
+
+    
+    
+
+    
+    <style>
+        :root {
+            --waline-theme-color: #9e5345; 
+            --waline-color: #9e5345; 
+            --waline-border-color: #9e5345; 
+            --waline-white: #9e5345; 
+            --waline-bgcolor-light: #efeae2;  
+        }
+        body {
+            color: #9e5345;
+            background: #e8e0c9;
+        }
+        .post-md code {
+            background: #e4e4e4;
+            color: #2e5041; 
+        }
+        .post-md pre, .post-md .highlight {
+            background: #e4e4e4;
+            color: #2e5041; 
+        }
+        pre .string, pre .value, pre .inheritance, pre .header, pre .ruby .symbol, pre .xml .cdata {
+            color: #9e5345;
+        }
+        pre .number, pre .preprocessor, pre .built_in, pre .literal, pre .params, pre .constant {
+            color: #9e5345;
+        }
+        .year-font-color {
+            color: #9e5345 !important;
+        }
+        .wl-card span.wl-nick {
+            color: #9e5345; 
+        }
+        .wl-card .wl-badge {
+            border: 1px solid #9e5345;
+            color: #9e5345; 
+        }
+        .wl-btn {
+            border: 1px solid #9e5345; 
+            color:  #9e5345;  
+        }
+        .wl-btn.primary {
+            color: #efeae2; 
+        }
+        .wl-header label {
+            color: #9e5345;
+        }
+        a {
+            color: #2e5041;
+        }
+
+        .post-md a {
+            color: #2e5041;
+        }
+
+        .nav li a {
+            color: #2e5041;
+        }
+
+        .archive-main a:link {
+            color: #2e5041;
+        }
+        .archive-main a:visited {
+            color: #9c9caf; 
+        }
+
+        .archive li span {
+            color: #9e5345;
+        }
+
+        .post-main-title {
+            color: #9e5345;
+        }
+
+        .post-md h1,
+        .post-md h2,
+        .post-md h3,
+        .post-md h4,
+        .post-md h5,
+        .post-md h6 {
+            color: #9e5345;
+        }
+
+        [data-waline] p {
+            color: #9e5345;
+        }
+        [data-waline] a {
+            color: #9e5345;
+        } 
+        .wl-sort li.active {
+            color: #9e5345;
+        }
+
+        .wl-card .wl-meta>span {
+            background: #efeae2;
+        }
+
+        .paper {
+            background: #e8e0c9;
+        }
+
+        .index-main {
+            background: #efeae2;
+        }
+
+        .paper-main {
+            background: #efeae2;
+        }
+
+        .wl-panel {
+            background: #efeae2;
+        }
+
+        .archive li:nth-child(odd) {
+            background: #efeae2;
+            ;
+        }
+
+        .archive li:nth-child(even) {
+            background: #efeae2;
+        }
+
+        .post-md table tr:nth-child(odd) td {
+            background: #efeae2;
+        }
+
+        .post-md table tr:nth-child(even) td {
+            background: #efeae2;
+        }
+
+    
+        .progress-wrap::after {
+            color: #9e5345; /* 箭头的颜色 */
+        }
+        .progress-wrap svg.progress-circle path {
+	        stroke: #9e5345; /* 边框的颜色 */
+        }
+        .progress-wrap::before {
+	        background-image: linear-gradient(298deg, #2e5041, #2e5041); /* 鼠标滑过的箭头颜色 */
+         }
+
+        .return-to-last-progress-wrap::after {
+            color: #9e5345; /* 箭头的颜色 */
+        }
+        .return-to-last-progress-wrap svg.progress-circle path {
+	        stroke: #9e5345; /* 边框的颜色 */
+        }
+        .return-to-last-progress-wrap::before {
+	        background-image: linear-gradient(298deg, #2e5041, #2e5041); /* 鼠标滑过的箭头颜色 */
+         }
+
+         .left-toc-container::-webkit-scrollbar-thumb {
+            background-color: #9e5345; /* 设置滚动条拖动块的颜色 */
+        }
+
+        .bs-docs-sidebar .nav>.active>a,
+        .bs-docs-sidebar .nav>li>a:hover,
+        .bs-docs-sidebar .nav>li>a:focus {
+            color: #2e5041;
+            border-left-color: #2e5041;
+        }
+        .bs-docs-sidebar .nav>li>a {
+            color:  #9e5345;
+        }
+    </style>
+
+    
     
     <body>
+        <script src="/js/darkmode-js.min.js"></script>
+        
+        <script>
+            const options = {
+                bottom: '40px', // default: '32px'
+                right: 'unset', // default: '32px'
+                left: '42px', // default: 'unset'
+                time: '0.3s', // default: '0.3s'
+                mixColor: '#fff', // default: '#fff'
+                backgroundColor: ' #e8e0c9  ',  // default: '#fff'
+                buttonColorDark: '#100f2c',  // default: '#100f2c'
+                buttonColorLight: '#fff', // default: '#fff'
+                saveInCookies: true, // default: true,
+                label: '🌓', // default: ''
+                autoMatchOsTheme: true // default: true
+            }
+            const darkmode = new Darkmode(options);
+            darkmode.showWidget();
+        </script>
+        
+        
+            <div class="left-toc-container">
+                <nav id="toc" class="bs-docs-sidebar"></nav>
+            </div>
+        
         <div class="paper">
             
             
@@ -37,16 +274,30 @@
             
                 <div class="shadow-drop-2-bottom paper-main">
                     
+
+
 <div class="header">
     <div class="header-container">
-        <img style="
-        width: 56px;
-        height: auto;" alt="^-^" cache-control="max-age=86400" class="header-img" src="/img/favicon.webp" width="10%"></img>
+        <style>
+            .header-img {
+                width: 56px;
+                height: auto;
+                object-fit: cover; /* 保持图片比例 */
+                transition: transform 0.3s ease-in-out; 
+                border-radius: 0; 
+            }
+            
+        </style>
+        <img 
+            alt="^-^" 
+            cache-control="max-age=86400" 
+            class="header-img" 
+            src="/img/favicon.webp" 
+        />
         <div class="header-content">
             <a class="logo" href="/">Coronarium</a> 
             <span class="description">专注、探索、积累</span> 
         </div>
-        
     </div>
     
    
@@ -76,54 +327,116 @@
                     <!--说明是文章post页面-->
                     
                         <div class="post-main">
+    
 
     
-        <div class="post-main-title">
-            RabbitMQ安装和基本概念
-        </div>
+        
+            
+                <div class="post-main-title" style="text-align: center;">
+                    RabbitMQ安装和基本概念
+                </div>
+            
+        
       
+    
+
+    
+
+        
+            <div class="post-head-meta-center">
+        
+                
+                    <span>最近更新：2023-09-10</span> 
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                     <span>字数总计：1.1k</span>
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                    <span>阅读估时：4分钟</span>
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                    <span id="busuanzi_container_page_pv">
+                        阅读量：<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                
+            </div>
     
 
     <div class="post-md">
         
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RabbitMQ"><span class="post-toc-text">RabbitMQ</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#1%E3%80%81RabbitMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="post-toc-text">1、RabbitMQ消息队列</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#2%E3%80%81RabbitMQ%E5%AE%89%E8%A3%85"><span class="post-toc-text">2、RabbitMQ安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-Mac%E5%AE%89%E8%A3%85"><span class="post-toc-text">1| Mac安装</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-Centos%E5%AE%89%E8%A3%85"><span class="post-toc-text">2|Centos安装</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-ubuntu%E5%AE%89%E8%A3%85"><span class="post-toc-text">3|ubuntu安装</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#3%E3%80%81RabbitMQ%E4%BD%BF%E7%94%A8"><span class="post-toc-text">3、RabbitMQ使用</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#rabbitmq%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7"><span class="post-toc-text">rabbitmq添加用户</span></a></li></ol>
+            
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RabbitMQ"><span class="post-toc-text">RabbitMQ</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#1%E3%80%81RabbitMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="post-toc-text">1、RabbitMQ消息队列</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#2%E3%80%81RabbitMQ%E5%AE%89%E8%A3%85"><span class="post-toc-text">2、RabbitMQ安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-Mac%E5%AE%89%E8%A3%85"><span class="post-toc-text">1| Mac安装</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-Centos%E5%AE%89%E8%A3%85"><span class="post-toc-text">2|Centos安装</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-ubuntu%E5%AE%89%E8%A3%85"><span class="post-toc-text">3|ubuntu安装</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#3%E3%80%81RabbitMQ%E4%BD%BF%E7%94%A8"><span class="post-toc-text">3、RabbitMQ使用</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#rabbitmq%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7"><span class="post-toc-text">rabbitmq添加用户</span></a></li></ol>
+            
         
-        <h1 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h1><h2 id="1、RabbitMQ消息队列"><a href="#1、RabbitMQ消息队列" class="headerlink" title="1、RabbitMQ消息队列"></a>1、RabbitMQ消息队列</h2><p>RabbitMQ是一个消息队列：用于接收和转发消息。</p>
-<p><img src="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.jpg"></p>
-<h2 id="2、RabbitMQ安装"><a href="#2、RabbitMQ安装" class="headerlink" title="2、RabbitMQ安装"></a>2、RabbitMQ安装</h2><h3 id="1-Mac安装"><a href="#1-Mac安装" class="headerlink" title="1| Mac安装"></a>1| Mac安装</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew install rabbitmq</span><br><span class="line"></span><br><span class="line">rabbitmq-server</span><br></pre></td></tr></table></figure>
+        <div class=".article-gallery"><h1 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h1><h2 id="1、RabbitMQ消息队列"><a href="#1、RabbitMQ消息队列" class="headerlink" title="1、RabbitMQ消息队列"></a>1、RabbitMQ消息队列</h2><p>RabbitMQ是一个消息队列：用于接收和转发消息。</p>
+<p><a href="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.jpg" class="gallery-item" style="box-shadow: none;"> <img src="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97.jpg"></a></p>
+<h2 id="2、RabbitMQ安装"><a href="#2、RabbitMQ安装" class="headerlink" title="2、RabbitMQ安装"></a>2、RabbitMQ安装</h2><h3 id="1-Mac安装"><a href="#1-Mac安装" class="headerlink" title="1| Mac安装"></a>1| Mac安装</h3><pre><code class="sh">brew install rabbitmq
 
-
-
+rabbitmq-server
+</code></pre>
 <h3 id="2-Centos安装"><a href="#2-Centos安装" class="headerlink" title="2|Centos安装"></a>2|Centos安装</h3><ul>
 <li><p>安装epel源-解决erlang依赖wxGTK</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.rpmfind.net/linux/centos/7.4.1708/extras/x86_64/Packages/epel-release-7-9.noarch.rpm</span><br><span class="line"></span><br><span class="line">yum install epel-release-7-9.noarch.rpm</span><br></pre></td></tr></table></figure>
+<pre><code class="sh">wget http://www.rpmfind.net/linux/centos/7.4.1708/extras/x86_64/Packages/epel-release-7-9.noarch.rpm
+
+yum install epel-release-7-9.noarch.rpm
+</code></pre>
 </li>
 <li><p>添加erlang仓库-支持最新版erlang</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm</span><br><span class="line"></span><br><span class="line">rpm -Uvh erlang-solutions-1.0-1.noarch.rpm</span><br></pre></td></tr></table></figure>
+<pre><code class="sh">wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+
+rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
+</code></pre>
 </li>
 <li><p>安装erlang</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># yum install erlang			# 精简版</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># yum install esl-erlang     # 完整版</span></span><br><span class="line"><span class="comment"># 实际使用yum连网安装RabbitMQ时，会自动下载安装依赖，此步骤不进行，否则后期会引起冲突</span></span><br></pre></td></tr></table></figure>
+<pre><code class="sh"># yum install erlang			# 精简版
+
+# yum install esl-erlang     # 完整版
+# 实际使用yum连网安装RabbitMQ时，会自动下载安装依赖，此步骤不进行，否则后期会引起冲突
+</code></pre>
 </li>
 <li><p>安装RabbitMQ</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc</span><br><span class="line"></span><br><span class="line">yum install rabbitmq-server-3.7.2-1.el7.noarch.rpm</span><br></pre></td></tr></table></figure>
+<pre><code class="sh">rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
+
+yum install rabbitmq-server-3.7.2-1.el7.noarch.rpm
+</code></pre>
 </li>
 <li><p>启动Rabbit MQ</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> rabbitmq-server</span><br><span class="line">systemctl start rabbitmq-server</span><br></pre></td></tr></table></figure>
-
+<pre><code class="sh">systemctl enable rabbitmq-server
+systemctl start rabbitmq-server
+</code></pre>
 <h3 id="3-ubuntu安装"><a href="#3-ubuntu安装" class="headerlink" title="3|ubuntu安装"></a>3|ubuntu安装</h3><ul>
 <li>添加erlang源</li>
 </ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb</span><br><span class="line">dpkg -i erlang-solutions_1.0_all.deb</span><br></pre></td></tr></table></figure>
-
+<pre><code class="sh">wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+dpkg -i erlang-solutions_1.0_all.deb
+</code></pre>
 <ul>
 <li>安装erlang</li>
 </ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># apt install esl-erlang</span></span><br><span class="line"><span class="comment"># 不进行实际安装</span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="sh"># apt install esl-erlang
+# 不进行实际安装
+</code></pre>
 <ul>
 <li>安装rabbitmq</li>
 </ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;deb https://dl.bintray.com/rabbitmq/debian xenial main&quot;</span> | sudo <span class="built_in">tee</span> /etc/apt/sources.list.d/bintray.rabbitmq.list</span><br><span class="line"></span><br><span class="line">wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc |</span><br><span class="line">     sudo apt-key add -</span><br><span class="line">     </span><br><span class="line">apt update</span><br><span class="line">apt install rabbitmq-server</span><br></pre></td></tr></table></figure></li>
+<pre><code class="sh">echo &quot;deb https://dl.bintray.com/rabbitmq/debian xenial main&quot; | sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list
+
+wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc |
+     sudo apt-key add -
+     
+apt update
+apt install rabbitmq-server
+</code></pre>
+</li>
 </ul>
 <h2 id="3、RabbitMQ使用"><a href="#3、RabbitMQ使用" class="headerlink" title="3、RabbitMQ使用"></a>3、RabbitMQ使用</h2><p><a target="_blank" rel="noopener" href="http://blog.csdn.net/column/details/rabbitmq.html">http://blog.csdn.net/column/details/rabbitmq.html</a></p>
 <p><strong>问题</strong>：消息队列解决编程中的什么问题？或者不使用消息队列，可能存在哪些问题？</p>
@@ -141,7 +454,7 @@
 <p>AMQP协议定义了解决这些问题的方案，RabbitMQ是一种具体实现。</p>
 <p>生产者指任何产生数据的程序。</p>
 <p>消费者指任何接收数据的程序。</p>
-<p><img src="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E7%BB%86%E6%A8%A1%E5%9E%8B.jpg" alt=" 消息队列模型"></p>
+<p><a href="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E7%BB%86%E6%A8%A1%E5%9E%8B.jpg" title=" 消息队列模型" class="gallery-item" style="box-shadow: none;"> <img src="/img/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E7%BB%86%E6%A8%A1%E5%9E%8B.jpg" alt=" 消息队列模型"></a></p>
 <blockquote>
 <p>queue:A <em>queue</em> is only bound by the host’s memory &amp; disk limits, it’s essentially a large message buffer.</p>
 </blockquote>
@@ -163,13 +476,20 @@
 </ul>
 <p>exchange和队列创建完成之后，exchange需要知道将数据发送到哪个队列，这里需要进行exchange和队列之间的绑定。</p>
 <p>开启rabbitmq管理网页的方法：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl start_app</span><br><span class="line">rabbitmq-plugins <span class="built_in">enable</span> rabbitmq_management</span><br><span class="line">rabbitmqctl stop</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
+<pre><code class="sh">rabbitmqctl start_app
+rabbitmq-plugins enable rabbitmq_management
+rabbitmqctl stop
+</code></pre>
 <h1 id="rabbitmq添加用户"><a href="#rabbitmq添加用户" class="headerlink" title="rabbitmq添加用户"></a>rabbitmq添加用户</h1><p>现添加admin，密码admin，管理员权限</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl add_user admin admin</span><br><span class="line">rabbitmqctl list_users</span><br><span class="line">rabbitmqctl set_user_tags admin administrator</span><br><span class="line">rabbitmqctl list_users</span><br></pre></td></tr></table></figure>
-
+<pre><code>rabbitmqctl add_user admin admin
+rabbitmqctl list_users
+rabbitmqctl set_user_tags admin administrator
+rabbitmqctl list_users
+</code></pre>
 <p>添加成功后赋权限</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl set_permissions -p / myuser &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br></pre></td></tr></table></figure>
+<pre><code>rabbitmqctl set_permissions -p / myuser &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;
+</code></pre>
+</div>
     </div>
 
     <div class="post-meta">
@@ -193,6 +513,26 @@
         
         </i>
     </div>
+    <br>
+    
+    
+        
+            
+    
+            <div class="post-footer-pre-next">
+                
+                    <span>上一篇：<a href='/2019/04/11/%E6%9C%80%E5%A5%BD%E7%9A%84%E5%91%8A%E5%88%AB/'>最好的告别</a></span>
+                
+
+                
+                    <span class="post-footer-pre-next-last-span-right">下一篇：<a href="/2019/04/10/ansible/">ansible</a>
+                    </span>
+                
+            </div>
+    
+        
+    
+
     
         
 
@@ -201,20 +541,25 @@
 
 
 
+                                      
                     
                     
                     <div class="footer">
     
         <span> 
-            © Bray Wang 
+            © Jerry Wang 
 
             
                 
 
             
         </span>
+       
     
 </div>
+
+
+
 <!--这是指一条线往下的内容-->
 <div class="footer-last">
     
@@ -227,20 +572,103 @@
 
 
     
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+    <!--目录-->
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js" type="text/javascript" ></script>
+        
+<script src="/js/toc.js"></script>
 
     
-<script src="/js/highlight.min.js"></script>
 
     
-<script src="/js/highlightjs-line-numbers.js"></script>
+<script src="/js/randomHeaderContent.js"></script>
+
+    <!--回到顶部按钮-->
+    
+        
+<script src="/js/returnToTop.js"></script>
+
+    
+
+    
+        
+<script src="/js/returnToLastPage.js"></script>
+
+    
 
 
 
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
+
+
+<script src="/js/lightgallery/lightgallery.umd.min.js"></script>
+
+
+
+<script src="/js/lightgallery/plugins/lg-thumbnail.umd.min.js"></script>
+
+
+
+<script src="/js/lightgallery/plugins/lg-fullscreen.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-autoplay.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-zoom.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-rotate.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-paper.umd.min.js"></script>
+
+
+
+
+<script type="text/javascript">
+     
+    if (typeof lightGallery !== "undefined") {
+        var options1 = {
+            selector: '.gallery-item',
+            plugins: [lgThumbnail, lgFullscreen, lgAutoplay, lgZoom, lgRotate, lgPager], // 启用插件
+            thumbnail: true,          // 显示缩略图
+            zoom: true,               // 启用缩放功
+            rotate: true,             // 启用旋转功能能
+            autoplay: true,        // 启用自动播放功能
+            fullScreen: true,      // 启用全屏功能
+            pager: false, //页码,
+            zoomFromOrigin: true,   // 从原始位置缩放
+            actualSize: true,       // 启用查看实际大小的功能
+            enableZoomAfter: 300,    // 延迟缩放，确保图片加载完成后可缩放
+        };
+        lightGallery(document.getElementsByClassName('.article-gallery')[0], options1); // 修复选择器
+    }
+    
 </script>
+
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script> 
+
+                </div>
+            
+            
+                <!-- 回到顶部的按钮-->  
+                <div class="progress-wrap shadow-drop-2-bottom">
+                    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+                        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+                    </svg>
+                </div>
+            
+            
+                <!-- 返回的按钮-->  
+                <div class="return-to-last-progress-wrap shadow-drop-2-bottom">
+                    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+                        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+                    </svg>
                 </div>
             
     </body>

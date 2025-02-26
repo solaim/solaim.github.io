@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+    
     <head>
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0,  viewport-fit=cover" name="viewport" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
     <meta name="description" content="Flask-SocketIO基本使用" />
-    <meta name="hexo-theme-A4" content="v1.7.1" />
+    <meta name="hexo-theme-A4" content="v1.9.7" />
     <link rel="alternate icon" type="image/webp" href="/img/favicon.webp">
     <title>Coronarium | Drill down</title>
 
     
+        
+<link rel="stylesheet" href="/css/highlight/style1.css">
+
         
 <link rel="stylesheet" href="/css/reset.css">
 
@@ -20,16 +24,249 @@
  
          <!--注意：首页既不是post也不是page-->
         
-    
-    
+        
+        
 <link rel="stylesheet" href="/css/ui.css">
  
-    
+        
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 7.0.0-rc2"></head>
+
+        
+            <!--返回顶部css-->
+            
+<link rel="stylesheet" href="/css/returnToTop.css">
+
+            
+<link rel="stylesheet" href="/css/unicons.css">
+
+        
+        
+            <!--目录-->
+            
+<link rel="stylesheet" href="/css/toc.css">
+
+        
+    
+
+    
+        
+<link rel="stylesheet" href="/css/returnToLastPage.css">
+
+    
+    
+   
+<link rel="stylesheet" href="/css/lightgallery-bundle.min.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+    
+    
+
+    
+    
+
+
+
+    
+
+    
+    
+
+    
+    <style>
+        :root {
+            --waline-theme-color: #9e5345; 
+            --waline-color: #9e5345; 
+            --waline-border-color: #9e5345; 
+            --waline-white: #9e5345; 
+            --waline-bgcolor-light: #efeae2;  
+        }
+        body {
+            color: #9e5345;
+            background: #e8e0c9;
+        }
+        .post-md code {
+            background: #e4e4e4;
+            color: #2e5041; 
+        }
+        .post-md pre, .post-md .highlight {
+            background: #e4e4e4;
+            color: #2e5041; 
+        }
+        pre .string, pre .value, pre .inheritance, pre .header, pre .ruby .symbol, pre .xml .cdata {
+            color: #9e5345;
+        }
+        pre .number, pre .preprocessor, pre .built_in, pre .literal, pre .params, pre .constant {
+            color: #9e5345;
+        }
+        .year-font-color {
+            color: #9e5345 !important;
+        }
+        .wl-card span.wl-nick {
+            color: #9e5345; 
+        }
+        .wl-card .wl-badge {
+            border: 1px solid #9e5345;
+            color: #9e5345; 
+        }
+        .wl-btn {
+            border: 1px solid #9e5345; 
+            color:  #9e5345;  
+        }
+        .wl-btn.primary {
+            color: #efeae2; 
+        }
+        .wl-header label {
+            color: #9e5345;
+        }
+        a {
+            color: #2e5041;
+        }
+
+        .post-md a {
+            color: #2e5041;
+        }
+
+        .nav li a {
+            color: #2e5041;
+        }
+
+        .archive-main a:link {
+            color: #2e5041;
+        }
+        .archive-main a:visited {
+            color: #9c9caf; 
+        }
+
+        .archive li span {
+            color: #9e5345;
+        }
+
+        .post-main-title {
+            color: #9e5345;
+        }
+
+        .post-md h1,
+        .post-md h2,
+        .post-md h3,
+        .post-md h4,
+        .post-md h5,
+        .post-md h6 {
+            color: #9e5345;
+        }
+
+        [data-waline] p {
+            color: #9e5345;
+        }
+        [data-waline] a {
+            color: #9e5345;
+        } 
+        .wl-sort li.active {
+            color: #9e5345;
+        }
+
+        .wl-card .wl-meta>span {
+            background: #efeae2;
+        }
+
+        .paper {
+            background: #e8e0c9;
+        }
+
+        .index-main {
+            background: #efeae2;
+        }
+
+        .paper-main {
+            background: #efeae2;
+        }
+
+        .wl-panel {
+            background: #efeae2;
+        }
+
+        .archive li:nth-child(odd) {
+            background: #efeae2;
+            ;
+        }
+
+        .archive li:nth-child(even) {
+            background: #efeae2;
+        }
+
+        .post-md table tr:nth-child(odd) td {
+            background: #efeae2;
+        }
+
+        .post-md table tr:nth-child(even) td {
+            background: #efeae2;
+        }
+
+    
+        .progress-wrap::after {
+            color: #9e5345; /* 箭头的颜色 */
+        }
+        .progress-wrap svg.progress-circle path {
+	        stroke: #9e5345; /* 边框的颜色 */
+        }
+        .progress-wrap::before {
+	        background-image: linear-gradient(298deg, #2e5041, #2e5041); /* 鼠标滑过的箭头颜色 */
+         }
+
+        .return-to-last-progress-wrap::after {
+            color: #9e5345; /* 箭头的颜色 */
+        }
+        .return-to-last-progress-wrap svg.progress-circle path {
+	        stroke: #9e5345; /* 边框的颜色 */
+        }
+        .return-to-last-progress-wrap::before {
+	        background-image: linear-gradient(298deg, #2e5041, #2e5041); /* 鼠标滑过的箭头颜色 */
+         }
+
+         .left-toc-container::-webkit-scrollbar-thumb {
+            background-color: #9e5345; /* 设置滚动条拖动块的颜色 */
+        }
+
+        .bs-docs-sidebar .nav>.active>a,
+        .bs-docs-sidebar .nav>li>a:hover,
+        .bs-docs-sidebar .nav>li>a:focus {
+            color: #2e5041;
+            border-left-color: #2e5041;
+        }
+        .bs-docs-sidebar .nav>li>a {
+            color:  #9e5345;
+        }
+    </style>
+
+    
     
     <body>
+        <script src="/js/darkmode-js.min.js"></script>
+        
+        <script>
+            const options = {
+                bottom: '40px', // default: '32px'
+                right: 'unset', // default: '32px'
+                left: '42px', // default: 'unset'
+                time: '0.3s', // default: '0.3s'
+                mixColor: '#fff', // default: '#fff'
+                backgroundColor: ' #e8e0c9  ',  // default: '#fff'
+                buttonColorDark: '#100f2c',  // default: '#100f2c'
+                buttonColorLight: '#fff', // default: '#fff'
+                saveInCookies: true, // default: true,
+                label: '🌓', // default: ''
+                autoMatchOsTheme: true // default: true
+            }
+            const darkmode = new Darkmode(options);
+            darkmode.showWidget();
+        </script>
+        
+        
+            <div class="left-toc-container">
+                <nav id="toc" class="bs-docs-sidebar"></nav>
+            </div>
+        
         <div class="paper">
             
             
@@ -37,16 +274,30 @@
             
                 <div class="shadow-drop-2-bottom paper-main">
                     
+
+
 <div class="header">
     <div class="header-container">
-        <img style="
-        width: 56px;
-        height: auto;" alt="^-^" cache-control="max-age=86400" class="header-img" src="/img/favicon.webp" width="10%"></img>
+        <style>
+            .header-img {
+                width: 56px;
+                height: auto;
+                object-fit: cover; /* 保持图片比例 */
+                transition: transform 0.3s ease-in-out; 
+                border-radius: 0; 
+            }
+            
+        </style>
+        <img 
+            alt="^-^" 
+            cache-control="max-age=86400" 
+            class="header-img" 
+            src="/img/favicon.webp" 
+        />
         <div class="header-content">
             <a class="logo" href="/">Coronarium</a> 
             <span class="description">专注、探索、积累</span> 
         </div>
-        
     </div>
     
    
@@ -76,19 +327,57 @@
                     <!--说明是文章post页面-->
                     
                         <div class="post-main">
+    
 
     
-        <div class="post-main-title">
-            Flask-SocketIO基本使用
-        </div>
+        
+            
+                <div class="post-main-title" style="text-align: center;">
+                    Flask-SocketIO基本使用
+                </div>
+            
+        
       
+    
+
+    
+
+        
+            <div class="post-head-meta-center">
+        
+                
+                    <span>最近更新：2023-09-10</span> 
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                     <span>字数总计：1.4k</span>
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                    <span>阅读估时：6分钟</span>
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                    <span id="busuanzi_container_page_pv">
+                        阅读量：<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                
+            </div>
     
 
     <div class="post-md">
         
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#1-%E5%AE%89%E8%A3%85"><span class="post-toc-text">1.安装</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#2-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="post-toc-text">2.初始化</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#3-%E6%8E%A5%E6%94%B6%E6%B6%88%E6%81%AF"><span class="post-toc-text">3.接收消息</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#4%E3%80%81%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF"><span class="post-toc-text">4、发送消息</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#5%E3%80%81%E5%B9%BF%E6%92%AD"><span class="post-toc-text">5、广播</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#6%E3%80%81Rooms"><span class="post-toc-text">6、Rooms</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#7%E3%80%81%E8%BF%9E%E6%8E%A5%E4%BA%8B%E4%BB%B6"><span class="post-toc-text">7、连接事件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#8%E3%80%81%E5%9F%BA%E4%BA%8E%E7%B1%BB%E7%9A%84%E5%91%BD%E5%90%8D%E5%9F%9F"><span class="post-toc-text">8、基于类的命名域</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#9%E3%80%81%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="post-toc-text">9、错误处理</span></a></li></ol>
+            
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#1-%E5%AE%89%E8%A3%85"><span class="post-toc-text">1.安装</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#2-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="post-toc-text">2.初始化</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#3-%E6%8E%A5%E6%94%B6%E6%B6%88%E6%81%AF"><span class="post-toc-text">3.接收消息</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#4%E3%80%81%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF"><span class="post-toc-text">4、发送消息</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#5%E3%80%81%E5%B9%BF%E6%92%AD"><span class="post-toc-text">5、广播</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#6%E3%80%81Rooms"><span class="post-toc-text">6、Rooms</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#7%E3%80%81%E8%BF%9E%E6%8E%A5%E4%BA%8B%E4%BB%B6"><span class="post-toc-text">7、连接事件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#8%E3%80%81%E5%9F%BA%E4%BA%8E%E7%B1%BB%E7%9A%84%E5%91%BD%E5%90%8D%E5%9F%9F"><span class="post-toc-text">8、基于类的命名域</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#9%E3%80%81%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="post-toc-text">9、错误处理</span></a></li></ol>
+            
         
-        <p>Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。</p>
+        <div class=".article-gallery"><p>Flask-SocketIO是一个用于建立WebSocket全双工通信的Flask扩展。客户端应用可以使用任一SocketIO官方客户端库实现，或可以建立持久连接的兼容客户端实现。</p>
 <h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1.安装"></a>1.安装</h2><blockquote>
 <p>pip install flask-socketio</p>
 </blockquote>
@@ -98,68 +387,168 @@
 <li>gevent：需使用第三方库</li>
 <li>Werkzeug：仅支持长轮询</li>
 </ul>
-<h2 id="2-初始化"><a href="#2-初始化" class="headerlink" title="2.初始化"></a>2.初始化</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template</span><br><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> SocketIO</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;secret!&#x27;</span></span><br><span class="line">socketio = SocketIO(app)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    socketio.run(app)</span><br></pre></td></tr></table></figure>
+<h2 id="2-初始化"><a href="#2-初始化" class="headerlink" title="2.初始化"></a>2.初始化</h2><pre><code class="python">from flask import Flask, render_template
+from flask_socketio import SocketIO
 
+app = Flask(__name__)
+app.config[&#39;SECRET_KEY&#39;] = &#39;secret!&#39;
+socketio = SocketIO(app)
+
+if __name__ == &#39;__main__&#39;:
+    socketio.run(app)
+</code></pre>
 <p>应用必须给客户端返回一个html页面加载SocketIO库，并且建立连接：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span> src=<span class="string">&quot;//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js&quot;</span>&gt;&lt;/script&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span><span class="language-javascript"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">var</span> socket = io.<span class="title function_">connect</span>(<span class="string">&#x27;http://&#x27;</span> + <span class="variable language_">document</span>.<span class="property">domain</span> + <span class="string">&#x27;:&#x27;</span> + location.<span class="property">port</span>);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    socket.<span class="title function_">on</span>(<span class="string">&#x27;connect&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>) &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        socket.<span class="title function_">emit</span>(<span class="string">&#x27;my event&#x27;</span>, &#123;<span class="attr">data</span>: <span class="string">&#x27;I\&#x27;m connected!&#x27;</span>&#125;);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    &#125;);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="javascript">&lt;script type=&quot;text/javascript&quot; src=&quot;//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+    var socket = io.connect(&#39;http://&#39; + document.domain + &#39;:&#39; + location.port);
+    socket.on(&#39;connect&#39;, function() &#123;
+        socket.emit(&#39;my event&#39;, &#123;data: &#39;I\&#39;m connected!&#39;&#125;);
+    &#125;);
+&lt;/script&gt;
+</code></pre>
 <h2 id="3-接收消息"><a href="#3-接收消息" class="headerlink" title="3.接收消息"></a>3.接收消息</h2><p>使用SocketIO时，客户端和服务端以事件的方式接收消息-事件驱动。在客户端，javascript使用回调函数。在服务端，Flask-SocketIO需要注册事件处理函数，类似于路由-视图函数机制。</p>
 <p>下面的例子创建服务端无名事件处理函数：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;message&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_message</span>(<span class="params">message</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;received message: &#x27;</span> + message)</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">@socketio.on(&#39;message&#39;)
+def handle_message(message):
+    print(&#39;received message: &#39; + message)
+</code></pre>
 <p>上面的例子使用字符串消息，也可以使用json格式的消息：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;json&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_json</span>(<span class="params">json</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;received json: &#x27;</span> + <span class="built_in">str</span>(json))</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">@socketio.on(&#39;json&#39;)
+def handle_json(json):
+    print(&#39;received json: &#39; + str(json))
+</code></pre>
 <p>最灵活的事件类型是使用定制事件名称。这些事件的消息数据格式可以是字符串、字节、整数或者json：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_event</span>(<span class="params">json</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;received json: &#x27;</span> + <span class="built_in">str</span>(json))</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(json):
+    print(&#39;received json: &#39; + str(json))
+</code></pre>
 <p>定制的命名事件支持多参数：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_event</span>(<span class="params">arg1, arg2, arg3</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;received args: &#x27;</span> + arg1 + arg2 + arg3)</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(arg1, arg2, arg3):
+    print(&#39;received args: &#39; + arg1 + arg2 + arg3)
+</code></pre>
 <p>命名事件是最灵活的，因为命名事件消除了包含附加元数据（描述消息类型）的需要。Flask-socketIO也支持SocketIO命名域，SocketIO命名域允许客户端复用socket（多个连接建立在同一物理socket）。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span>, namespace=<span class="string">&#x27;/test&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_namespace_event</span>(<span class="params">json</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;received json: &#x27;</span> + <span class="built_in">str</span>(json))</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">@socketio.on(&#39;my event&#39;, namespace=&#39;/test&#39;)
+def handle_my_custom_namespace_event(json):
+    print(&#39;received json: &#39; + str(json))
+</code></pre>
 <p>当SocketIO没有显式指定命名域，全局命名域‘／’将会被使用。</p>
 <p>当装饰器语法不太合适时，on_event方法可被使用：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">my_function_handler</span>(<span class="params">data</span>):</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">socketio.on_event(<span class="string">&#x27;my event&#x27;</span>, my_function_handler, namespace=<span class="string">&#x27;/test&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code class="python">def my_function_handler(data):
+    pass
 
+socketio.on_event(&#39;my event&#39;, my_function_handler, namespace=&#39;/test&#39;)
+</code></pre>
 <p>客户端可能请求一个承认的回调函数，该函数确认接收发送的消息。处理函数的任何返回值将会作为参数递送给客户端的回调函数：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@socketio.on(<span class="string">&#x27;my event&#x27;</span>)</span><br><span class="line">def <span class="title function_">handle_my_custom_event</span><span class="params">(json)</span>:</span><br><span class="line">    <span class="title function_">print</span><span class="params">(<span class="string">&#x27;received json: &#x27;</span> + str(json))</span></span><br><span class="line">    <span class="keyword">return</span> &#x27;one&#x27;, 2</span><br></pre></td></tr></table></figure>
-
+<pre><code class="c">@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(json):
+    print(&#39;received json: &#39; + str(json))
+    return &#39;one&#39;, 2
+</code></pre>
 <p>上例中，客户端回调函数将会被传递两个参数：‘one’和2。</p>
 <h2 id="4、发送消息"><a href="#4、发送消息" class="headerlink" title="4、发送消息"></a>4、发送消息</h2><p>Socket IO事件处理函数可以发送回复消息至连接的客户端，方法包括send()和emit()。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> send, emit</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;message&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_message</span>(<span class="params">message</span>):</span><br><span class="line">    send(message)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;json&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_json</span>(<span class="params">json</span>):</span><br><span class="line">    send(json, json=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_event</span>(<span class="params">json</span>):</span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, json)</span><br></pre></td></tr></table></figure>
+<pre><code class="python">from flask_socketio import send, emit
 
+@socketio.on(&#39;message&#39;)
+def handle_message(message):
+    send(message)
+
+@socketio.on(&#39;json&#39;)
+def handle_json(json):
+    send(json, json=True)
+
+@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(json):
+    emit(&#39;my response&#39;, json)
+</code></pre>
 <p>当使用命名域时，send和emit默认使用接收消息的命名域。不同的命名域可以通过namespace参数指定。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;message&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_message</span>(<span class="params">message</span>):</span><br><span class="line">    send(message, namespace=<span class="string">&#x27;/chat&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_event</span>(<span class="params">json</span>):</span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, json, namespace=<span class="string">&#x27;/chat&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code class="python">@socketio.on(&#39;message&#39;)
+def handle_message(message):
+    send(message, namespace=&#39;/chat&#39;)
 
+@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(json):
+    emit(&#39;my response&#39;, json, namespace=&#39;/chat&#39;)
+</code></pre>
 <p>当使用多个参数回复一个事件时，发送一个tuple：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_event</span>(<span class="params">json</span>):</span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, (<span class="string">&#x27;foo&#x27;</span>, <span class="string">&#x27;bar&#x27;</span>, json), namespace=<span class="string">&#x27;/chat&#x27;</span>)</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(json):
+    emit(&#39;my response&#39;, (&#39;foo&#39;, &#39;bar&#39;, json), namespace=&#39;/chat&#39;)
+</code></pre>
 <p>SocketIO支持回调函数，该函数用于证实客户端成功接收了消息：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">ack</span>():</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;message was received!&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_event</span>(<span class="params">json</span>):</span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, json, callback=ack)</span><br></pre></td></tr></table></figure>
+<pre><code class="python">def ack():
+    print &#39;message was received!&#39;
 
+@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(json):
+    emit(&#39;my response&#39;, json, callback=ack)
+</code></pre>
 <p>当使用回调函数时，js客户端从接收的消息中获取回调函数，客户端回调函数唤起之后服务端的回调函数相应地被唤起。如歌客户端回调函数具有参数，服务端的回调函数具有相同的参数。</p>
 <h2 id="5、广播"><a href="#5、广播" class="headerlink" title="5、广播"></a>5、广播</h2><p>Flask-SocketIO支持广播，只需在send和emit函数中添加关键字参数broadcast&#x3D;True：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;my event&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_my_custom_event</span>(<span class="params">data</span>):</span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, data, broadcast=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">@socketio.on(&#39;my event&#39;)
+def handle_my_custom_event(data):
+    emit(&#39;my response&#39;, data, broadcast=True)
+</code></pre>
 <p>对于服务端主动发起的广播，socketio.send()和socketio.emit()方法可以用来广播消息至所有连接的客户端。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">some_function</span>():</span><br><span class="line">    socketio.emit(<span class="string">&#x27;some event&#x27;</span>, &#123;<span class="string">&#x27;data&#x27;</span>: <span class="number">42</span>&#125;)</span><br></pre></td></tr></table></figure>
-
+<pre><code class="python">def some_function():
+    socketio.emit(&#39;some event&#39;, &#123;&#39;data&#39;: 42&#125;)
+</code></pre>
 <h2 id="6、Rooms"><a href="#6、Rooms" class="headerlink" title="6、Rooms"></a>6、Rooms</h2><p>Flask-SocketIO通过join_room和leave_room函数支持room概念。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> join_room, leave_room</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;join&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_join</span>(<span class="params">data</span>):</span><br><span class="line">    username = data[<span class="string">&#x27;username&#x27;</span>]</span><br><span class="line">    room = data[<span class="string">&#x27;room&#x27;</span>]</span><br><span class="line">    join_room(room)</span><br><span class="line">    send(username + <span class="string">&#x27; has entered the room.&#x27;</span>, room=room)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;leave&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_leave</span>(<span class="params">data</span>):</span><br><span class="line">    username = data[<span class="string">&#x27;username&#x27;</span>]</span><br><span class="line">    room = data[<span class="string">&#x27;room&#x27;</span>]</span><br><span class="line">    leave_room(room)</span><br><span class="line">    send(username + <span class="string">&#x27; has left the room.&#x27;</span>, room=room)</span><br></pre></td></tr></table></figure>
+<pre><code class="python">from flask_socketio import join_room, leave_room
 
+@socketio.on(&#39;join&#39;)
+def on_join(data):
+    username = data[&#39;username&#39;]
+    room = data[&#39;room&#39;]
+    join_room(room)
+    send(username + &#39; has entered the room.&#39;, room=room)
+
+@socketio.on(&#39;leave&#39;)
+def on_leave(data):
+    username = data[&#39;username&#39;]
+    room = data[&#39;room&#39;]
+    leave_room(room)
+    send(username + &#39; has left the room.&#39;, room=room)
+</code></pre>
 <p>send和emit函数接收关键字参数room，将消息发送至连接对应room的客户端。</p>
 <p>所有的客户端连接room时用session ID命名，可以使用request.sid获取。</p>
 <h2 id="7、连接事件"><a href="#7、连接事件" class="headerlink" title="7、连接事件"></a>7、连接事件</h2><p>Flask-SocketIO也支持连接和连接断开事件。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;connect&#x27;</span>, namespace=<span class="string">&#x27;/chat&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_connect</span>():</span><br><span class="line">    emit(<span class="string">&#x27;my response&#x27;</span>, &#123;<span class="string">&#x27;data&#x27;</span>: <span class="string">&#x27;Connected&#x27;</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on(<span class="params"><span class="string">&#x27;disconnect&#x27;</span>, namespace=<span class="string">&#x27;/chat&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">test_disconnect</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;Client disconnected&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code class="python">@socketio.on(&#39;connect&#39;, namespace=&#39;/chat&#39;)
+def test_connect():
+    emit(&#39;my response&#39;, &#123;&#39;data&#39;: &#39;Connected&#39;&#125;)
 
+@socketio.on(&#39;disconnect&#39;, namespace=&#39;/chat&#39;)
+def test_disconnect():
+    print(&#39;Client disconnected&#39;)
+</code></pre>
 <h2 id="8、基于类的命名域"><a href="#8、基于类的命名域" class="headerlink" title="8、基于类的命名域"></a>8、基于类的命名域</h2><p>上面描述的是基于装饰器的处理函数，也可以使用基于类的命名域处理函数。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask_socketio <span class="keyword">import</span> Namespace, emit</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyCustomNamespace</span>(<span class="title class_ inherited__">Namespace</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">on_connect</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">on_disconnect</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">on_my_event</span>(<span class="params">self, data</span>):</span><br><span class="line">        emit(<span class="string">&#x27;my_response&#x27;</span>, data)</span><br><span class="line"></span><br><span class="line">socketio.on_namespace(MyCustomNamespace(<span class="string">&#x27;/test&#x27;</span>))</span><br></pre></td></tr></table></figure>
+<pre><code class="python">from flask_socketio import Namespace, emit
 
-<h2 id="9、错误处理"><a href="#9、错误处理" class="headerlink" title="9、错误处理"></a>9、错误处理</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@socketio.on_error()        </span><span class="comment"># Handles the default namespace</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">error_handler</span>(<span class="params">e</span>):</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on_error(<span class="params"><span class="string">&#x27;/chat&#x27;</span></span>) </span><span class="comment"># handles the &#x27;/chat&#x27; namespace</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">error_handler_chat</span>(<span class="params">e</span>):</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@socketio.on_error_default  </span><span class="comment"># handles all namespaces without an explicit error handler</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">default_error_handler</span>(<span class="params">e</span>):</span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+class MyCustomNamespace(Namespace):
+    def on_connect(self):
+        pass
 
+    def on_disconnect(self):
+        pass
 
+    def on_my_event(self, data):
+        emit(&#39;my_response&#39;, data)
+
+socketio.on_namespace(MyCustomNamespace(&#39;/test&#39;))
+</code></pre>
+<h2 id="9、错误处理"><a href="#9、错误处理" class="headerlink" title="9、错误处理"></a>9、错误处理</h2><pre><code class="python">@socketio.on_error()        # Handles the default namespace
+def error_handler(e):
+    pass
+
+@socketio.on_error(&#39;/chat&#39;) # handles the &#39;/chat&#39; namespace
+def error_handler_chat(e):
+    pass
+
+@socketio.on_error_default  # handles all namespaces without an explicit error handler
+def default_error_handler(e):
+    pass
+</code></pre>
+</div>
     </div>
 
     <div class="post-meta">
@@ -192,6 +581,26 @@
         
         </i>
     </div>
+    <br>
+    
+    
+        
+            
+    
+            <div class="post-footer-pre-next">
+                
+                    <span>上一篇：<a href='/2019/10/15/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/'>k8s集群搭建</a></span>
+                
+
+                
+                    <span class="post-footer-pre-next-last-span-right">下一篇：<a href="/2019/04/11/%E6%9C%80%E5%A5%BD%E7%9A%84%E5%91%8A%E5%88%AB/">最好的告别</a>
+                    </span>
+                
+            </div>
+    
+        
+    
+
     
         
 
@@ -200,20 +609,25 @@
 
 
 
+                                      
                     
                     
                     <div class="footer">
     
         <span> 
-            © Bray Wang 
+            © Jerry Wang 
 
             
                 
 
             
         </span>
+       
     
 </div>
+
+
+
 <!--这是指一条线往下的内容-->
 <div class="footer-last">
     
@@ -226,20 +640,103 @@
 
 
     
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+    <!--目录-->
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js" type="text/javascript" ></script>
+        
+<script src="/js/toc.js"></script>
 
     
-<script src="/js/highlight.min.js"></script>
 
     
-<script src="/js/highlightjs-line-numbers.js"></script>
+<script src="/js/randomHeaderContent.js"></script>
+
+    <!--回到顶部按钮-->
+    
+        
+<script src="/js/returnToTop.js"></script>
+
+    
+
+    
+        
+<script src="/js/returnToLastPage.js"></script>
+
+    
 
 
 
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
+
+
+<script src="/js/lightgallery/lightgallery.umd.min.js"></script>
+
+
+
+<script src="/js/lightgallery/plugins/lg-thumbnail.umd.min.js"></script>
+
+
+
+<script src="/js/lightgallery/plugins/lg-fullscreen.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-autoplay.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-zoom.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-rotate.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-paper.umd.min.js"></script>
+
+
+
+
+<script type="text/javascript">
+     
+    if (typeof lightGallery !== "undefined") {
+        var options1 = {
+            selector: '.gallery-item',
+            plugins: [lgThumbnail, lgFullscreen, lgAutoplay, lgZoom, lgRotate, lgPager], // 启用插件
+            thumbnail: true,          // 显示缩略图
+            zoom: true,               // 启用缩放功
+            rotate: true,             // 启用旋转功能能
+            autoplay: true,        // 启用自动播放功能
+            fullScreen: true,      // 启用全屏功能
+            pager: false, //页码,
+            zoomFromOrigin: true,   // 从原始位置缩放
+            actualSize: true,       // 启用查看实际大小的功能
+            enableZoomAfter: 300,    // 延迟缩放，确保图片加载完成后可缩放
+        };
+        lightGallery(document.getElementsByClassName('.article-gallery')[0], options1); // 修复选择器
+    }
+    
 </script>
+
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script> 
+
+                </div>
+            
+            
+                <!-- 回到顶部的按钮-->  
+                <div class="progress-wrap shadow-drop-2-bottom">
+                    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+                        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+                    </svg>
+                </div>
+            
+            
+                <!-- 返回的按钮-->  
+                <div class="return-to-last-progress-wrap shadow-drop-2-bottom">
+                    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+                        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+                    </svg>
                 </div>
             
     </body>

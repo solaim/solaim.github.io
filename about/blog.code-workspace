@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "blog",
+			"path": "../.."
+		},
+		{
+			"name": "scaffolds",
+			"path": "../../../new_blog/scaffolds"
+		}
+	],
+	"settings": {}
+}

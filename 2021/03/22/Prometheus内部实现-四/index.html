@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+    
     <head>
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0,  viewport-fit=cover" name="viewport" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport" />
     <meta name="description" content="Prometheus内部实现(四)" />
-    <meta name="hexo-theme-A4" content="v1.7.1" />
+    <meta name="hexo-theme-A4" content="v1.9.7" />
     <link rel="alternate icon" type="image/webp" href="/img/favicon.webp">
     <title>Coronarium | Drill down</title>
 
     
+        
+<link rel="stylesheet" href="/css/highlight/style1.css">
+
         
 <link rel="stylesheet" href="/css/reset.css">
 
@@ -20,16 +24,249 @@
  
          <!--注意：首页既不是post也不是page-->
         
-    
-    
+        
+        
 <link rel="stylesheet" href="/css/ui.css">
  
-    
+        
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 7.0.0-rc2"></head>
+
+        
+            <!--返回顶部css-->
+            
+<link rel="stylesheet" href="/css/returnToTop.css">
+
+            
+<link rel="stylesheet" href="/css/unicons.css">
+
+        
+        
+            <!--目录-->
+            
+<link rel="stylesheet" href="/css/toc.css">
+
+        
+    
+
+    
+        
+<link rel="stylesheet" href="/css/returnToLastPage.css">
+
+    
+    
+   
+<link rel="stylesheet" href="/css/lightgallery-bundle.min.css">
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+    
+    
+
+    
+    
+
+
+
+    
+
+    
+    
+
+    
+    <style>
+        :root {
+            --waline-theme-color: #9e5345; 
+            --waline-color: #9e5345; 
+            --waline-border-color: #9e5345; 
+            --waline-white: #9e5345; 
+            --waline-bgcolor-light: #efeae2;  
+        }
+        body {
+            color: #9e5345;
+            background: #e8e0c9;
+        }
+        .post-md code {
+            background: #e4e4e4;
+            color: #2e5041; 
+        }
+        .post-md pre, .post-md .highlight {
+            background: #e4e4e4;
+            color: #2e5041; 
+        }
+        pre .string, pre .value, pre .inheritance, pre .header, pre .ruby .symbol, pre .xml .cdata {
+            color: #9e5345;
+        }
+        pre .number, pre .preprocessor, pre .built_in, pre .literal, pre .params, pre .constant {
+            color: #9e5345;
+        }
+        .year-font-color {
+            color: #9e5345 !important;
+        }
+        .wl-card span.wl-nick {
+            color: #9e5345; 
+        }
+        .wl-card .wl-badge {
+            border: 1px solid #9e5345;
+            color: #9e5345; 
+        }
+        .wl-btn {
+            border: 1px solid #9e5345; 
+            color:  #9e5345;  
+        }
+        .wl-btn.primary {
+            color: #efeae2; 
+        }
+        .wl-header label {
+            color: #9e5345;
+        }
+        a {
+            color: #2e5041;
+        }
+
+        .post-md a {
+            color: #2e5041;
+        }
+
+        .nav li a {
+            color: #2e5041;
+        }
+
+        .archive-main a:link {
+            color: #2e5041;
+        }
+        .archive-main a:visited {
+            color: #9c9caf; 
+        }
+
+        .archive li span {
+            color: #9e5345;
+        }
+
+        .post-main-title {
+            color: #9e5345;
+        }
+
+        .post-md h1,
+        .post-md h2,
+        .post-md h3,
+        .post-md h4,
+        .post-md h5,
+        .post-md h6 {
+            color: #9e5345;
+        }
+
+        [data-waline] p {
+            color: #9e5345;
+        }
+        [data-waline] a {
+            color: #9e5345;
+        } 
+        .wl-sort li.active {
+            color: #9e5345;
+        }
+
+        .wl-card .wl-meta>span {
+            background: #efeae2;
+        }
+
+        .paper {
+            background: #e8e0c9;
+        }
+
+        .index-main {
+            background: #efeae2;
+        }
+
+        .paper-main {
+            background: #efeae2;
+        }
+
+        .wl-panel {
+            background: #efeae2;
+        }
+
+        .archive li:nth-child(odd) {
+            background: #efeae2;
+            ;
+        }
+
+        .archive li:nth-child(even) {
+            background: #efeae2;
+        }
+
+        .post-md table tr:nth-child(odd) td {
+            background: #efeae2;
+        }
+
+        .post-md table tr:nth-child(even) td {
+            background: #efeae2;
+        }
+
+    
+        .progress-wrap::after {
+            color: #9e5345; /* 箭头的颜色 */
+        }
+        .progress-wrap svg.progress-circle path {
+	        stroke: #9e5345; /* 边框的颜色 */
+        }
+        .progress-wrap::before {
+	        background-image: linear-gradient(298deg, #2e5041, #2e5041); /* 鼠标滑过的箭头颜色 */
+         }
+
+        .return-to-last-progress-wrap::after {
+            color: #9e5345; /* 箭头的颜色 */
+        }
+        .return-to-last-progress-wrap svg.progress-circle path {
+	        stroke: #9e5345; /* 边框的颜色 */
+        }
+        .return-to-last-progress-wrap::before {
+	        background-image: linear-gradient(298deg, #2e5041, #2e5041); /* 鼠标滑过的箭头颜色 */
+         }
+
+         .left-toc-container::-webkit-scrollbar-thumb {
+            background-color: #9e5345; /* 设置滚动条拖动块的颜色 */
+        }
+
+        .bs-docs-sidebar .nav>.active>a,
+        .bs-docs-sidebar .nav>li>a:hover,
+        .bs-docs-sidebar .nav>li>a:focus {
+            color: #2e5041;
+            border-left-color: #2e5041;
+        }
+        .bs-docs-sidebar .nav>li>a {
+            color:  #9e5345;
+        }
+    </style>
+
+    
     
     <body>
+        <script src="/js/darkmode-js.min.js"></script>
+        
+        <script>
+            const options = {
+                bottom: '40px', // default: '32px'
+                right: 'unset', // default: '32px'
+                left: '42px', // default: 'unset'
+                time: '0.3s', // default: '0.3s'
+                mixColor: '#fff', // default: '#fff'
+                backgroundColor: ' #e8e0c9  ',  // default: '#fff'
+                buttonColorDark: '#100f2c',  // default: '#100f2c'
+                buttonColorLight: '#fff', // default: '#fff'
+                saveInCookies: true, // default: true,
+                label: '🌓', // default: ''
+                autoMatchOsTheme: true // default: true
+            }
+            const darkmode = new Darkmode(options);
+            darkmode.showWidget();
+        </script>
+        
+        
+            <div class="left-toc-container">
+                <nav id="toc" class="bs-docs-sidebar"></nav>
+            </div>
+        
         <div class="paper">
             
             
@@ -37,16 +274,30 @@
             
                 <div class="shadow-drop-2-bottom paper-main">
                     
+
+
 <div class="header">
     <div class="header-container">
-        <img style="
-        width: 56px;
-        height: auto;" alt="^-^" cache-control="max-age=86400" class="header-img" src="/img/favicon.webp" width="10%"></img>
+        <style>
+            .header-img {
+                width: 56px;
+                height: auto;
+                object-fit: cover; /* 保持图片比例 */
+                transition: transform 0.3s ease-in-out; 
+                border-radius: 0; 
+            }
+            
+        </style>
+        <img 
+            alt="^-^" 
+            cache-control="max-age=86400" 
+            class="header-img" 
+            src="/img/favicon.webp" 
+        />
         <div class="header-content">
             <a class="logo" href="/">Coronarium</a> 
             <span class="description">专注、探索、积累</span> 
         </div>
-        
     </div>
     
    
@@ -76,23 +327,61 @@
                     <!--说明是文章post页面-->
                     
                         <div class="post-main">
+    
 
     
-        <div class="post-main-title">
-            Prometheus内部实现(四)
-        </div>
+        
+            
+                <div class="post-main-title" style="text-align: center;">
+                    Prometheus内部实现(四)
+                </div>
+            
+        
       
+    
+
+    
+
+        
+            <div class="post-head-meta-center">
+        
+                
+                    <span>最近更新：2023-09-10</span> 
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                     <span>字数总计：2.5k</span>
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                    <span>阅读估时：12分钟</span>
+                
+                
+                    
+                        &nbsp; | &nbsp;
+                    
+                    <span id="busuanzi_container_page_pv">
+                        阅读量：<span id="busuanzi_value_page_pv"></span>次
+                    </span>
+                
+            </div>
     
 
     <div class="post-md">
         
             
+                
+            
         
-        <blockquote>
+        <div class=".article-gallery"><blockquote>
 <p>目标该怎么管理？静态还是动态发现？</p>
 </blockquote>
 <p>目标管理是使用静态还是动态发现，这个和基础架构有关，要回答这个问题，需要先说说应用部署的现状！</p>
-<p><img src="/img/virtual-container.webp" alt="virtual-container"></p>
+<p><a href="/img/virtual-container.webp" title="virtual-container" class="gallery-item" style="box-shadow: none;"> <img src="/img/virtual-container.webp" alt="virtual-container"></a></p>
 <p>目前，企业应用部署有两种选项：</p>
 <ol>
 <li>基于虚拟机</li>
@@ -106,70 +395,406 @@
 <p>题外话：要想Devops在企业落地，得有一整套配套的工具，整体打通。</p>
 </blockquote>
 <p>那么Prometheus在抓取目标方面是怎么做的呢？我们先重温一下相关组件的启动：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Scrape discovery manager.</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span></span> <span class="type">error</span> &#123;</span><br><span class="line">      err := discoveryManagerScrape.Run()</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Scrape discovery manager stopped&quot;</span>)</span><br><span class="line">      <span class="keyword">return</span> err</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err <span class="type">error</span>)</span></span> &#123;</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Stopping scrape discovery manager...&quot;</span>)</span><br><span class="line">      cancelScrape()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Notify discovery manager.</span></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Scrape manager.</span></span><br><span class="line">  g.Add(</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span></span> <span class="type">error</span> &#123;</span><br><span class="line">      <span class="comment">// When the scrape manager receives a new targets list</span></span><br><span class="line">      <span class="comment">// it needs to read a valid config for each job.</span></span><br><span class="line">      <span class="comment">// It depends on the config being in sync with the discovery manager so</span></span><br><span class="line">      <span class="comment">// we wait until the config is fully loaded.</span></span><br><span class="line">      &lt;-reloadReady.C</span><br><span class="line"></span><br><span class="line">      err := scrapeManager.Run(discoveryManagerScrape.SyncCh())</span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Scrape manager stopped&quot;</span>)</span><br><span class="line">      <span class="keyword">return</span> err</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">(err <span class="type">error</span>)</span></span> &#123;</span><br><span class="line">      <span class="comment">// Scrape manager needs to be stopped before closing the local TSDB</span></span><br><span class="line">      <span class="comment">// so that it doesn&#x27;t try to write samples to a closed storage.</span></span><br><span class="line">      level.Info(logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;Stopping scrape manager...&quot;</span>)</span><br><span class="line">      scrapeManager.Stop()</span><br><span class="line">    &#125;,</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">&#123;
+  // Scrape discovery manager.
+  g.Add(
+    func() error &#123;
+      err := discoveryManagerScrape.Run()
+      level.Info(logger).Log(&quot;msg&quot;, &quot;Scrape discovery manager stopped&quot;)
+      return err
+    &#125;,
+    func(err error) &#123;
+      level.Info(logger).Log(&quot;msg&quot;, &quot;Stopping scrape discovery manager...&quot;)
+      cancelScrape()
+    &#125;,
+  )
+&#125;
+&#123;
+  // Notify discovery manager.
+  ...
+&#125;
+&#123;
+  // Scrape manager.
+  g.Add(
+    func() error &#123;
+      // When the scrape manager receives a new targets list
+      // it needs to read a valid config for each job.
+      // It depends on the config being in sync with the discovery manager so
+      // we wait until the config is fully loaded.
+      &lt;-reloadReady.C
 
+      err := scrapeManager.Run(discoveryManagerScrape.SyncCh())
+      level.Info(logger).Log(&quot;msg&quot;, &quot;Scrape manager stopped&quot;)
+      return err
+    &#125;,
+    func(err error) &#123;
+      // Scrape manager needs to be stopped before closing the local TSDB
+      // so that it doesn&#39;t try to write samples to a closed storage.
+      level.Info(logger).Log(&quot;msg&quot;, &quot;Stopping scrape manager...&quot;)
+      scrapeManager.Stop()
+    &#125;,
+  )
+&#125;
+</code></pre>
 <p>启动的核心语句：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 启动动态发现</span><br><span class="line">discoveryManagerScrape.Run()</span><br><span class="line"></span><br><span class="line"># 启动目标抓取</span><br><span class="line">scrapeManager.Run(discoveryManagerScrape.SyncCh())</span><br></pre></td></tr></table></figure>
+<pre><code class="go"># 启动动态发现
+discoveryManagerScrape.Run()
 
+# 启动目标抓取
+scrapeManager.Run(discoveryManagerScrape.SyncCh())
+</code></pre>
 <p><code>discoveryManagerScrape.SyncCh()</code>作为参数传递给<code>scrapeManager.Run</code>，来看看它的实现：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SyncCh returns a read only channel used by all the clients to receive target updates.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Manager)</span></span> SyncCh() &lt;-<span class="keyword">chan</span> <span class="keyword">map</span>[<span class="type">string</span>][]*targetgroup.Group &#123;</span><br><span class="line">	<span class="keyword">return</span> m.syncCh</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="go">// SyncCh returns a read only channel used by all the clients to receive target updates.
+func (m *Manager) SyncCh() &lt;-chan map[string][]*targetgroup.Group &#123;
+    return m.syncCh
+&#125;
+</code></pre>
 <p>实际上，是将discoveryManagerScrape和scrapeManager通过<code>map[string][]*targetgroup.Group</code>channel 连接了起来，也就是discoveryManagerScrape动态发现的目标通过这个channel，同步给scrapeManager，scrapeManager负责抓取。</p>
 <p>我们来做一个小结：</p>
-<p><img src="/img/dsm.jpg" alt="dsm"></p>
+<p><a href="/img/dsm.jpg" title="dsm" class="gallery-item" style="box-shadow: none;"> <img src="/img/dsm.jpg" alt="dsm"></a></p>
 <p>其实，就是两个goroutine之间通过channel通信。</p>
 <p>接下来，让我们看看<code>scrapeManager.Run</code>里面的实现：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Run receives and saves target set updates and triggers the scraping loops reloading.</span></span><br><span class="line"><span class="comment">// Reloading happens in the background so that it doesn&#x27;t block receiving targets updates.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Manager)</span></span> Run(tsets &lt;-<span class="keyword">chan</span> <span class="keyword">map</span>[<span class="type">string</span>][]*targetgroup.Group) <span class="type">error</span> &#123;</span><br><span class="line">	<span class="keyword">go</span> m.reloader()</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> ts := &lt;-tsets:</span><br><span class="line">			m.updateTsets(ts)</span><br><span class="line"></span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> m.triggerReload &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;:</span><br><span class="line">			<span class="keyword">default</span>:</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">case</span> &lt;-m.graceShut:</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">// Run receives and saves target set updates and triggers the scraping loops reloading.
+// Reloading happens in the background so that it doesn&#39;t block receiving targets updates.
+func (m *Manager) Run(tsets &lt;-chan map[string][]*targetgroup.Group) error &#123;
+    go m.reloader()
+    for &#123;
+        select &#123;
+        case ts := &lt;-tsets:
+            m.updateTsets(ts)
 
+            select &#123;
+            case m.triggerReload &lt;- struct&#123;&#125;&#123;&#125;:
+            default:
+            &#125;
+
+        case &lt;-m.graceShut:
+            return nil
+        &#125;
+    &#125;
+&#125;
+</code></pre>
 <p>核心是一个for循环，channel tsets(map[string][]*targetgroup.Group)等待动态发现传递的目标，调用<code>m.updateTsets(ts)</code>更新抓取的目标，设置reload信号<code>m.triggerReload &lt;- struct&#123;&#125;&#123;&#125;</code>，周而复始，先来看看<code>m.updateTsets(ts)</code>坐了什么操作：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Manager)</span></span> updateTsets(tsets <span class="keyword">map</span>[<span class="type">string</span>][]*targetgroup.Group) &#123;</span><br><span class="line">	m.mtxScrape.Lock()</span><br><span class="line">	m.targetSets = tsets</span><br><span class="line">	m.mtxScrape.Unlock()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="go">func (m *Manager) updateTsets(tsets map[string][]*targetgroup.Group) &#123;
+    m.mtxScrape.Lock()
+    m.targetSets = tsets
+    m.mtxScrape.Unlock()
+&#125;
+</code></pre>
 <p>没错，很简单，将监控的目标进行了更新。再来，看看Manager结构体的定义：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Manager <span class="keyword">struct</span> &#123;</span><br><span class="line">	logger    log.Logger</span><br><span class="line">	<span class="built_in">append</span>    storage.Appendable</span><br><span class="line">	graceShut <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">	jitterSeed    <span class="type">uint64</span>     <span class="comment">// Global jitterSeed seed is used to spread scrape workload across HA setup.</span></span><br><span class="line">	mtxScrape     sync.Mutex <span class="comment">// Guards the fields below.</span></span><br><span class="line">	scrapeConfigs <span class="keyword">map</span>[<span class="type">string</span>]*config.ScrapeConfig</span><br><span class="line">	scrapePools   <span class="keyword">map</span>[<span class="type">string</span>]*scrapePool</span><br><span class="line">	targetSets    <span class="keyword">map</span>[<span class="type">string</span>][]*targetgroup.Group</span><br><span class="line"></span><br><span class="line">	triggerReload <span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">type Manager struct &#123;
+    logger    log.Logger
+    append    storage.Appendable
+    graceShut chan struct&#123;&#125;
 
+    jitterSeed    uint64     // Global jitterSeed seed is used to spread scrape workload across HA setup.
+    mtxScrape     sync.Mutex // Guards the fields below.
+    scrapeConfigs map[string]*config.ScrapeConfig
+    scrapePools   map[string]*scrapePool
+    targetSets    map[string][]*targetgroup.Group
+
+    triggerReload chan struct&#123;&#125;
+&#125;
+</code></pre>
 <p>可以看到跟抓取有关的三个字段为：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scrapeConfigs <span class="keyword">map</span>[<span class="type">string</span>]*config.ScrapeConfig</span><br><span class="line">scrapePools   <span class="keyword">map</span>[<span class="type">string</span>]*scrapePool</span><br><span class="line">targetSets    <span class="keyword">map</span>[<span class="type">string</span>][]*targetgroup.Group</span><br></pre></td></tr></table></figure>
-
+<pre><code class="go">    scrapeConfigs map[string]*config.ScrapeConfig
+    scrapePools   map[string]*scrapePool
+    targetSets    map[string][]*targetgroup.Group
+</code></pre>
 <p>现在，discoveryManagerScrape通过channel将抓取的目标传递过来，scrapeManager内部到底是怎样转化成最后的HTTP请求呢？</p>
 <p>scrapeManager.Run有一个重要的语句<code>go m.reloader()</code>，并在接收目标后设置了<code>triggerReload</code></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Manager)</span></span> reloader() &#123;</span><br><span class="line">	ticker := time.NewTicker(<span class="number">5</span> * time.Second)</span><br><span class="line">	<span class="keyword">defer</span> ticker.Stop()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> &lt;-m.graceShut:</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		<span class="keyword">case</span> &lt;-ticker.C:</span><br><span class="line">			<span class="keyword">select</span> &#123;</span><br><span class="line">			<span class="keyword">case</span> &lt;-m.triggerReload:</span><br><span class="line">				m.reload()</span><br><span class="line">			<span class="keyword">case</span> &lt;-m.graceShut:</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">func (m *Manager) reloader() &#123;
+    ticker := time.NewTicker(5 * time.Second)
+    defer ticker.Stop()
 
+    for &#123;
+        select &#123;
+        case &lt;-m.graceShut:
+            return
+        case &lt;-ticker.C:
+            select &#123;
+            case &lt;-m.triggerReload:
+                m.reload()
+            case &lt;-m.graceShut:
+                return
+            &#125;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
 <p>Prometheus server每隔5秒，检查triggerReload channel，调用<code>m.reload()</code></p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Manager)</span></span> reload() &#123;</span><br><span class="line">	m.mtxScrape.Lock()</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	<span class="keyword">for</span> setName, groups := <span class="keyword">range</span> m.targetSets &#123;</span><br><span class="line">		<span class="keyword">if</span> _, ok := m.scrapePools[setName]; !ok &#123;</span><br><span class="line">			scrapeConfig, ok := m.scrapeConfigs[setName]</span><br><span class="line">			<span class="keyword">if</span> !ok &#123;</span><br><span class="line">				level.Error(m.logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;error reloading target set&quot;</span>, <span class="string">&quot;err&quot;</span>, <span class="string">&quot;invalid config id:&quot;</span>+setName)</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			sp, err := newScrapePool(scrapeConfig, m.<span class="built_in">append</span>, m.jitterSeed, log.With(m.logger, <span class="string">&quot;scrape_pool&quot;</span>, setName))</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				level.Error(m.logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;error creating new scrape pool&quot;</span>, <span class="string">&quot;err&quot;</span>, err, <span class="string">&quot;scrape_pool&quot;</span>, setName)</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			m.scrapePools[setName] = sp</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		wg.Add(<span class="number">1</span>)</span><br><span class="line">		<span class="comment">// Run the sync in parallel as these take a while and at high load can&#x27;t catch up.</span></span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(sp *scrapePool, groups []*targetgroup.Group)</span></span> &#123;</span><br><span class="line">			sp.Sync(groups)</span><br><span class="line">			wg.Done()</span><br><span class="line">		&#125;(m.scrapePools[setName], groups)</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	m.mtxScrape.Unlock()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">func (m *Manager) reload() &#123;
+    m.mtxScrape.Lock()
+    var wg sync.WaitGroup
+    for setName, groups := range m.targetSets &#123;
+        if _, ok := m.scrapePools[setName]; !ok &#123;
+            scrapeConfig, ok := m.scrapeConfigs[setName]
+            if !ok &#123;
+                level.Error(m.logger).Log(&quot;msg&quot;, &quot;error reloading target set&quot;, &quot;err&quot;, &quot;invalid config id:&quot;+setName)
+                continue
+            &#125;
+            sp, err := newScrapePool(scrapeConfig, m.append, m.jitterSeed, log.With(m.logger, &quot;scrape_pool&quot;, setName))
+            if err != nil &#123;
+                level.Error(m.logger).Log(&quot;msg&quot;, &quot;error creating new scrape pool&quot;, &quot;err&quot;, err, &quot;scrape_pool&quot;, setName)
+                continue
+            &#125;
+            m.scrapePools[setName] = sp
+        &#125;
 
+        wg.Add(1)
+        // Run the sync in parallel as these take a while and at high load can&#39;t catch up.
+        go func(sp *scrapePool, groups []*targetgroup.Group) &#123;
+            sp.Sync(groups)
+            wg.Done()
+        &#125;(m.scrapePools[setName], groups)
+
+    &#125;
+    m.mtxScrape.Unlock()
+    wg.Wait()
+&#125;
+</code></pre>
 <p>这个方法完成了核心的转换，将目标转换成可以执行的任务，抽出核心业务我们可以得到这样的范式：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"><span class="keyword">for</span> _, t := <span class="keyword">range</span> tsets &#123;</span><br><span class="line">  wg.Add(<span class="number">1</span>)</span><br><span class="line">  <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(t <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">    wg.Done()</span><br><span class="line">  &#125;(t)</span><br><span class="line">&#125;</span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
-
+<pre><code class="go">
+var wg sync.WaitGroup
+for _, t := range tsets &#123;
+  wg.Add(1)
+  go func(t int) &#123;
+    wg.Done()
+  &#125;(t)
+&#125;
+wg.Wait()
+</code></pre>
 <p>回到业务上，我们发现targetSets、scrapeConfigs和scrapePools进行了完美的转换，如果scrapePools没有setName，并且scrapeConfigs有相应的配置，则调用<code>newScrapePool</code>创建scrapePool，更新到Manager，最后将scrapePool和[]*targetgroup.Group传递给匿名函数，完成<code>sp.Sync(groups)</code>调用，然我们继续跟踪Sync方法：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sp *scrapePool)</span></span> Sync(tgs []*targetgroup.Group) &#123;</span><br><span class="line">	sp.mtx.Lock()</span><br><span class="line">	<span class="keyword">defer</span> sp.mtx.Unlock()</span><br><span class="line">	start := time.Now()</span><br><span class="line"></span><br><span class="line">	sp.targetMtx.Lock()</span><br><span class="line">	<span class="keyword">var</span> all []*Target</span><br><span class="line">	sp.droppedTargets = []*Target&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> _, tg := <span class="keyword">range</span> tgs &#123;</span><br><span class="line">		targets, err := targetsFromGroup(tg, sp.config)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			level.Error(sp.logger).Log(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;creating targets failed&quot;</span>, <span class="string">&quot;err&quot;</span>, err)</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> _, t := <span class="keyword">range</span> targets &#123;</span><br><span class="line">			<span class="keyword">if</span> t.Labels().Len() &gt; <span class="number">0</span> &#123;</span><br><span class="line">				all = <span class="built_in">append</span>(all, t)</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> t.DiscoveredLabels().Len() &gt; <span class="number">0</span> &#123;</span><br><span class="line">				sp.droppedTargets = <span class="built_in">append</span>(sp.droppedTargets, t)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	sp.targetMtx.Unlock()</span><br><span class="line">	sp.sync(all)</span><br><span class="line"></span><br><span class="line">	targetSyncIntervalLength.WithLabelValues(sp.config.JobName).Observe(</span><br><span class="line">		time.Since(start).Seconds(),</span><br><span class="line">	)</span><br><span class="line">	targetScrapePoolSyncsCounter.WithLabelValues(sp.config.JobName).Inc()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">func (sp *scrapePool) Sync(tgs []*targetgroup.Group) &#123;
+    sp.mtx.Lock()
+    defer sp.mtx.Unlock()
+    start := time.Now()
 
+    sp.targetMtx.Lock()
+    var all []*Target
+    sp.droppedTargets = []*Target&#123;&#125;
+    for _, tg := range tgs &#123;
+        targets, err := targetsFromGroup(tg, sp.config)
+        if err != nil &#123;
+            level.Error(sp.logger).Log(&quot;msg&quot;, &quot;creating targets failed&quot;, &quot;err&quot;, err)
+            continue
+        &#125;
+        for _, t := range targets &#123;
+            if t.Labels().Len() &gt; 0 &#123;
+                all = append(all, t)
+            &#125; else if t.DiscoveredLabels().Len() &gt; 0 &#123;
+                sp.droppedTargets = append(sp.droppedTargets, t)
+            &#125;
+        &#125;
+    &#125;
+    sp.targetMtx.Unlock()
+    sp.sync(all)
+
+    targetSyncIntervalLength.WithLabelValues(sp.config.JobName).Observe(
+        time.Since(start).Seconds(),
+    )
+    targetScrapePoolSyncsCounter.WithLabelValues(sp.config.JobName).Inc()
+&#125;
+</code></pre>
 <p>Sync方法的核心有两个调用：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 将Group转化成Target列表</span><br><span class="line">targets, err := targetsFromGroup(tg, sp.config)</span><br><span class="line"></span><br><span class="line"># 同步</span><br><span class="line">sp.sync(all)</span><br></pre></td></tr></table></figure>
+<pre><code class="go"># 将Group转化成Target列表
+targets, err := targetsFromGroup(tg, sp.config)
 
+# 同步
+sp.sync(all)
+</code></pre>
 <p>Target的定义如下：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Target <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// Labels before any processing.</span></span><br><span class="line">	discoveredLabels labels.Labels</span><br><span class="line">	<span class="comment">// Any labels that are added to this target and its metrics.</span></span><br><span class="line">	labels labels.Labels</span><br><span class="line">	<span class="comment">// Additional URL parameters that are part of the target URL.</span></span><br><span class="line">	params url.Values</span><br><span class="line"></span><br><span class="line">	mtx                sync.RWMutex</span><br><span class="line">	lastError          <span class="type">error</span></span><br><span class="line">	lastScrape         time.Time</span><br><span class="line">	lastScrapeDuration time.Duration</span><br><span class="line">	health             TargetHealth</span><br><span class="line">	metadata           MetricMetadataStore</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">type Target struct &#123;
+    // Labels before any processing.
+    discoveredLabels labels.Labels
+    // Any labels that are added to this target and its metrics.
+    labels labels.Labels
+    // Additional URL parameters that are part of the target URL.
+    params url.Values
 
+    mtx                sync.RWMutex
+    lastError          error
+    lastScrape         time.Time
+    lastScrapeDuration time.Duration
+    health             TargetHealth
+    metadata           MetricMetadataStore
+&#125;
+</code></pre>
 <p>这就是要抓取一个目标的所有配置，基本信息都包含在这里面了，现在配置转化成了可以执行的目标，我们看看<code>sp.sync</code>的具体实现：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sync takes a list of potentially duplicated targets, deduplicates them, starts</span></span><br><span class="line"><span class="comment">// scrape loops for new targets, and stops scrape loops for disappeared targets.</span></span><br><span class="line"><span class="comment">// It returns after all stopped scrape loops terminated.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(sp *scrapePool)</span></span> sync(targets []*Target) &#123;</span><br><span class="line">	<span class="keyword">var</span> (</span><br><span class="line">		uniqueLoops     = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">uint64</span>]loop)</span><br><span class="line">		interval        = time.Duration(sp.config.ScrapeInterval)</span><br><span class="line">		timeout         = time.Duration(sp.config.ScrapeTimeout)</span><br><span class="line">		limit           = <span class="type">int</span>(sp.config.SampleLimit)</span><br><span class="line">		honorLabels     = sp.config.HonorLabels</span><br><span class="line">		honorTimestamps = sp.config.HonorTimestamps</span><br><span class="line">		mrc             = sp.config.MetricRelabelConfigs</span><br><span class="line">	)</span><br><span class="line"></span><br><span class="line">	sp.targetMtx.Lock()</span><br><span class="line">	<span class="keyword">for</span> _, t := <span class="keyword">range</span> targets &#123;</span><br><span class="line">		hash := t.hash()</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> _, ok := sp.activeTargets[hash]; !ok &#123;</span><br><span class="line">			s := &amp;targetScraper&#123;Target: t, client: sp.client, timeout: timeout&#125;</span><br><span class="line">			l := sp.newLoop(scrapeLoopOptions&#123;</span><br><span class="line">				target:          t,</span><br><span class="line">				scraper:         s,</span><br><span class="line">				limit:           limit,</span><br><span class="line">				honorLabels:     honorLabels,</span><br><span class="line">				honorTimestamps: honorTimestamps,</span><br><span class="line">				mrc:             mrc,</span><br><span class="line">			&#125;)</span><br><span class="line"></span><br><span class="line">			sp.activeTargets[hash] = t</span><br><span class="line">			sp.loops[hash] = l</span><br><span class="line"></span><br><span class="line">			uniqueLoops[hash] = l</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">// This might be a duplicated target.</span></span><br><span class="line">			<span class="keyword">if</span> _, ok := uniqueLoops[hash]; !ok &#123;</span><br><span class="line">				uniqueLoops[hash] = <span class="literal">nil</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">// Need to keep the most updated labels information</span></span><br><span class="line">			<span class="comment">// for displaying it in the Service Discovery web page.</span></span><br><span class="line">			sp.activeTargets[hash].SetDiscoveredLabels(t.DiscoveredLabels())</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Stop and remove old targets and scraper loops.</span></span><br><span class="line">	<span class="keyword">for</span> hash := <span class="keyword">range</span> sp.activeTargets &#123;</span><br><span class="line">		<span class="keyword">if</span> _, ok := uniqueLoops[hash]; !ok &#123;</span><br><span class="line">			wg.Add(<span class="number">1</span>)</span><br><span class="line">			<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(l loop)</span></span> &#123;</span><br><span class="line">				l.stop()</span><br><span class="line">				wg.Done()</span><br><span class="line">			&#125;(sp.loops[hash])</span><br><span class="line"></span><br><span class="line">			<span class="built_in">delete</span>(sp.loops, hash)</span><br><span class="line">			<span class="built_in">delete</span>(sp.activeTargets, hash)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	sp.targetMtx.Unlock()</span><br><span class="line"></span><br><span class="line">	targetScrapePoolTargetsAdded.WithLabelValues(sp.config.JobName).Set(<span class="type">float64</span>(<span class="built_in">len</span>(uniqueLoops)))</span><br><span class="line">	forcedErr := sp.refreshTargetLimitErr()</span><br><span class="line">	<span class="keyword">for</span> _, l := <span class="keyword">range</span> sp.loops &#123;</span><br><span class="line">		l.setForcedError(forcedErr)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> _, l := <span class="keyword">range</span> uniqueLoops &#123;</span><br><span class="line">		<span class="keyword">if</span> l != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">go</span> l.run(interval, timeout, <span class="literal">nil</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Wait for all potentially stopped scrapers to terminate.</span></span><br><span class="line">	<span class="comment">// This covers the case of flapping targets. If the server is under high load, a new scraper</span></span><br><span class="line">	<span class="comment">// may be active and tries to insert. The old scraper that didn&#x27;t terminate yet could still</span></span><br><span class="line">	<span class="comment">// be inserting a previous sample set.</span></span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">// sync takes a list of potentially duplicated targets, deduplicates them, starts
+// scrape loops for new targets, and stops scrape loops for disappeared targets.
+// It returns after all stopped scrape loops terminated.
+func (sp *scrapePool) sync(targets []*Target) &#123;
+    var (
+        uniqueLoops     = make(map[uint64]loop)
+        interval        = time.Duration(sp.config.ScrapeInterval)
+        timeout         = time.Duration(sp.config.ScrapeTimeout)
+        limit           = int(sp.config.SampleLimit)
+        honorLabels     = sp.config.HonorLabels
+        honorTimestamps = sp.config.HonorTimestamps
+        mrc             = sp.config.MetricRelabelConfigs
+    )
 
+    sp.targetMtx.Lock()
+    for _, t := range targets &#123;
+        hash := t.hash()
+
+        if _, ok := sp.activeTargets[hash]; !ok &#123;
+            s := &amp;targetScraper&#123;Target: t, client: sp.client, timeout: timeout&#125;
+            l := sp.newLoop(scrapeLoopOptions&#123;
+                target:          t,
+                scraper:         s,
+                limit:           limit,
+                honorLabels:     honorLabels,
+                honorTimestamps: honorTimestamps,
+                mrc:             mrc,
+            &#125;)
+
+            sp.activeTargets[hash] = t
+            sp.loops[hash] = l
+
+            uniqueLoops[hash] = l
+        &#125; else &#123;
+            // This might be a duplicated target.
+            if _, ok := uniqueLoops[hash]; !ok &#123;
+                uniqueLoops[hash] = nil
+            &#125;
+            // Need to keep the most updated labels information
+            // for displaying it in the Service Discovery web page.
+            sp.activeTargets[hash].SetDiscoveredLabels(t.DiscoveredLabels())
+        &#125;
+    &#125;
+
+    var wg sync.WaitGroup
+
+    // Stop and remove old targets and scraper loops.
+    for hash := range sp.activeTargets &#123;
+        if _, ok := uniqueLoops[hash]; !ok &#123;
+            wg.Add(1)
+            go func(l loop) &#123;
+                l.stop()
+                wg.Done()
+            &#125;(sp.loops[hash])
+
+            delete(sp.loops, hash)
+            delete(sp.activeTargets, hash)
+        &#125;
+    &#125;
+
+    sp.targetMtx.Unlock()
+
+    targetScrapePoolTargetsAdded.WithLabelValues(sp.config.JobName).Set(float64(len(uniqueLoops)))
+    forcedErr := sp.refreshTargetLimitErr()
+    for _, l := range sp.loops &#123;
+        l.setForcedError(forcedErr)
+    &#125;
+    for _, l := range uniqueLoops &#123;
+        if l != nil &#123;
+            go l.run(interval, timeout, nil)
+        &#125;
+    &#125;
+    // Wait for all potentially stopped scrapers to terminate.
+    // This covers the case of flapping targets. If the server is under high load, a new scraper
+    // may be active and tries to insert. The old scraper that didn&#39;t terminate yet could still
+    // be inserting a previous sample set.
+    wg.Wait()
+&#125;
+</code></pre>
 <p>这个方法现将Target转换成Loop，然后调用<code>go l.run(interval, timeout, nil)</code>开始抓取：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> loop <span class="keyword">interface</span> &#123;</span><br><span class="line">	run(interval, timeout time.Duration, errc <span class="keyword">chan</span>&lt;- <span class="type">error</span>)</span><br><span class="line">	setForcedError(err <span class="type">error</span>)</span><br><span class="line">	stop()</span><br><span class="line">	getCache() *scrapeCache</span><br><span class="line">	disableEndOfRunStalenessMarkers()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="go">type loop interface &#123;
+    run(interval, timeout time.Duration, errc chan&lt;- error)
+    setForcedError(err error)
+    stop()
+    getCache() *scrapeCache
+    disableEndOfRunStalenessMarkers()
+&#125;
+</code></pre>
 <p>loop是一个interface，只要实现相应的方法都是loop。</p>
 <p>run方法核心的在于调用scraper的scrape方法和report方法，scrape负责抓取，report负责数据上报，进行下一步的存储，scraper的定义如下：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> scraper <span class="keyword">interface</span> &#123;</span><br><span class="line">	scrape(ctx context.Context, w io.Writer) (<span class="type">string</span>, <span class="type">error</span>)</span><br><span class="line">	Report(start time.Time, dur time.Duration, err <span class="type">error</span>)</span><br><span class="line">	offset(interval time.Duration, jitterSeed <span class="type">uint64</span>) time.Duration</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="go">type scraper interface &#123;
+    scrape(ctx context.Context, w io.Writer) (string, error)
+    Report(start time.Time, dur time.Duration, err error)
+    offset(interval time.Duration, jitterSeed uint64) time.Duration
+&#125;
+</code></pre>
 <p>具体实现的是targetScraper，定义如下：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> targetScraper <span class="keyword">struct</span> &#123;</span><br><span class="line">	*Target</span><br><span class="line"></span><br><span class="line">	client  *http.Client</span><br><span class="line">	req     *http.Request</span><br><span class="line">	timeout time.Duration</span><br><span class="line"></span><br><span class="line">	gzipr *gzip.Reader</span><br><span class="line">	buf   *bufio.Reader</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="go">type targetScraper struct &#123;
+    *Target
 
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *targetScraper)</span></span> scrape(ctx context.Context, w io.Writer) (<span class="type">string</span>, <span class="type">error</span>) &#123;</span><br><span class="line">	<span class="keyword">if</span> s.req == <span class="literal">nil</span> &#123;</span><br><span class="line">		req, err := http.NewRequest(<span class="string">&quot;GET&quot;</span>, s.URL().String(), <span class="literal">nil</span>)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">		req.Header.Add(<span class="string">&quot;Accept&quot;</span>, acceptHeader)</span><br><span class="line">		req.Header.Add(<span class="string">&quot;Accept-Encoding&quot;</span>, <span class="string">&quot;gzip&quot;</span>)</span><br><span class="line">		req.Header.Set(<span class="string">&quot;User-Agent&quot;</span>, userAgentHeader)</span><br><span class="line">		req.Header.Set(<span class="string">&quot;X-Prometheus-Scrape-Timeout-Seconds&quot;</span>, fmt.Sprintf(<span class="string">&quot;%f&quot;</span>, s.timeout.Seconds()))</span><br><span class="line"></span><br><span class="line">		s.req = req</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	resp, err := s.client.Do(s.req.WithContext(ctx))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		io.Copy(ioutil.Discard, resp.Body)</span><br><span class="line">		resp.Body.Close()</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> resp.StatusCode != http.StatusOK &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, errors.Errorf(<span class="string">&quot;server returned HTTP status %s&quot;</span>, resp.Status)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> resp.Header.Get(<span class="string">&quot;Content-Encoding&quot;</span>) != <span class="string">&quot;gzip&quot;</span> &#123;</span><br><span class="line">		_, err = io.Copy(w, resp.Body)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> resp.Header.Get(<span class="string">&quot;Content-Type&quot;</span>), <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> s.gzipr == <span class="literal">nil</span> &#123;</span><br><span class="line">		s.buf = bufio.NewReader(resp.Body)</span><br><span class="line">		s.gzipr, err = gzip.NewReader(s.buf)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		s.buf.Reset(resp.Body)</span><br><span class="line">		<span class="keyword">if</span> err = s.gzipr.Reset(s.buf); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	_, err = io.Copy(w, s.gzipr)</span><br><span class="line">	s.gzipr.Close()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;&quot;</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> resp.Header.Get(<span class="string">&quot;Content-Type&quot;</span>), <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    client  *http.Client
+    req     *http.Request
+    timeout time.Duration
 
+    gzipr *gzip.Reader
+    buf   *bufio.Reader
+&#125;
+</code></pre>
+<pre><code class="go">func (s *targetScraper) scrape(ctx context.Context, w io.Writer) (string, error) &#123;
+    if s.req == nil &#123;
+        req, err := http.NewRequest(&quot;GET&quot;, s.URL().String(), nil)
+        if err != nil &#123;
+            return &quot;&quot;, err
+        &#125;
+        req.Header.Add(&quot;Accept&quot;, acceptHeader)
+        req.Header.Add(&quot;Accept-Encoding&quot;, &quot;gzip&quot;)
+        req.Header.Set(&quot;User-Agent&quot;, userAgentHeader)
+        req.Header.Set(&quot;X-Prometheus-Scrape-Timeout-Seconds&quot;, fmt.Sprintf(&quot;%f&quot;, s.timeout.Seconds()))
+
+        s.req = req
+    &#125;
+
+    resp, err := s.client.Do(s.req.WithContext(ctx))
+    if err != nil &#123;
+        return &quot;&quot;, err
+    &#125;
+    defer func() &#123;
+        io.Copy(ioutil.Discard, resp.Body)
+        resp.Body.Close()
+    &#125;()
+
+    if resp.StatusCode != http.StatusOK &#123;
+        return &quot;&quot;, errors.Errorf(&quot;server returned HTTP status %s&quot;, resp.Status)
+    &#125;
+
+    if resp.Header.Get(&quot;Content-Encoding&quot;) != &quot;gzip&quot; &#123;
+        _, err = io.Copy(w, resp.Body)
+        if err != nil &#123;
+            return &quot;&quot;, err
+        &#125;
+        return resp.Header.Get(&quot;Content-Type&quot;), nil
+    &#125;
+
+    if s.gzipr == nil &#123;
+        s.buf = bufio.NewReader(resp.Body)
+        s.gzipr, err = gzip.NewReader(s.buf)
+        if err != nil &#123;
+            return &quot;&quot;, err
+        &#125;
+    &#125; else &#123;
+        s.buf.Reset(resp.Body)
+        if err = s.gzipr.Reset(s.buf); err != nil &#123;
+            return &quot;&quot;, err
+        &#125;
+    &#125;
+
+    _, err = io.Copy(w, s.gzipr)
+    s.gzipr.Close()
+    if err != nil &#123;
+        return &quot;&quot;, err
+    &#125;
+    return resp.Header.Get(&quot;Content-Type&quot;), nil
+&#125;
+</code></pre>
 <p>我们终于看到，最后的最后，抓取其实是一个HTTP请求。为了完成一个抓取，Prometheus server进行了复杂的转化过程，正是这种实现，才让Prometheus拥有动态管理抓取目标的能力，我们大概来回忆一下这个转化过程：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Group --------</span><br><span class="line">   |           \</span><br><span class="line">   |             -&gt; scrapePool -&gt; pool -&gt; scraper</span><br><span class="line">   |           /</span><br><span class="line">Tatget ------- </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
+<pre><code class="go">Group --------
+   |           \
+   |             -&gt; scrapePool -&gt; pool -&gt; scraper
+   |           /
+Tatget ------- 
+</code></pre>
 <p>终于，我们把Prometheus server的抓取过程翻了个底朝天，裨益甚多。</p>
 <p>那么数据抓取过来就是存储、分析和展示了，下一篇我们开始研究存储。</p>
-
+</div>
     </div>
 
     <div class="post-meta">
@@ -202,6 +827,26 @@
         
         </i>
     </div>
+    <br>
+    
+    
+        
+            
+    
+            <div class="post-footer-pre-next">
+                
+                    <span>上一篇：<a href='/2021/06/06/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/'>说说k8s网络</a></span>
+                
+
+                
+                    <span class="post-footer-pre-next-last-span-right">下一篇：<a href="/2021/03/20/Prometheus%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-%E4%B8%89/">Prometheus内部实现(三)</a>
+                    </span>
+                
+            </div>
+    
+        
+    
+
     
         
 
@@ -210,20 +855,25 @@
 
 
 
+                                      
                     
                     
                     <div class="footer">
     
         <span> 
-            © Bray Wang 
+            © Jerry Wang 
 
             
                 
 
             
         </span>
+       
     
 </div>
+
+
+
 <!--这是指一条线往下的内容-->
 <div class="footer-last">
     
@@ -236,20 +886,103 @@
 
 
     
-<link rel="stylesheet" href="/css/a11y-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+    <!--目录-->
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tocify/1.9.0/javascripts/jquery.tocify.min.js" type="text/javascript" ></script>
+        
+<script src="/js/toc.js"></script>
 
     
-<script src="/js/highlight.min.js"></script>
 
     
-<script src="/js/highlightjs-line-numbers.js"></script>
+<script src="/js/randomHeaderContent.js"></script>
+
+    <!--回到顶部按钮-->
+    
+        
+<script src="/js/returnToTop.js"></script>
+
+    
+
+    
+        
+<script src="/js/returnToLastPage.js"></script>
+
+    
 
 
 
-<script>
-    hljs.initHighlightingOnLoad();
-    hljs.initLineNumbersOnLoad();
+
+
+<script src="/js/lightgallery/lightgallery.umd.min.js"></script>
+
+
+
+<script src="/js/lightgallery/plugins/lg-thumbnail.umd.min.js"></script>
+
+
+
+<script src="/js/lightgallery/plugins/lg-fullscreen.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-autoplay.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-zoom.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-rotate.umd.min.js"></script>
+
+
+<script src="/js/lightgallery/plugins/lg-paper.umd.min.js"></script>
+
+
+
+
+<script type="text/javascript">
+     
+    if (typeof lightGallery !== "undefined") {
+        var options1 = {
+            selector: '.gallery-item',
+            plugins: [lgThumbnail, lgFullscreen, lgAutoplay, lgZoom, lgRotate, lgPager], // 启用插件
+            thumbnail: true,          // 显示缩略图
+            zoom: true,               // 启用缩放功
+            rotate: true,             // 启用旋转功能能
+            autoplay: true,        // 启用自动播放功能
+            fullScreen: true,      // 启用全屏功能
+            pager: false, //页码,
+            zoomFromOrigin: true,   // 从原始位置缩放
+            actualSize: true,       // 启用查看实际大小的功能
+            enableZoomAfter: 300,    // 延迟缩放，确保图片加载完成后可缩放
+        };
+        lightGallery(document.getElementsByClassName('.article-gallery')[0], options1); // 修复选择器
+    }
+    
 </script>
+
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script> 
+
+                </div>
+            
+            
+                <!-- 回到顶部的按钮-->  
+                <div class="progress-wrap shadow-drop-2-bottom">
+                    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+                        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+                    </svg>
+                </div>
+            
+            
+                <!-- 返回的按钮-->  
+                <div class="return-to-last-progress-wrap shadow-drop-2-bottom">
+                    <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+                        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+                    </svg>
                 </div>
             
     </body>
