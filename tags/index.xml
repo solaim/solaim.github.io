@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tags on Jerry Wang</title>
+    <link>https://solaim.github.io/tags/</link>
+    <description>Recent content in Tags on Jerry Wang</description>
+    <image>
+      <title>Jerry Wang</title>
+      <url>https://solaim.github.io/img/favicon.webp</url>
+      <link>https://solaim.github.io/img/favicon.webp</link>
+    </image>
+    <generator>Hugo -- 0.147.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 06 Jun 2021 11:17:45 +0800</lastBuildDate>
+    <atom:link href="https://solaim.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang</title>
+      <link>https://solaim.github.io/tags/golang/</link>
+      <pubDate>Sun, 06 Jun 2021 11:17:45 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/golang/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Kubernetes</title>
+      <link>https://solaim.github.io/tags/kubernetes/</link>
+      <pubDate>Sun, 06 Jun 2021 11:17:45 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Service</title>
+      <link>https://solaim.github.io/tags/service/</link>
+      <pubDate>Sun, 06 Jun 2021 11:17:45 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/service/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Observability</title>
+      <link>https://solaim.github.io/tags/observability/</link>
+      <pubDate>Mon, 22 Mar 2021 21:31:03 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/observability/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Prometheus</title>
+      <link>https://solaim.github.io/tags/prometheus/</link>
+      <pubDate>Mon, 22 Mar 2021 21:31:03 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/prometheus/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Flask</title>
+      <link>https://solaim.github.io/tags/flask/</link>
+      <pubDate>Thu, 11 Apr 2019 21:22:26 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/flask/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>https://solaim.github.io/tags/python/</link>
+      <pubDate>Thu, 11 Apr 2019 21:22:26 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/python/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>SocketIO</title>
+      <link>https://solaim.github.io/tags/socketio/</link>
+      <pubDate>Thu, 11 Apr 2019 21:22:26 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/socketio/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Life</title>
+      <link>https://solaim.github.io/tags/life/</link>
+      <pubDate>Thu, 11 Apr 2019 20:47:43 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/life/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ansible</title>
+      <link>https://solaim.github.io/tags/ansible/</link>
+      <pubDate>Wed, 10 Apr 2019 21:21:23 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/ansible/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>AI</title>
+      <link>https://solaim.github.io/tags/ai/</link>
+      <pubDate>Tue, 19 Dec 2017 20:44:16 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/ai/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

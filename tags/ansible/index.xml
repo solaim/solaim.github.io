@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ansible on Jerry Wang</title>
+    <link>https://solaim.github.io/tags/ansible/</link>
+    <description>Recent content in Ansible on Jerry Wang</description>
+    <image>
+      <title>Jerry Wang</title>
+      <url>https://solaim.github.io/img/favicon.webp</url>
+      <link>https://solaim.github.io/img/favicon.webp</link>
+    </image>
+    <generator>Hugo -- 0.147.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 10 Apr 2019 21:21:23 +0800</lastBuildDate>
+    <atom:link href="https://solaim.github.io/tags/ansible/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible</title>
+      <link>https://solaim.github.io/posts/ansible/</link>
+      <pubDate>Wed, 10 Apr 2019 21:21:23 +0800</pubDate>
+      <guid>https://solaim.github.io/posts/ansible/</guid>
+      <description>&lt;h2 id=&#34;1-what-is-ansible&#34;&gt;1、 What is ansible?&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Ansible is a radically simple IT automation engine that automates &lt;em&gt;cloud provisioning&lt;/em&gt;, &lt;em&gt;configuration management&lt;/em&gt;, &lt;em&gt;application deployment&lt;/em&gt;, &lt;em&gt;intra-service orchestration&lt;/em&gt;, and many other IT needs.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Ansible是一个颠覆性的运维工具，支持云配置、配置管理、应用部署、服务编配等运维工作。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Designed for multi-tier deployments since day one, Ansible models your IT infrastructure by describing how all of your systems inter-relate, rather than just managing one system at a time.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Ansible一开始就是为多层架构设计的，因此Ansible通过描述系统内部关系，进行整体建模。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;AnsibleArchitecture&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/AnsibleArchitecture.png&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;It uses no agents and no additional custom security infrastructure, so it&amp;rsquo;s easy to deploy - and most importantly, it uses a very simple language (YAML, in the form of Ansible Playbooks) that allow you to describe your automation jobs in a way that approaches plain English.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

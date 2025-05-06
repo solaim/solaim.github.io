@@ -1,0 +1,658 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>K8s官网留言板demo | Jerry Wang</title>
+<meta name=keywords content><meta name=description content="
+https://kubernetes.io/docs/tutorials/stateless-application/guestbook/#start-up-the-redis-master
+1、部署redis-master Deployment
+
+Step1 编辑redis-master-deployment.yaml
+
+# application/guestbook/redis-master-deployment.yaml 
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: master
+        image: redis  # or just image: redis
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+
+Step2 执行命令
+
+# 创建Deployment
+kubectl create -f redis-master-deployment.yaml 
+
+# 查看pods
+kubectl get pods
+2、部署redis-master Service
+
+Step1 编辑redis-master-service.yaml
+
+# application/guestbook/redis-master-service.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+    role: master
+    tier: backend
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+    role: master
+    tier: backend
+
+Step2 执行命令
+
+# 创建DService
+kubectl create -f redis-master-service.yaml 
+
+# 查看service
+kubectl get services
+3、部署redis-slave Deployment
+
+Step1 编辑redis-slave-deployment.yaml
+
+# application/guestbook/redis-slave-deployment.yaml 
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redis-slave
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+      tier: backend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+        tier: backend
+    spec:
+      containers:
+      - name: slave
+        image: gcr.io/google_samples/gb-redisslave:v3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+          # Using `GET_HOSTS_FROM=dns` requires your cluster to
+          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in
+          # service launched automatically. However, if the cluster you are using
+          # does not have a built-in DNS service, you can instead
+          # access an environment variable to find the master
+          # service's host. To do so, comment out the 'value: dns' line above, and
+          # uncomment the line below:
+          # value: env
+        ports:
+        - containerPort: 6379
+
+Step2 执行命令
+
+kubectl create -f redis-slave-deployment.yaml
+kubectl get pods
+4、部署redis slave Service
+
+Step1 编辑redis-slave-service.yaml
+
+# application/guestbook/redis-slave-service.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave
+  labels:
+    app: redis
+    role: slave
+    tier: backend
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: redis
+    role: slave
+    tier: backend
+
+Step2 执行命令
+
+kubectl create -f redis-slave-service.yaml
+kubectl get services
+5、部署guestbook Deployment
+
+Step1 编辑frontend-deployment.yaml
+
+# application/guestbook/frontend-deployment.yaml 
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+spec:
+  selector:
+    matchLabels:
+      app: guestbook
+      tier: frontend
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google-samples/gb-frontend:v6
+        # 官网上使用的是v4版，在使用中出现ImageInspectErr，镜像出现问题，升级为v6
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+          # Using `GET_HOSTS_FROM=dns` requires your cluster to
+          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in
+          # service launched automatically. However, if the cluster you are using
+          # does not have a built-in DNS service, you can instead
+          # access an environment variable to find the master
+          # service's host. To do so, comment out the 'value: dns' line above, and
+          # uncomment the line below:
+          # value: env
+        ports:
+        - containerPort: 80
+
+Step2 执行命令
+
+kubectl create -f frontend-deployment.yaml
+kubectl get pods
+6、部署guestbook Service
+
+Step1 编辑frontend-service.yaml
+
+# application/guestbook/frontend-service.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  # comment or delete the following line if you want to use a LoadBalancer
+  type: NodePort 
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the frontend service.
+  # type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: guestbook
+    tier: frontend
+
+Step2 执行命令
+
+kubectl create -f frontend-service.yaml
+kubectl get services
+然后使用node的IP和端口，就可以访问服务了。"><meta name=author content="Jerry Wang"><link rel=canonical href=https://solaim.github.io/posts/k8s%E5%AE%98%E7%BD%91%E7%95%99%E8%A8%80%E6%9D%BFdemo/><link crossorigin=anonymous href=/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF+13Dyqob6ASlTrTye8=" rel="preload stylesheet" as=style><link rel=icon href=https://solaim.github.io/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://solaim.github.io/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://solaim.github.io/favicon-32x32.png><link rel=apple-touch-icon href=https://solaim.github.io/apple-touch-icon.png><link rel=mask-icon href=https://solaim.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://solaim.github.io/posts/k8s%E5%AE%98%E7%BD%91%E7%95%99%E8%A8%80%E6%9D%BFdemo/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://solaim.github.io/posts/k8s%E5%AE%98%E7%BD%91%E7%95%99%E8%A8%80%E6%9D%BFdemo/"><meta property="og:site_name" content="Jerry Wang"><meta property="og:title" content="K8s官网留言板demo"><meta property="og:description" content=" https://kubernetes.io/docs/tutorials/stateless-application/guestbook/#start-up-the-redis-master
+1、部署redis-master Deployment Step1 编辑redis-master-deployment.yaml # application/guestbook/redis-master-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: redis-master labels: app: redis spec: selector: matchLabels: app: redis role: master tier: backend replicas: 1 template: metadata: labels: app: redis role: master tier: backend spec: containers: - name: master image: redis # or just image: redis resources: requests: cpu: 100m memory: 100Mi ports: - containerPort: 6379 Step2 执行命令 # 创建Deployment kubectl create -f redis-master-deployment.yaml # 查看pods kubectl get pods 2、部署redis-master Service Step1 编辑redis-master-service.yaml # application/guestbook/redis-master-service.yaml apiVersion: v1 kind: Service metadata: name: redis-master labels: app: redis role: master tier: backend spec: ports: - port: 6379 targetPort: 6379 selector: app: redis role: master tier: backend Step2 执行命令 # 创建DService kubectl create -f redis-master-service.yaml # 查看service kubectl get services 3、部署redis-slave Deployment Step1 编辑redis-slave-deployment.yaml # application/guestbook/redis-slave-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: redis-slave labels: app: redis spec: selector: matchLabels: app: redis role: slave tier: backend replicas: 2 template: metadata: labels: app: redis role: slave tier: backend spec: containers: - name: slave image: gcr.io/google_samples/gb-redisslave:v3 resources: requests: cpu: 100m memory: 100Mi env: - name: GET_HOSTS_FROM value: dns # Using `GET_HOSTS_FROM=dns` requires your cluster to # provide a dns service. As of Kubernetes 1.3, DNS is a built-in # service launched automatically. However, if the cluster you are using # does not have a built-in DNS service, you can instead # access an environment variable to find the master # service's host. To do so, comment out the 'value: dns' line above, and # uncomment the line below: # value: env ports: - containerPort: 6379 Step2 执行命令 kubectl create -f redis-slave-deployment.yaml kubectl get pods 4、部署redis slave Service Step1 编辑redis-slave-service.yaml # application/guestbook/redis-slave-service.yaml apiVersion: v1 kind: Service metadata: name: redis-slave labels: app: redis role: slave tier: backend spec: ports: - port: 6379 selector: app: redis role: slave tier: backend Step2 执行命令 kubectl create -f redis-slave-service.yaml kubectl get services 5、部署guestbook Deployment Step1 编辑frontend-deployment.yaml # application/guestbook/frontend-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: frontend labels: app: guestbook spec: selector: matchLabels: app: guestbook tier: frontend replicas: 3 template: metadata: labels: app: guestbook tier: frontend spec: containers: - name: php-redis image: gcr.io/google-samples/gb-frontend:v6 # 官网上使用的是v4版，在使用中出现ImageInspectErr，镜像出现问题，升级为v6 resources: requests: cpu: 100m memory: 100Mi env: - name: GET_HOSTS_FROM value: dns # Using `GET_HOSTS_FROM=dns` requires your cluster to # provide a dns service. As of Kubernetes 1.3, DNS is a built-in # service launched automatically. However, if the cluster you are using # does not have a built-in DNS service, you can instead # access an environment variable to find the master # service's host. To do so, comment out the 'value: dns' line above, and # uncomment the line below: # value: env ports: - containerPort: 80 Step2 执行命令 kubectl create -f frontend-deployment.yaml kubectl get pods 6、部署guestbook Service Step1 编辑frontend-service.yaml # application/guestbook/frontend-service.yaml apiVersion: v1 kind: Service metadata: name: frontend labels: app: guestbook tier: frontend spec: # comment or delete the following line if you want to use a LoadBalancer type: NodePort # if your cluster supports it, uncomment the following to automatically create # an external load-balanced IP for the frontend service. # type: LoadBalancer ports: - port: 80 selector: app: guestbook tier: frontend Step2 执行命令 kubectl create -f frontend-service.yaml kubectl get services 然后使用node的IP和端口，就可以访问服务了。"><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-10-20T18:28:40+08:00"><meta property="article:modified_time" content="2019-10-20T18:28:40+08:00"><meta property="og:image" content="https://solaim.github.io/img/favicon.webp"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://solaim.github.io/img/favicon.webp"><meta name=twitter:title content="K8s官网留言板demo"><meta name=twitter:description content="
+https://kubernetes.io/docs/tutorials/stateless-application/guestbook/#start-up-the-redis-master
+1、部署redis-master Deployment
+
+Step1 编辑redis-master-deployment.yaml
+
+# application/guestbook/redis-master-deployment.yaml 
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: master
+        image: redis  # or just image: redis
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+
+Step2 执行命令
+
+# 创建Deployment
+kubectl create -f redis-master-deployment.yaml 
+
+# 查看pods
+kubectl get pods
+2、部署redis-master Service
+
+Step1 编辑redis-master-service.yaml
+
+# application/guestbook/redis-master-service.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+    role: master
+    tier: backend
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+    role: master
+    tier: backend
+
+Step2 执行命令
+
+# 创建DService
+kubectl create -f redis-master-service.yaml 
+
+# 查看service
+kubectl get services
+3、部署redis-slave Deployment
+
+Step1 编辑redis-slave-deployment.yaml
+
+# application/guestbook/redis-slave-deployment.yaml 
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redis-slave
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+      tier: backend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+        tier: backend
+    spec:
+      containers:
+      - name: slave
+        image: gcr.io/google_samples/gb-redisslave:v3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+          # Using `GET_HOSTS_FROM=dns` requires your cluster to
+          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in
+          # service launched automatically. However, if the cluster you are using
+          # does not have a built-in DNS service, you can instead
+          # access an environment variable to find the master
+          # service's host. To do so, comment out the 'value: dns' line above, and
+          # uncomment the line below:
+          # value: env
+        ports:
+        - containerPort: 6379
+
+Step2 执行命令
+
+kubectl create -f redis-slave-deployment.yaml
+kubectl get pods
+4、部署redis slave Service
+
+Step1 编辑redis-slave-service.yaml
+
+# application/guestbook/redis-slave-service.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave
+  labels:
+    app: redis
+    role: slave
+    tier: backend
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: redis
+    role: slave
+    tier: backend
+
+Step2 执行命令
+
+kubectl create -f redis-slave-service.yaml
+kubectl get services
+5、部署guestbook Deployment
+
+Step1 编辑frontend-deployment.yaml
+
+# application/guestbook/frontend-deployment.yaml 
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+spec:
+  selector:
+    matchLabels:
+      app: guestbook
+      tier: frontend
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      containers:
+      - name: php-redis
+        image: gcr.io/google-samples/gb-frontend:v6
+        # 官网上使用的是v4版，在使用中出现ImageInspectErr，镜像出现问题，升级为v6
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: GET_HOSTS_FROM
+          value: dns
+          # Using `GET_HOSTS_FROM=dns` requires your cluster to
+          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in
+          # service launched automatically. However, if the cluster you are using
+          # does not have a built-in DNS service, you can instead
+          # access an environment variable to find the master
+          # service's host. To do so, comment out the 'value: dns' line above, and
+          # uncomment the line below:
+          # value: env
+        ports:
+        - containerPort: 80
+
+Step2 执行命令
+
+kubectl create -f frontend-deployment.yaml
+kubectl get pods
+6、部署guestbook Service
+
+Step1 编辑frontend-service.yaml
+
+# application/guestbook/frontend-service.yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  # comment or delete the following line if you want to use a LoadBalancer
+  type: NodePort 
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the frontend service.
+  # type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: guestbook
+    tier: frontend
+
+Step2 执行命令
+
+kubectl create -f frontend-service.yaml
+kubectl get services
+然后使用node的IP和端口，就可以访问服务了。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://solaim.github.io/posts/"},{"@type":"ListItem","position":2,"name":"K8s官网留言板demo","item":"https://solaim.github.io/posts/k8s%E5%AE%98%E7%BD%91%E7%95%99%E8%A8%80%E6%9D%BFdemo/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"K8s官网留言板demo","name":"K8s官网留言板demo","description":" https://kubernetes.io/docs/tutorials/stateless-application/guestbook/#start-up-the-redis-master\n1、部署redis-master Deployment Step1 编辑redis-master-deployment.yaml # application/guestbook/redis-master-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: redis-master labels: app: redis spec: selector: matchLabels: app: redis role: master tier: backend replicas: 1 template: metadata: labels: app: redis role: master tier: backend spec: containers: - name: master image: redis # or just image: redis resources: requests: cpu: 100m memory: 100Mi ports: - containerPort: 6379 Step2 执行命令 # 创建Deployment kubectl create -f redis-master-deployment.yaml # 查看pods kubectl get pods 2、部署redis-master Service Step1 编辑redis-master-service.yaml # application/guestbook/redis-master-service.yaml apiVersion: v1 kind: Service metadata: name: redis-master labels: app: redis role: master tier: backend spec: ports: - port: 6379 targetPort: 6379 selector: app: redis role: master tier: backend Step2 执行命令 # 创建DService kubectl create -f redis-master-service.yaml # 查看service kubectl get services 3、部署redis-slave Deployment Step1 编辑redis-slave-deployment.yaml # application/guestbook/redis-slave-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: redis-slave labels: app: redis spec: selector: matchLabels: app: redis role: slave tier: backend replicas: 2 template: metadata: labels: app: redis role: slave tier: backend spec: containers: - name: slave image: gcr.io/google_samples/gb-redisslave:v3 resources: requests: cpu: 100m memory: 100Mi env: - name: GET_HOSTS_FROM value: dns # Using `GET_HOSTS_FROM=dns` requires your cluster to # provide a dns service. As of Kubernetes 1.3, DNS is a built-in # service launched automatically. However, if the cluster you are using # does not have a built-in DNS service, you can instead # access an environment variable to find the master # service\u0026#39;s host. To do so, comment out the \u0026#39;value: dns\u0026#39; line above, and # uncomment the line below: # value: env ports: - containerPort: 6379 Step2 执行命令 kubectl create -f redis-slave-deployment.yaml kubectl get pods 4、部署redis slave Service Step1 编辑redis-slave-service.yaml # application/guestbook/redis-slave-service.yaml apiVersion: v1 kind: Service metadata: name: redis-slave labels: app: redis role: slave tier: backend spec: ports: - port: 6379 selector: app: redis role: slave tier: backend Step2 执行命令 kubectl create -f redis-slave-service.yaml kubectl get services 5、部署guestbook Deployment Step1 编辑frontend-deployment.yaml # application/guestbook/frontend-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: frontend labels: app: guestbook spec: selector: matchLabels: app: guestbook tier: frontend replicas: 3 template: metadata: labels: app: guestbook tier: frontend spec: containers: - name: php-redis image: gcr.io/google-samples/gb-frontend:v6 # 官网上使用的是v4版，在使用中出现ImageInspectErr，镜像出现问题，升级为v6 resources: requests: cpu: 100m memory: 100Mi env: - name: GET_HOSTS_FROM value: dns # Using `GET_HOSTS_FROM=dns` requires your cluster to # provide a dns service. As of Kubernetes 1.3, DNS is a built-in # service launched automatically. However, if the cluster you are using # does not have a built-in DNS service, you can instead # access an environment variable to find the master # service\u0026#39;s host. To do so, comment out the \u0026#39;value: dns\u0026#39; line above, and # uncomment the line below: # value: env ports: - containerPort: 80 Step2 执行命令 kubectl create -f frontend-deployment.yaml kubectl get pods 6、部署guestbook Service Step1 编辑frontend-service.yaml # application/guestbook/frontend-service.yaml apiVersion: v1 kind: Service metadata: name: frontend labels: app: guestbook tier: frontend spec: # comment or delete the following line if you want to use a LoadBalancer type: NodePort # if your cluster supports it, uncomment the following to automatically create # an external load-balanced IP for the frontend service. # type: LoadBalancer ports: - port: 80 selector: app: guestbook tier: frontend Step2 执行命令 kubectl create -f frontend-service.yaml kubectl get services 然后使用node的IP和端口，就可以访问服务了。\n","keywords":[],"articleBody":" https://kubernetes.io/docs/tutorials/stateless-application/guestbook/#start-up-the-redis-master\n1、部署redis-master Deployment Step1 编辑redis-master-deployment.yaml # application/guestbook/redis-master-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: redis-master labels: app: redis spec: selector: matchLabels: app: redis role: master tier: backend replicas: 1 template: metadata: labels: app: redis role: master tier: backend spec: containers: - name: master image: redis # or just image: redis resources: requests: cpu: 100m memory: 100Mi ports: - containerPort: 6379 Step2 执行命令 # 创建Deployment kubectl create -f redis-master-deployment.yaml # 查看pods kubectl get pods 2、部署redis-master Service Step1 编辑redis-master-service.yaml # application/guestbook/redis-master-service.yaml apiVersion: v1 kind: Service metadata: name: redis-master labels: app: redis role: master tier: backend spec: ports: - port: 6379 targetPort: 6379 selector: app: redis role: master tier: backend Step2 执行命令 # 创建DService kubectl create -f redis-master-service.yaml # 查看service kubectl get services 3、部署redis-slave Deployment Step1 编辑redis-slave-deployment.yaml # application/guestbook/redis-slave-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: redis-slave labels: app: redis spec: selector: matchLabels: app: redis role: slave tier: backend replicas: 2 template: metadata: labels: app: redis role: slave tier: backend spec: containers: - name: slave image: gcr.io/google_samples/gb-redisslave:v3 resources: requests: cpu: 100m memory: 100Mi env: - name: GET_HOSTS_FROM value: dns # Using `GET_HOSTS_FROM=dns` requires your cluster to # provide a dns service. As of Kubernetes 1.3, DNS is a built-in # service launched automatically. However, if the cluster you are using # does not have a built-in DNS service, you can instead # access an environment variable to find the master # service's host. To do so, comment out the 'value: dns' line above, and # uncomment the line below: # value: env ports: - containerPort: 6379 Step2 执行命令 kubectl create -f redis-slave-deployment.yaml kubectl get pods 4、部署redis slave Service Step1 编辑redis-slave-service.yaml # application/guestbook/redis-slave-service.yaml apiVersion: v1 kind: Service metadata: name: redis-slave labels: app: redis role: slave tier: backend spec: ports: - port: 6379 selector: app: redis role: slave tier: backend Step2 执行命令 kubectl create -f redis-slave-service.yaml kubectl get services 5、部署guestbook Deployment Step1 编辑frontend-deployment.yaml # application/guestbook/frontend-deployment.yaml apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 kind: Deployment metadata: name: frontend labels: app: guestbook spec: selector: matchLabels: app: guestbook tier: frontend replicas: 3 template: metadata: labels: app: guestbook tier: frontend spec: containers: - name: php-redis image: gcr.io/google-samples/gb-frontend:v6 # 官网上使用的是v4版，在使用中出现ImageInspectErr，镜像出现问题，升级为v6 resources: requests: cpu: 100m memory: 100Mi env: - name: GET_HOSTS_FROM value: dns # Using `GET_HOSTS_FROM=dns` requires your cluster to # provide a dns service. As of Kubernetes 1.3, DNS is a built-in # service launched automatically. However, if the cluster you are using # does not have a built-in DNS service, you can instead # access an environment variable to find the master # service's host. To do so, comment out the 'value: dns' line above, and # uncomment the line below: # value: env ports: - containerPort: 80 Step2 执行命令 kubectl create -f frontend-deployment.yaml kubectl get pods 6、部署guestbook Service Step1 编辑frontend-service.yaml # application/guestbook/frontend-service.yaml apiVersion: v1 kind: Service metadata: name: frontend labels: app: guestbook tier: frontend spec: # comment or delete the following line if you want to use a LoadBalancer type: NodePort # if your cluster supports it, uncomment the following to automatically create # an external load-balanced IP for the frontend service. # type: LoadBalancer ports: - port: 80 selector: app: guestbook tier: frontend Step2 执行命令 kubectl create -f frontend-service.yaml kubectl get services 然后使用node的IP和端口，就可以访问服务了。\n7、清理 kubectl delete deployment -l app=redis kubectl delete service -l app=redis kubectl delete deployment -l app=guestbook kubectl delete service -l app=guestbook 8、小结 通过部署一个留言板服务，熟悉了kubernetes的基本的使用，知道一个服务怎么通过kubernetes部署起来。服务虽然部署起来了，但是kubernetes是怎么实现的呢？它都帮我们做了什么呢？不过在搞清楚这些之前，我们下一篇文章先说说kuberneters使用的yaml配置文件。\n","wordCount":"563","inLanguage":"en","image":"https://solaim.github.io/img/favicon.webp","datePublished":"2019-10-20T18:28:40+08:00","dateModified":"2019-10-20T18:28:40+08:00","author":{"@type":"Person","name":"Jerry Wang"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://solaim.github.io/posts/k8s%E5%AE%98%E7%BD%91%E7%95%99%E8%A8%80%E6%9D%BFdemo/"},"publisher":{"@type":"Organization","name":"Jerry Wang","logo":{"@type":"ImageObject","url":"https://solaim.github.io/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://solaim.github.io/ accesskey=h title="首页 (Alt + H)"><img src=https://solaim.github.io/apple-touch-icon.png alt aria-label=logo height=35>首页</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://solaim.github.io/categories/ title=🕸分类><span>🕸分类</span></a></li><li><a href=https://solaim.github.io/tags/ title=🐚标签><span>🐚标签</span></a></li><li><a href=https://solaim.github.io/about/ title=🌏关于><span>🌏关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://solaim.github.io/>Home</a>&nbsp;»&nbsp;<a href=https://solaim.github.io/posts/>Posts</a></div><h1 class="post-title entry-hint-parent">K8s官网留言板demo</h1><div class=post-meta><span title='2019-10-20 18:28:40 +0800 +0800'>2019-10-20</span>&nbsp;·&nbsp;Jerry Wang</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><nav id=TableOfContents><ul><li><a href=#1部署redis-master-deployment>1、部署redis-master Deployment</a></li><li><a href=#2部署redis-master-service>2、部署redis-master Service</a></li><li><a href=#3部署redis-slave-deployment>3、部署redis-slave Deployment</a></li><li><a href=#4部署redis-slave-service>4、部署redis slave Service</a></li><li><a href=#5部署guestbook-deployment>5、部署guestbook Deployment</a></li><li><a href=#6部署guestbook-service>6、部署guestbook Service</a></li><li><a href=#7清理>7、清理</a></li><li><a href=#8小结>8、小结</a></li></ul></nav></div></details></div><div class=post-content><blockquote><p><a href=https://kubernetes.io/docs/tutorials/stateless-application/guestbook/#start-up-the-redis-master>https://kubernetes.io/docs/tutorials/stateless-application/guestbook/#start-up-the-redis-master</a></p></blockquote><h2 id=1部署redis-master-deployment>1、部署redis-master Deployment<a hidden class=anchor aria-hidden=true href=#1部署redis-master-deployment>#</a></h2><ul><li>Step1 编辑redis-master-deployment.yaml</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># application/guestbook/redis-master-deployment.yaml </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w> </span><span class=c># for versions before 1.9.0 use apps/v1beta2</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>redis-master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>image: redis  # or just image</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>resources</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>requests</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>cpu</span><span class=p>:</span><span class=w> </span><span class=l>100m</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>memory</span><span class=p>:</span><span class=w> </span><span class=l>100Mi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>6379</span><span class=w>
+</span></span></span></code></pre></div><ul><li>Step2 执行命令</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=c1># 创建Deployment</span>
+</span></span><span class=line><span class=cl>kubectl create -f redis-master-deployment.yaml 
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 查看pods</span>
+</span></span><span class=line><span class=cl>kubectl get pods
+</span></span></code></pre></div><h2 id=2部署redis-master-service>2、部署redis-master Service<a hidden class=anchor aria-hidden=true href=#2部署redis-master-service>#</a></h2><ul><li>Step1 编辑redis-master-service.yaml</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># application/guestbook/redis-master-service.yaml </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>redis-master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span>- <span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>6379</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>targetPort</span><span class=p>:</span><span class=w> </span><span class=m>6379</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span></code></pre></div><ul><li>Step2 执行命令</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=c1># 创建DService</span>
+</span></span><span class=line><span class=cl>kubectl create -f redis-master-service.yaml 
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 查看service</span>
+</span></span><span class=line><span class=cl>kubectl get services
+</span></span></code></pre></div><h2 id=3部署redis-slave-deployment>3、部署redis-slave Deployment<a hidden class=anchor aria-hidden=true href=#3部署redis-slave-deployment>#</a></h2><ul><li>Step1 编辑redis-slave-deployment.yaml</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># application/guestbook/redis-slave-deployment.yaml </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w> </span><span class=c># for versions before 1.9.0 use apps/v1beta2</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>redis-slave</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>slave</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>2</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>slave</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>slave</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>gcr.io/google_samples/gb-redisslave:v3</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>resources</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>requests</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>cpu</span><span class=p>:</span><span class=w> </span><span class=l>100m</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>memory</span><span class=p>:</span><span class=w> </span><span class=l>100Mi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>GET_HOSTS_FROM</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=l>dns</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># Using `GET_HOSTS_FROM=dns` requires your cluster to</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># provide a dns service. As of Kubernetes 1.3, DNS is a built-in</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># service launched automatically. However, if the cluster you are using</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># does not have a built-in DNS service, you can instead</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># access an environment variable to find the master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># service&#39;s host. To do so, comment out the &#39;value: dns&#39; line above, and</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># uncomment the line below:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># value: env</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>6379</span><span class=w>
+</span></span></span></code></pre></div><ul><li>Step2 执行命令</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>kubectl create -f redis-slave-deployment.yaml
+</span></span><span class=line><span class=cl>kubectl get pods
+</span></span></code></pre></div><h2 id=4部署redis-slave-service>4、部署redis slave Service<a hidden class=anchor aria-hidden=true href=#4部署redis-slave-service>#</a></h2><ul><li>Step1 编辑redis-slave-service.yaml</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># application/guestbook/redis-slave-service.yaml </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>redis-slave</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>slave</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span>- <span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>6379</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>role</span><span class=p>:</span><span class=w> </span><span class=l>slave</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>backend</span><span class=w>
+</span></span></span></code></pre></div><ul><li>Step2 执行命令</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>kubectl create -f redis-slave-service.yaml
+</span></span><span class=line><span class=cl>kubectl get services
+</span></span></code></pre></div><h2 id=5部署guestbook-deployment>5、部署guestbook Deployment<a hidden class=anchor aria-hidden=true href=#5部署guestbook-deployment>#</a></h2><ul><li>Step1 编辑frontend-deployment.yaml</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># application/guestbook/frontend-deployment.yaml </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w> </span><span class=c># for versions before 1.9.0 use apps/v1beta2</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>guestbook</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>guestbook</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>3</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>guestbook</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>php-redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>gcr.io/google-samples/gb-frontend:v6</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c># 官网上使用的是v4版，在使用中出现ImageInspectErr，镜像出现问题，升级为v6</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>resources</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>requests</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>cpu</span><span class=p>:</span><span class=w> </span><span class=l>100m</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>memory</span><span class=p>:</span><span class=w> </span><span class=l>100Mi</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>GET_HOSTS_FROM</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=l>dns</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># Using `GET_HOSTS_FROM=dns` requires your cluster to</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># provide a dns service. As of Kubernetes 1.3, DNS is a built-in</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># service launched automatically. However, if the cluster you are using</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># does not have a built-in DNS service, you can instead</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># access an environment variable to find the master</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># service&#39;s host. To do so, comment out the &#39;value: dns&#39; line above, and</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># uncomment the line below:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=c># value: env</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span></code></pre></div><ul><li>Step2 执行命令</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>kubectl create -f frontend-deployment.yaml
+</span></span><span class=line><span class=cl>kubectl get pods
+</span></span></code></pre></div><h2 id=6部署guestbook-service>6、部署guestbook Service<a hidden class=anchor aria-hidden=true href=#6部署guestbook-service>#</a></h2><ul><li>Step1 编辑frontend-service.yaml</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># application/guestbook/frontend-service.yaml </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>guestbook</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># comment or delete the following line if you want to use a LoadBalancer</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>NodePort </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># if your cluster supports it, uncomment the following to automatically create</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># an external load-balanced IP for the frontend service.</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=c># type: LoadBalancer</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span>- <span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>guestbook</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>tier</span><span class=p>:</span><span class=w> </span><span class=l>frontend</span><span class=w>
+</span></span></span></code></pre></div><ul><li>Step2 执行命令</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>kubectl create -f frontend-service.yaml
+</span></span><span class=line><span class=cl>kubectl get services
+</span></span></code></pre></div><p>然后使用node的IP和端口，就可以访问服务了。</p><h2 id=7清理>7、清理<a hidden class=anchor aria-hidden=true href=#7清理>#</a></h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>kubectl delete deployment -l <span class=nv>app</span><span class=o>=</span>redis
+</span></span><span class=line><span class=cl>kubectl delete service -l <span class=nv>app</span><span class=o>=</span>redis
+</span></span><span class=line><span class=cl>kubectl delete deployment -l <span class=nv>app</span><span class=o>=</span>guestbook
+</span></span><span class=line><span class=cl>kubectl delete service -l <span class=nv>app</span><span class=o>=</span>guestbook
+</span></span></code></pre></div><h2 id=8小结>8、小结<a hidden class=anchor aria-hidden=true href=#8小结>#</a></h2><p>通过部署一个留言板服务，熟悉了kubernetes的基本的使用，知道一个服务怎么通过kubernetes部署起来。服务虽然部署起来了，但是kubernetes是怎么实现的呢？它都帮我们做了什么呢？不过在搞清楚这些之前，我们下一篇文章先说说kuberneters使用的yaml配置文件。</p></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://solaim.github.io/posts/k8s-yaml%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/><span class=title>« Prev</span><br><span>K8s Yaml配置文件</span>
+</a><a class=next href=https://solaim.github.io/posts/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/><span class=title>Next »</span><br><span>K8s集群搭建</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://solaim.github.io/>Jerry Wang</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>
