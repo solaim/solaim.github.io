@@ -2,14 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://solaim.github.io/categories/</loc>
+    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/posts/</loc>
+    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/categories/ros2/</loc>
+    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/tags/ros2/</loc>
+    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/posts/ros2%E6%9E%B6%E6%9E%84%E5%92%8C%E5%AE%9E%E7%8E%B0/</loc>
+    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/tags/</loc>
+    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+  </url><url>
     <loc>https://solaim.github.io/</loc>
     <lastmod>2023-09-15T23:15:58+08:00</lastmod>
   </url><url>
     <loc>https://solaim.github.io/about/</loc>
     <lastmod>2023-09-15T21:40:24+08:00</lastmod>
-  </url><url>
-    <loc>https://solaim.github.io/categories/</loc>
-    <lastmod>2021-06-06T11:17:45+08:00</lastmod>
   </url><url>
     <loc>https://solaim.github.io/tags/golang/</loc>
     <lastmod>2021-06-06T11:17:45+08:00</lastmod>
@@ -20,13 +35,7 @@
     <loc>https://solaim.github.io/tags/kubernetes/</loc>
     <lastmod>2021-06-06T11:17:45+08:00</lastmod>
   </url><url>
-    <loc>https://solaim.github.io/posts/</loc>
-    <lastmod>2021-06-06T11:17:45+08:00</lastmod>
-  </url><url>
     <loc>https://solaim.github.io/tags/service/</loc>
-    <lastmod>2021-06-06T11:17:45+08:00</lastmod>
-  </url><url>
-    <loc>https://solaim.github.io/tags/</loc>
     <lastmod>2021-06-06T11:17:45+08:00</lastmod>
   </url><url>
     <loc>https://solaim.github.io/posts/%E8%AF%B4%E8%AF%B4k8s%E7%BD%91%E7%BB%9C/</loc>

@@ -11,8 +11,15 @@
     </image>
     <generator>Hugo -- 0.147.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 06 Jun 2021 11:17:45 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 07 May 2025 10:20:33 +0800</lastBuildDate>
     <atom:link href="https://solaim.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ROS2</title>
+      <link>https://solaim.github.io/categories/ros2/</link>
+      <pubDate>Wed, 07 May 2025 10:20:33 +0800</pubDate>
+      <guid>https://solaim.github.io/categories/ros2/</guid>
+      <description></description>
+    </item>
     <item>
       <title>K8s</title>
       <link>https://solaim.github.io/categories/k8s/</link>
