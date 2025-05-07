@@ -18,8 +18,7 @@
       <link>https://solaim.github.io/posts/ros2%E6%9E%B6%E6%9E%84%E5%92%8C%E5%AE%9E%E7%8E%B0/</link>
       <pubDate>Wed, 07 May 2025 10:20:33 +0800</pubDate>
       <guid>https://solaim.github.io/posts/ros2%E6%9E%B6%E6%9E%84%E5%92%8C%E5%AE%9E%E7%8E%B0/</guid>
-      <description>&lt;h1 id=&#34;ros2架构和实现&#34;&gt;ROS2架构和实现&lt;/h1&gt;
-&lt;p&gt;ROS2是机器人领域的著名SDK，可以加速学习效率。ROS2主要解决了两个问题：&lt;/p&gt;
+      <description>&lt;p&gt;ROS2是机器人领域的著名SDK，可以加速学习效率。ROS2主要解决了两个问题：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;通信：基于Node，包含topic、service、action通信方式&lt;/li&gt;
 &lt;li&gt;代码架构：模块化开发，简化维护&lt;/li&gt;

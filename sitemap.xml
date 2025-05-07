@@ -2,11 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://solaim.github.io/categories/agent/</loc>
+    <lastmod>2025-05-07T10:29:29+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/tags/agent/</loc>
+    <lastmod>2025-05-07T10:29:29+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/</loc>
+    <lastmod>2025-05-07T10:29:29+08:00</lastmod>
+  </url><url>
     <loc>https://solaim.github.io/categories/</loc>
-    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+    <lastmod>2025-05-07T10:29:29+08:00</lastmod>
   </url><url>
     <loc>https://solaim.github.io/posts/</loc>
-    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
+    <lastmod>2025-05-07T10:29:29+08:00</lastmod>
+  </url><url>
+    <loc>https://solaim.github.io/tags/</loc>
+    <lastmod>2025-05-07T10:29:29+08:00</lastmod>
   </url><url>
     <loc>https://solaim.github.io/categories/ros2/</loc>
     <lastmod>2025-05-07T10:20:33+08:00</lastmod>
@@ -15,9 +27,6 @@
     <lastmod>2025-05-07T10:20:33+08:00</lastmod>
   </url><url>
     <loc>https://solaim.github.io/posts/ros2%E6%9E%B6%E6%9E%84%E5%92%8C%E5%AE%9E%E7%8E%B0/</loc>
-    <lastmod>2025-05-07T10:20:33+08:00</lastmod>
-  </url><url>
-    <loc>https://solaim.github.io/tags/</loc>
     <lastmod>2025-05-07T10:20:33+08:00</lastmod>
   </url><url>
     <loc>https://solaim.github.io/</loc>

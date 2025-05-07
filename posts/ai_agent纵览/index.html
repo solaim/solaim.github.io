@@ -1,0 +1,150 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>AI Agent纵览 | Jerry Wang</title>
+<meta name=keywords content="Agent"><meta name=description content="AI Agent最近两三年异常火热，下面👇是某头部公司的AI Agent开发岗的JD：
+
+岗位职责
+1、负责大模型应用开发范式及一站式研发平台的设计、开发及应用，支持公司内部大模型的应用的快速落地
+2、负责大模型产品的整体技术解决方案，并支持技术研发和效果优化等工作，推动产品持续增长
+3、保障大模型应用系统架构的稳定、高效运行，帮助业务优化性能和改善系统稳定性
+职位描述
+1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。
+2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。
+3、有比较敏锐的产品意识和数据分析能力。
+4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。
+从上面的JD可以提取的信息：
+
+开发语言：Python(C++、Golang需求也较多)
+框架：dify、langflow等
+原理：RAG、Agent工作原理
+后端基础组件
+
+AI Agent
+
+AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。
+
+智能体的组成：
+
+I：输入，也就是上图中的感知Perception，包括文本、图片、视频、音频等
+O：输出，即上图中的行动Action，包括输出文本及调用工具等
+B：大脑Brain，基于LLM，具有知识、记忆、推理、规划等功能
+
+智能体的形式：
+
+单Agent：单个Agent完成任务
+多Agent：多个Agent配合完成任务
+
+RAG
+检索增强生成（Retrieval Augmented Generation），简称 RAG。
+为什么会有RAG？
+
+解决知识缺失问题：大模型的知识固定在训练的数据上，无法获取最新资讯。
+解决快问乱答问题：大模型有幻觉问题，超出范围的答案不靠谱。
+解决数据安全问题：企业专有资料，不能丢给通用大模型去训练。
+
+实现路径：
+
+**
+
+将知识向量化：知识通过embedding存储在向量数据库
+客户检索：问题embedding，检索向量数据库，生成提示词
+投喂LLM：将上面生成的提示词喂给LLM生成最终的答案
+
+MCP
+Model Context Protocol（模型上下文协议）是 Anthropic 在推出的用于 LLM 应用和外部数据源（Resources）或工具（Tools）通信的标准协议，遵循 JSON-RPC 2.0 的基础消息格式。
+
+MCP遵循CS架构，应用包括client，client负责和server通信。
+核心概念：
+
+资源：MCP 服务器希望提供给客户端的任何类型的数据
+提示词：MCP 服务器能够定义可重用的提示模板和工作流
+工具：使服务器能够向客户端公开可执行功能。通过工具，LLM 可以与外部系统交互，执行计算，并在真实的世界中采取行动。
+采样：服务器通过客户端请求 LLM
+根：定义了服务器可以操作的边界
+
+详细文档请参考官方文档"><meta name=author content="Jerry Wang"><link rel=canonical href=https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/><link crossorigin=anonymous href=/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF+13Dyqob6ASlTrTye8=" rel="preload stylesheet" as=style><link rel=icon href=https://solaim.github.io/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://solaim.github.io/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://solaim.github.io/favicon-32x32.png><link rel=apple-touch-icon href=https://solaim.github.io/apple-touch-icon.png><link rel=mask-icon href=https://solaim.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/"><meta property="og:site_name" content="Jerry Wang"><meta property="og:title" content="AI Agent纵览"><meta property="og:description" content="AI Agent最近两三年异常火热，下面👇是某头部公司的AI Agent开发岗的JD：
+岗位职责
+1、负责大模型应用开发范式及一站式研发平台的设计、开发及应用，支持公司内部大模型的应用的快速落地
+2、负责大模型产品的整体技术解决方案，并支持技术研发和效果优化等工作，推动产品持续增长
+3、保障大模型应用系统架构的稳定、高效运行，帮助业务优化性能和改善系统稳定性
+职位描述
+1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。
+2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。
+3、有比较敏锐的产品意识和数据分析能力。
+4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。
+从上面的JD可以提取的信息：
+开发语言：Python(C++、Golang需求也较多) 框架：dify、langflow等 原理：RAG、Agent工作原理 后端基础组件 AI Agent AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。
+智能体的组成：
+I：输入，也就是上图中的感知Perception，包括文本、图片、视频、音频等 O：输出，即上图中的行动Action，包括输出文本及调用工具等 B：大脑Brain，基于LLM，具有知识、记忆、推理、规划等功能 智能体的形式：
+单Agent：单个Agent完成任务 多Agent：多个Agent配合完成任务 RAG 检索增强生成（Retrieval Augmented Generation），简称 RAG。
+为什么会有RAG？
+解决知识缺失问题：大模型的知识固定在训练的数据上，无法获取最新资讯。 解决快问乱答问题：大模型有幻觉问题，超出范围的答案不靠谱。 解决数据安全问题：企业专有资料，不能丢给通用大模型去训练。 实现路径：
+**
+将知识向量化：知识通过embedding存储在向量数据库 客户检索：问题embedding，检索向量数据库，生成提示词 投喂LLM：将上面生成的提示词喂给LLM生成最终的答案 MCP Model Context Protocol（模型上下文协议）是 Anthropic 在推出的用于 LLM 应用和外部数据源（Resources）或工具（Tools）通信的标准协议，遵循 JSON-RPC 2.0 的基础消息格式。
+MCP遵循CS架构，应用包括client，client负责和server通信。
+核心概念：
+资源：MCP 服务器希望提供给客户端的任何类型的数据 提示词：MCP 服务器能够定义可重用的提示模板和工作流 工具：使服务器能够向客户端公开可执行功能。通过工具，LLM 可以与外部系统交互，执行计算，并在真实的世界中采取行动。 采样：服务器通过客户端请求 LLM 根：定义了服务器可以操作的边界 详细文档请参考官方文档"><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-05-07T10:29:29+08:00"><meta property="article:modified_time" content="2025-05-07T10:29:29+08:00"><meta property="article:tag" content="Agent"><meta property="og:image" content="https://solaim.github.io/img/favicon.webp"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://solaim.github.io/img/favicon.webp"><meta name=twitter:title content="AI Agent纵览"><meta name=twitter:description content="AI Agent最近两三年异常火热，下面👇是某头部公司的AI Agent开发岗的JD：
+
+岗位职责
+1、负责大模型应用开发范式及一站式研发平台的设计、开发及应用，支持公司内部大模型的应用的快速落地
+2、负责大模型产品的整体技术解决方案，并支持技术研发和效果优化等工作，推动产品持续增长
+3、保障大模型应用系统架构的稳定、高效运行，帮助业务优化性能和改善系统稳定性
+职位描述
+1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。
+2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。
+3、有比较敏锐的产品意识和数据分析能力。
+4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。
+从上面的JD可以提取的信息：
+
+开发语言：Python(C++、Golang需求也较多)
+框架：dify、langflow等
+原理：RAG、Agent工作原理
+后端基础组件
+
+AI Agent
+
+AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。
+
+智能体的组成：
+
+I：输入，也就是上图中的感知Perception，包括文本、图片、视频、音频等
+O：输出，即上图中的行动Action，包括输出文本及调用工具等
+B：大脑Brain，基于LLM，具有知识、记忆、推理、规划等功能
+
+智能体的形式：
+
+单Agent：单个Agent完成任务
+多Agent：多个Agent配合完成任务
+
+RAG
+检索增强生成（Retrieval Augmented Generation），简称 RAG。
+为什么会有RAG？
+
+解决知识缺失问题：大模型的知识固定在训练的数据上，无法获取最新资讯。
+解决快问乱答问题：大模型有幻觉问题，超出范围的答案不靠谱。
+解决数据安全问题：企业专有资料，不能丢给通用大模型去训练。
+
+实现路径：
+
+**
+
+将知识向量化：知识通过embedding存储在向量数据库
+客户检索：问题embedding，检索向量数据库，生成提示词
+投喂LLM：将上面生成的提示词喂给LLM生成最终的答案
+
+MCP
+Model Context Protocol（模型上下文协议）是 Anthropic 在推出的用于 LLM 应用和外部数据源（Resources）或工具（Tools）通信的标准协议，遵循 JSON-RPC 2.0 的基础消息格式。
+
+MCP遵循CS架构，应用包括client，client负责和server通信。
+核心概念：
+
+资源：MCP 服务器希望提供给客户端的任何类型的数据
+提示词：MCP 服务器能够定义可重用的提示模板和工作流
+工具：使服务器能够向客户端公开可执行功能。通过工具，LLM 可以与外部系统交互，执行计算，并在真实的世界中采取行动。
+采样：服务器通过客户端请求 LLM
+根：定义了服务器可以操作的边界
+
+详细文档请参考官方文档"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://solaim.github.io/posts/"},{"@type":"ListItem","position":2,"name":"AI Agent纵览","item":"https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"AI Agent纵览","name":"AI Agent纵览","description":"AI Agent最近两三年异常火热，下面👇是某头部公司的AI Agent开发岗的JD：\n岗位职责\n1、负责大模型应用开发范式及一站式研发平台的设计、开发及应用，支持公司内部大模型的应用的快速落地\n2、负责大模型产品的整体技术解决方案，并支持技术研发和效果优化等工作，推动产品持续增长\n3、保障大模型应用系统架构的稳定、高效运行，帮助业务优化性能和改善系统稳定性\n职位描述\n1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。\n2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。\n3、有比较敏锐的产品意识和数据分析能力。\n4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。\n从上面的JD可以提取的信息：\n开发语言：Python(C++、Golang需求也较多) 框架：dify、langflow等 原理：RAG、Agent工作原理 后端基础组件 AI Agent AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。\n智能体的组成：\nI：输入，也就是上图中的感知Perception，包括文本、图片、视频、音频等 O：输出，即上图中的行动Action，包括输出文本及调用工具等 B：大脑Brain，基于LLM，具有知识、记忆、推理、规划等功能 智能体的形式：\n单Agent：单个Agent完成任务 多Agent：多个Agent配合完成任务 RAG 检索增强生成（Retrieval Augmented Generation），简称 RAG。\n为什么会有RAG？\n解决知识缺失问题：大模型的知识固定在训练的数据上，无法获取最新资讯。 解决快问乱答问题：大模型有幻觉问题，超出范围的答案不靠谱。 解决数据安全问题：企业专有资料，不能丢给通用大模型去训练。 实现路径：\n**\n将知识向量化：知识通过embedding存储在向量数据库 客户检索：问题embedding，检索向量数据库，生成提示词 投喂LLM：将上面生成的提示词喂给LLM生成最终的答案 MCP Model Context Protocol（模型上下文协议）是 Anthropic 在推出的用于 LLM 应用和外部数据源（Resources）或工具（Tools）通信的标准协议，遵循 JSON-RPC 2.0 的基础消息格式。\nMCP遵循CS架构，应用包括client，client负责和server通信。\n核心概念：\n资源：MCP 服务器希望提供给客户端的任何类型的数据 提示词：MCP 服务器能够定义可重用的提示模板和工作流 工具：使服务器能够向客户端公开可执行功能。通过工具，LLM 可以与外部系统交互，执行计算，并在真实的世界中采取行动。 采样：服务器通过客户端请求 LLM 根：定义了服务器可以操作的边界 详细文档请参考官方文档\n","keywords":["Agent"],"articleBody":"AI Agent最近两三年异常火热，下面👇是某头部公司的AI Agent开发岗的JD：\n岗位职责\n1、负责大模型应用开发范式及一站式研发平台的设计、开发及应用，支持公司内部大模型的应用的快速落地\n2、负责大模型产品的整体技术解决方案，并支持技术研发和效果优化等工作，推动产品持续增长\n3、保障大模型应用系统架构的稳定、高效运行，帮助业务优化性能和改善系统稳定性\n职位描述\n1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。\n2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。\n3、有比较敏锐的产品意识和数据分析能力。\n4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。\n从上面的JD可以提取的信息：\n开发语言：Python(C++、Golang需求也较多) 框架：dify、langflow等 原理：RAG、Agent工作原理 后端基础组件 AI Agent AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。\n智能体的组成：\nI：输入，也就是上图中的感知Perception，包括文本、图片、视频、音频等 O：输出，即上图中的行动Action，包括输出文本及调用工具等 B：大脑Brain，基于LLM，具有知识、记忆、推理、规划等功能 智能体的形式：\n单Agent：单个Agent完成任务 多Agent：多个Agent配合完成任务 RAG 检索增强生成（Retrieval Augmented Generation），简称 RAG。\n为什么会有RAG？\n解决知识缺失问题：大模型的知识固定在训练的数据上，无法获取最新资讯。 解决快问乱答问题：大模型有幻觉问题，超出范围的答案不靠谱。 解决数据安全问题：企业专有资料，不能丢给通用大模型去训练。 实现路径：\n**\n将知识向量化：知识通过embedding存储在向量数据库 客户检索：问题embedding，检索向量数据库，生成提示词 投喂LLM：将上面生成的提示词喂给LLM生成最终的答案 MCP Model Context Protocol（模型上下文协议）是 Anthropic 在推出的用于 LLM 应用和外部数据源（Resources）或工具（Tools）通信的标准协议，遵循 JSON-RPC 2.0 的基础消息格式。\nMCP遵循CS架构，应用包括client，client负责和server通信。\n核心概念：\n资源：MCP 服务器希望提供给客户端的任何类型的数据 提示词：MCP 服务器能够定义可重用的提示模板和工作流 工具：使服务器能够向客户端公开可执行功能。通过工具，LLM 可以与外部系统交互，执行计算，并在真实的世界中采取行动。 采样：服务器通过客户端请求 LLM 根：定义了服务器可以操作的边界 详细文档请参考官方文档\nA2A A2A（Agent2Agent）协议是由 Google Cloud 发起的开放协议，旨在促进不同 AI Agent 之间的互操作性。\n整体架构类似MCP，遵循CS架构。\n核心概念：\nAgentCard： 描述 Agent 功能的 JSON 文件，通常托管在 /. well-known/agent.json 路径中，使客户端可以轻松发现和理解 Agent。 任务： 一个有状态的实体，代表客户端和远程代理之间的协作过程，以实现特定的结果。任务包含状态、历史和生成的工件。 工件: 由Agent生成的不可变输出，作为任务的最终结果，可以包含多个 Part。 消息： 用于在客户端和代理之间传递非工件内容，如指令、上下文、思维过程、状态更新等。 Part: 消息或工件中内容的原子单元，具有特定的内容类型（例如，文本、文件、表单）。 详细文档请参考官方文档\n","wordCount":"95","inLanguage":"en","image":"https://solaim.github.io/img/favicon.webp","datePublished":"2025-05-07T10:29:29+08:00","dateModified":"2025-05-07T10:29:29+08:00","author":{"@type":"Person","name":"Jerry Wang"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/"},"publisher":{"@type":"Organization","name":"Jerry Wang","logo":{"@type":"ImageObject","url":"https://solaim.github.io/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://solaim.github.io/ accesskey=h title="首页 (Alt + H)"><img src=https://solaim.github.io/apple-touch-icon.png alt aria-label=logo height=35>首页</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://solaim.github.io/categories/ title=🕸分类><span>🕸分类</span></a></li><li><a href=https://solaim.github.io/tags/ title=🐚标签><span>🐚标签</span></a></li><li><a href=https://solaim.github.io/about/ title=🌏关于><span>🌏关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://solaim.github.io/>Home</a>&nbsp;»&nbsp;<a href=https://solaim.github.io/posts/>Posts</a></div><h1 class="post-title entry-hint-parent">AI Agent纵览</h1><div class=post-meta><span title='2025-05-07 10:29:29 +0800 +0800'>2025-05-07</span>&nbsp;·&nbsp;Jerry Wang</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><nav id=TableOfContents><ul><li><a href=#ai-agent>AI Agent</a></li><li><a href=#rag>RAG</a></li><li><a href=#mcp>MCP</a></li><li><a href=#a2a>A2A</a></li></ul></nav></div></details></div><div class=post-content><p>AI Agent最近两三年异常火热，下面👇是某头部公司的AI Agent开发岗的JD：</p><blockquote><p>岗位职责</p><p>1、负责大模型应用开发范式及一站式研发平台的设计、开发及应用，支持公司内部大模型的应用的快速落地</p><p>2、负责大模型产品的整体技术解决方案，并支持技术研发和效果优化等工作，推动产品持续增长</p><p>3、保障大模型应用系统架构的稳定、高效运行，帮助业务优化性能和改善系统稳定性</p><p>职位描述</p><p>1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。</p><p>2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。</p><p>3、有比较敏锐的产品意识和数据分析能力。</p><p>4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。</p></blockquote><p>从上面的JD可以提取的信息：</p><ul><li>开发语言：Python(C++、Golang需求也较多)</li><li>框架：dify、langflow等</li><li>原理：RAG、Agent工作原理</li><li>后端基础组件</li></ul><h2 id=ai-agent>AI Agent<a hidden class=anchor aria-hidden=true href=#ai-agent>#</a></h2><blockquote><p>AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。</p></blockquote><p><img alt=Agent loading=lazy src=/img/agent.png></p><p>智能体的组成：</p><ul><li>I：输入，也就是上图中的感知Perception，包括文本、图片、视频、音频等</li><li>O：输出，即上图中的行动Action，包括输出文本及<em>调用工具</em>等</li><li>B：大脑Brain，基于LLM，具有知识、记忆、推理、规划等功能</li></ul><p>智能体的形式：</p><ul><li>单Agent：单个Agent完成任务</li><li>多Agent：多个Agent配合完成任务</li></ul><h2 id=rag>RAG<a hidden class=anchor aria-hidden=true href=#rag>#</a></h2><p>检索增强生成（Retrieval Augmented Generation），简称 RAG。</p><p>为什么会有RAG？</p><ul><li>解决知识缺失问题：大模型的知识固定在训练的数据上，无法获取最新资讯。</li><li>解决快问乱答问题：大模型有幻觉问题，超出范围的答案不靠谱。</li><li>解决数据安全问题：企业专有资料，不能丢给通用大模型去训练。</li></ul><p>实现路径：</p><p><img alt=RAG loading=lazy src=/img/rag.jpg>
+**</p><ul><li>将知识向量化：知识通过embedding存储在向量数据库</li><li>客户检索：问题embedding，检索向量数据库，生成提示词</li><li>投喂LLM：将上面生成的提示词喂给LLM生成最终的答案</li></ul><h2 id=mcp>MCP<a hidden class=anchor aria-hidden=true href=#mcp>#</a></h2><p>Model Context Protocol（模型上下文协议）是 Anthropic 在推出的用于 LLM 应用和外部数据源（Resources）或工具（Tools）通信的标准协议，遵循 JSON-RPC 2.0 的基础消息格式。</p><p><img alt="MCP ARCH" loading=lazy src=/img/mcp_arch.png></p><p>MCP遵循CS架构，应用包括client，client负责和server通信。</p><p>核心概念：</p><ul><li>资源：MCP 服务器希望提供给客户端的任何类型的数据</li><li>提示词：MCP 服务器能够定义可重用的提示模板和工作流</li><li>工具：使服务器能够向客户端公开可执行功能。通过工具，LLM 可以与外部系统交互，执行计算，并在真实的世界中采取行动。</li><li>采样：服务器通过客户端请求 LLM</li><li>根：定义了服务器可以操作的边界</li></ul><p>详细文档请参考<a href=https://modelcontextprotocol.io/introduction>官方文档</a></p><h2 id=a2a>A2A<a hidden class=anchor aria-hidden=true href=#a2a>#</a></h2><p>A2A（Agent2Agent）协议是由 Google Cloud 发起的开放协议，旨在促进不同 AI Agent 之间的互操作性。</p><p>整体架构类似MCP，遵循CS架构。</p><p>核心概念：</p><ul><li>AgentCard： 描述 Agent 功能的 JSON 文件，通常托管在 /. well-known/agent.json 路径中，使客户端可以轻松发现和理解 Agent。</li><li>任务： 一个有状态的实体，代表客户端和远程代理之间的协作过程，以实现特定的结果。任务包含状态、历史和生成的工件。</li><li>工件: 由Agent生成的不可变输出，作为任务的最终结果，可以包含多个 Part。</li><li>消息： 用于在客户端和代理之间传递非工件内容，如指令、上下文、思维过程、状态更新等。</li><li>Part: 消息或工件中内容的原子单元，具有特定的内容类型（例如，文本、文件、表单）。</li></ul><p>详细文档请参考<a href=https://agent2agent.info/>官方文档</a></p></div><footer class=post-footer><ul class=post-tags><li><a href=https://solaim.github.io/tags/agent/>Agent</a></li></ul><nav class=paginav><a class=next href=https://solaim.github.io/posts/ros2%E6%9E%B6%E6%9E%84%E5%92%8C%E5%AE%9E%E7%8E%B0/><span class=title>Next »</span><br><span>ROS2架构和实现</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://solaim.github.io/>Jerry Wang</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

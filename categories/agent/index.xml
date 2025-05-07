@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Agent on Jerry Wang</title>
+    <link>https://solaim.github.io/categories/agent/</link>
+    <description>Recent content in Agent on Jerry Wang</description>
+    <image>
+      <title>Jerry Wang</title>
+      <url>https://solaim.github.io/img/favicon.webp</url>
+      <link>https://solaim.github.io/img/favicon.webp</link>
+    </image>
+    <generator>Hugo -- 0.147.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 07 May 2025 10:29:29 +0800</lastBuildDate>
+    <atom:link href="https://solaim.github.io/categories/agent/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI Agent纵览</title>
+      <link>https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/</link>
+      <pubDate>Wed, 07 May 2025 10:29:29 +0800</pubDate>
+      <guid>https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/</guid>
+      <description>&lt;p&gt;AI Agent最近两三年异常火热，下面👇是某头部公司的AI Agent开发岗的JD：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;岗位职责&lt;/p&gt;
+&lt;p&gt;1、负责大模型应用开发范式及一站式研发平台的设计、开发及应用，支持公司内部大模型的应用的快速落地&lt;/p&gt;
+&lt;p&gt;2、负责大模型产品的整体技术解决方案，并支持技术研发和效果优化等工作，推动产品持续增长&lt;/p&gt;
+&lt;p&gt;3、保障大模型应用系统架构的稳定、高效运行，帮助业务优化性能和改善系统稳定性&lt;/p&gt;
+&lt;p&gt;职位描述&lt;/p&gt;
+&lt;p&gt;1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。&lt;/p&gt;
+&lt;p&gt;2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。&lt;/p&gt;
+&lt;p&gt;3、有比较敏锐的产品意识和数据分析能力。&lt;/p&gt;
+&lt;p&gt;4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;从上面的JD可以提取的信息：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;开发语言：Python(C++、Golang需求也较多)&lt;/li&gt;
+&lt;li&gt;框架：dify、langflow等&lt;/li&gt;
+&lt;li&gt;原理：RAG、Agent工作原理&lt;/li&gt;
+&lt;li&gt;后端基础组件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;ai-agent&#34;&gt;AI Agent&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;img alt=&#34;Agent&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/agent.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;智能体的组成：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;I：输入，也就是上图中的感知Perception，包括文本、图片、视频、音频等&lt;/li&gt;
+&lt;li&gt;O：输出，即上图中的行动Action，包括输出文本及&lt;em&gt;调用工具&lt;/em&gt;等&lt;/li&gt;
+&lt;li&gt;B：大脑Brain，基于LLM，具有知识、记忆、推理、规划等功能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;智能体的形式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;单Agent：单个Agent完成任务&lt;/li&gt;
+&lt;li&gt;多Agent：多个Agent配合完成任务&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;rag&#34;&gt;RAG&lt;/h2&gt;
+&lt;p&gt;检索增强生成（Retrieval Augmented Generation），简称 RAG。&lt;/p&gt;
+&lt;p&gt;为什么会有RAG？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;解决知识缺失问题：大模型的知识固定在训练的数据上，无法获取最新资讯。&lt;/li&gt;
+&lt;li&gt;解决快问乱答问题：大模型有幻觉问题，超出范围的答案不靠谱。&lt;/li&gt;
+&lt;li&gt;解决数据安全问题：企业专有资料，不能丢给通用大模型去训练。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;实现路径：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;RAG&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/rag.jpg&#34;&gt;
+**&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将知识向量化：知识通过embedding存储在向量数据库&lt;/li&gt;
+&lt;li&gt;客户检索：问题embedding，检索向量数据库，生成提示词&lt;/li&gt;
+&lt;li&gt;投喂LLM：将上面生成的提示词喂给LLM生成最终的答案&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;mcp&#34;&gt;MCP&lt;/h2&gt;
+&lt;p&gt;Model Context Protocol（模型上下文协议）是 Anthropic 在推出的用于 LLM 应用和外部数据源（Resources）或工具（Tools）通信的标准协议，遵循 JSON-RPC 2.0 的基础消息格式。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;MCP ARCH&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/mcp_arch.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;MCP遵循CS架构，应用包括client，client负责和server通信。&lt;/p&gt;
+&lt;p&gt;核心概念：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;资源：MCP 服务器希望提供给客户端的任何类型的数据&lt;/li&gt;
+&lt;li&gt;提示词：MCP 服务器能够定义可重用的提示模板和工作流&lt;/li&gt;
+&lt;li&gt;工具：使服务器能够向客户端公开可执行功能。通过工具，LLM 可以与外部系统交互，执行计算，并在真实的世界中采取行动。&lt;/li&gt;
+&lt;li&gt;采样：服务器通过客户端请求 LLM&lt;/li&gt;
+&lt;li&gt;根：定义了服务器可以操作的边界&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;详细文档请参考&lt;a href=&#34;https://modelcontextprotocol.io/introduction&#34;&gt;官方文档&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
