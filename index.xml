@@ -11,8 +11,44 @@
     </image>
     <generator>Hugo -- 0.147.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 07 May 2025 10:29:29 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 07 May 2025 15:05:08 +0800</lastBuildDate>
     <atom:link href="https://solaim.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI agent实战</title>
+      <link>https://solaim.github.io/posts/ai_agent%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Wed, 07 May 2025 15:05:08 +0800</pubDate>
+      <guid>https://solaim.github.io/posts/ai_agent%E5%AE%9E%E6%88%98/</guid>
+      <description>&lt;p&gt;AI agent框架众多，本文选择Dify平台，来一波AI agent开发实战！&lt;/p&gt;
+&lt;h2 id=&#34;部署&#34;&gt;部署&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone https://github.com/langgenius/dify.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; dify/docker
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 国内docker hub访问受限，建议使用代理&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 请使用新版本docker&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;访问127.0.0.1，页面正常可设置管理员并登陆：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;dify init&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/dify_init.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;dify login&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/dify_login.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;登陆完成，进入工作室：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;dify workspace&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/dify_workspace.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;接下来我们开始搭建一个企业私有的AI agent。&lt;/p&gt;
+&lt;h2 id=&#34;管理模型&#34;&gt;管理模型&lt;/h2&gt;
+&lt;p&gt;添加模型供应商&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;dify provider&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/dify_provider.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;修改系统模型配置&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;dify model setup&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/dify_model_setup.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;本文使用火山方舟的deepseek和doubao embedding模型，可以在火山方舟控制台在线推理页面开通。&lt;/p&gt;
+&lt;h2 id=&#34;管理知识库&#34;&gt;管理知识库&lt;/h2&gt;
+&lt;p&gt;&lt;img alt=&#34;dify knowledge&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/dify_knowledge.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上传文档，选择embedding模型，进行知识入库。&lt;/p&gt;
+&lt;h2 id=&#34;配置agent&#34;&gt;配置Agent&lt;/h2&gt;
+&lt;p&gt;&lt;img alt=&#34;dify rag&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/dify_agent_rag.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在知识库添加面试资料文档知识库，进行聊天即可使用了。&lt;/p&gt;
+&lt;h2 id=&#34;发布&#34;&gt;发布&lt;/h2&gt;
+&lt;p&gt;dify提供发布功能，可以发布单独的页面或嵌入其他页面，方便使用。&lt;/p&gt;
+&lt;p&gt;dify也支持workflow，比单独的agent更强大。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>AI Agent纵览</title>
       <link>https://solaim.github.io/posts/ai_agent%E7%BA%B5%E8%A7%88/</link>
@@ -237,7 +273,9 @@ src/...     # 实现
 &lt;li&gt;微服务架构&lt;/li&gt;
 &lt;li&gt;领域驱动设计&lt;/li&gt;
 &lt;li&gt;机器人系统&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;/ul&gt;
+&lt;h2 id=&#34;email&#34;&gt;Email&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;mailto:solaim@163.com&#34;&gt;solaim@163.com&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>说说k8s网络</title>
