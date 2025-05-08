@@ -1,0 +1,100 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Dify实现及思考 | Jerry Wang</title>
+<meta name=keywords content="Agent"><meta name=description content="实现
+Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。
+主要代码目录如下：
+.\
+..\
+api\  # 后端实现目录
+  app.py         # 入口文件
+  controllers\   # 控制层，注册路由
+    console\     # 前端API
+    files\       # 图片、文件API
+    inner_api\   # 插件API
+    service_api\ 
+    web\         
+  services\      # 业务实现层
+  models\        # 模型
+  core\          # 逻辑实现
+web\  # 前端实现目录
+后端框架使用Flask，使用flask-restful管理路由，使用celery进行分布式任务管理。
+架构层面：
+API server <&ndash;> Worker
+为了支持横向扩展，可以多节点部署worker，属于基于事件驱动的架构。
+实现层面：
+分层架构，经典的控制、服务、模型分层。
+数据库：
+业务管理使用的pg，是除MySQL外很流行的开源关系型数据库。
+为支持RAG，dify支持了很多款向量数据库，可以按需配置。
+部署：
+docker compose 一行命令完成部署，快速体验很赞。
+思考
+翻看dify的源码，有种熟悉的感觉，因为这就是第一份工作的完整技术栈。
+作为技术开发者，追逐新颖、时髦的技术，认为这些很酷，但是有时候会忘了出发点：
+技术是用来解决问题的！
+Dify目前已经将近96K的star。"><meta name=author content="Jerry Wang"><link rel=canonical href=https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/><link crossorigin=anonymous href=/assets/css/stylesheet.f49d66caae9ea0fd43f21f29e71a8d3e284517ed770f2aa86fa012953ad3c9ef.css integrity="sha256-9J1myq6eoP1D8h8p5xqNPihFF+13Dyqob6ASlTrTye8=" rel="preload stylesheet" as=style><link rel=icon href=https://solaim.github.io/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://solaim.github.io/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://solaim.github.io/favicon-32x32.png><link rel=apple-touch-icon href=https://solaim.github.io/apple-touch-icon.png><link rel=mask-icon href=https://solaim.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/"><meta property="og:site_name" content="Jerry Wang"><meta property="og:title" content="Dify实现及思考"><meta property="og:description" content="实现 Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。
+主要代码目录如下：
+.\ ..\ api\ # 后端实现目录 app.py # 入口文件 controllers\ # 控制层，注册路由 console\ # 前端API files\ # 图片、文件API inner_api\ # 插件API service_api\ web\ services\ # 业务实现层 models\ # 模型 core\ # 逻辑实现 web\ # 前端实现目录 后端框架使用Flask，使用flask-restful管理路由，使用celery进行分布式任务管理。
+架构层面：
+API server <–> Worker
+为了支持横向扩展，可以多节点部署worker，属于基于事件驱动的架构。
+实现层面：
+分层架构，经典的控制、服务、模型分层。
+数据库：
+业务管理使用的pg，是除MySQL外很流行的开源关系型数据库。
+为支持RAG，dify支持了很多款向量数据库，可以按需配置。
+部署： docker compose 一行命令完成部署，快速体验很赞。
+思考 翻看dify的源码，有种熟悉的感觉，因为这就是第一份工作的完整技术栈。
+作为技术开发者，追逐新颖、时髦的技术，认为这些很酷，但是有时候会忘了出发点：
+技术是用来解决问题的！
+Dify目前已经将近96K的star。"><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-05-08T14:23:49+08:00"><meta property="article:modified_time" content="2025-05-08T14:23:49+08:00"><meta property="article:tag" content="Agent"><meta property="og:image" content="https://solaim.github.io/img/favicon.webp"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://solaim.github.io/img/favicon.webp"><meta name=twitter:title content="Dify实现及思考"><meta name=twitter:description content="实现
+Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。
+主要代码目录如下：
+.\
+..\
+api\  # 后端实现目录
+  app.py         # 入口文件
+  controllers\   # 控制层，注册路由
+    console\     # 前端API
+    files\       # 图片、文件API
+    inner_api\   # 插件API
+    service_api\ 
+    web\         
+  services\      # 业务实现层
+  models\        # 模型
+  core\          # 逻辑实现
+web\  # 前端实现目录
+后端框架使用Flask，使用flask-restful管理路由，使用celery进行分布式任务管理。
+架构层面：
+API server <&ndash;> Worker
+为了支持横向扩展，可以多节点部署worker，属于基于事件驱动的架构。
+实现层面：
+分层架构，经典的控制、服务、模型分层。
+数据库：
+业务管理使用的pg，是除MySQL外很流行的开源关系型数据库。
+为支持RAG，dify支持了很多款向量数据库，可以按需配置。
+部署：
+docker compose 一行命令完成部署，快速体验很赞。
+思考
+翻看dify的源码，有种熟悉的感觉，因为这就是第一份工作的完整技术栈。
+作为技术开发者，追逐新颖、时髦的技术，认为这些很酷，但是有时候会忘了出发点：
+技术是用来解决问题的！
+Dify目前已经将近96K的star。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://solaim.github.io/posts/"},{"@type":"ListItem","position":2,"name":"Dify实现及思考","item":"https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Dify实现及思考","name":"Dify实现及思考","description":"实现 Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。\n主要代码目录如下：\n.\\ ..\\ api\\ # 后端实现目录 app.py # 入口文件 controllers\\ # 控制层，注册路由 console\\ # 前端API files\\ # 图片、文件API inner_api\\ # 插件API service_api\\ web\\ services\\ # 业务实现层 models\\ # 模型 core\\ # 逻辑实现 web\\ # 前端实现目录 后端框架使用Flask，使用flask-restful管理路由，使用celery进行分布式任务管理。\n架构层面：\nAPI server \u0026lt;\u0026ndash;\u0026gt; Worker\n为了支持横向扩展，可以多节点部署worker，属于基于事件驱动的架构。\n实现层面：\n分层架构，经典的控制、服务、模型分层。\n数据库：\n业务管理使用的pg，是除MySQL外很流行的开源关系型数据库。\n为支持RAG，dify支持了很多款向量数据库，可以按需配置。\n部署： docker compose 一行命令完成部署，快速体验很赞。\n思考 翻看dify的源码，有种熟悉的感觉，因为这就是第一份工作的完整技术栈。\n作为技术开发者，追逐新颖、时髦的技术，认为这些很酷，但是有时候会忘了出发点：\n技术是用来解决问题的！\nDify目前已经将近96K的star。\n","keywords":["Agent"],"articleBody":"实现 Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。\n主要代码目录如下：\n.\\ ..\\ api\\ # 后端实现目录 app.py # 入口文件 controllers\\ # 控制层，注册路由 console\\ # 前端API files\\ # 图片、文件API inner_api\\ # 插件API service_api\\ web\\ services\\ # 业务实现层 models\\ # 模型 core\\ # 逻辑实现 web\\ # 前端实现目录 后端框架使用Flask，使用flask-restful管理路由，使用celery进行分布式任务管理。\n架构层面：\nAPI server \u003c–\u003e Worker\n为了支持横向扩展，可以多节点部署worker，属于基于事件驱动的架构。\n实现层面：\n分层架构，经典的控制、服务、模型分层。\n数据库：\n业务管理使用的pg，是除MySQL外很流行的开源关系型数据库。\n为支持RAG，dify支持了很多款向量数据库，可以按需配置。\n部署： docker compose 一行命令完成部署，快速体验很赞。\n思考 翻看dify的源码，有种熟悉的感觉，因为这就是第一份工作的完整技术栈。\n作为技术开发者，追逐新颖、时髦的技术，认为这些很酷，但是有时候会忘了出发点：\n技术是用来解决问题的！\nDify目前已经将近96K的star。\n","wordCount":"58","inLanguage":"en","image":"https://solaim.github.io/img/favicon.webp","datePublished":"2025-05-08T14:23:49+08:00","dateModified":"2025-05-08T14:23:49+08:00","author":{"@type":"Person","name":"Jerry Wang"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/"},"publisher":{"@type":"Organization","name":"Jerry Wang","logo":{"@type":"ImageObject","url":"https://solaim.github.io/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://solaim.github.io/ accesskey=h title="首页 (Alt + H)"><img src=https://solaim.github.io/apple-touch-icon.png alt aria-label=logo height=35>首页</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme"><svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://solaim.github.io/categories/ title=🕸分类><span>🕸分类</span></a></li><li><a href=https://solaim.github.io/tags/ title=🐚标签><span>🐚标签</span></a></li><li><a href=https://solaim.github.io/about/ title=🌏关于><span>🌏关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://solaim.github.io/>Home</a>&nbsp;»&nbsp;<a href=https://solaim.github.io/posts/>Posts</a></div><h1 class="post-title entry-hint-parent">Dify实现及思考</h1><div class=post-meta><span title='2025-05-08 14:23:49 +0800 +0800'>2025-05-08</span>&nbsp;·&nbsp;Jerry Wang</div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><nav id=TableOfContents><ul><li><a href=#实现>实现</a></li><li><a href=#思考>思考</a></li></ul></nav></div></details></div><div class=post-content><h2 id=实现>实现<a hidden class=anchor aria-hidden=true href=#实现>#</a></h2><p>Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。</p><p>主要代码目录如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>.<span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>..<span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>api<span class=se>\ </span> <span class=c1># 后端实现目录</span>
+</span></span><span class=line><span class=cl>  app.py         <span class=c1># 入口文件</span>
+</span></span><span class=line><span class=cl>  controllers<span class=se>\ </span>  <span class=c1># 控制层，注册路由</span>
+</span></span><span class=line><span class=cl>    console<span class=se>\ </span>    <span class=c1># 前端API</span>
+</span></span><span class=line><span class=cl>    files<span class=se>\ </span>      <span class=c1># 图片、文件API</span>
+</span></span><span class=line><span class=cl>    inner_api<span class=se>\ </span>  <span class=c1># 插件API</span>
+</span></span><span class=line><span class=cl>    service_api<span class=se>\ </span>
+</span></span><span class=line><span class=cl>    web<span class=se>\ </span>        
+</span></span><span class=line><span class=cl>  services<span class=se>\ </span>     <span class=c1># 业务实现层</span>
+</span></span><span class=line><span class=cl>  models<span class=se>\ </span>       <span class=c1># 模型</span>
+</span></span><span class=line><span class=cl>  core<span class=se>\ </span>         <span class=c1># 逻辑实现</span>
+</span></span><span class=line><span class=cl>web<span class=se>\ </span> <span class=c1># 前端实现目录</span>
+</span></span></code></pre></div><p>后端框架使用Flask，使用flask-restful管理路由，使用celery进行分布式任务管理。</p><p>架构层面：</p><p>API server &lt;&ndash;> Worker</p><p>为了支持横向扩展，可以多节点部署worker，属于基于事件驱动的架构。</p><p>实现层面：</p><p>分层架构，经典的控制、服务、模型分层。</p><p>数据库：</p><p>业务管理使用的pg，是除MySQL外很流行的开源关系型数据库。</p><p>为支持RAG，dify支持了很多款向量数据库，可以按需配置。</p><p>部署：
+docker compose 一行命令完成部署，快速体验很赞。</p><h2 id=思考>思考<a hidden class=anchor aria-hidden=true href=#思考>#</a></h2><p>翻看dify的源码，有种熟悉的感觉，因为这就是第一份工作的完整技术栈。</p><p>作为技术开发者，追逐新颖、时髦的技术，认为这些很酷，但是有时候会忘了出发点：</p><p><em>技术是用来解决问题的！</em></p><p>Dify目前已经将近96K的star。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://solaim.github.io/tags/agent/>Agent</a></li></ul><nav class=paginav><a class=next href=https://solaim.github.io/posts/ai_agent%E5%AE%9E%E6%88%98/><span class=title>Next »</span><br><span>AI agent实战</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://solaim.github.io/>Jerry Wang</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

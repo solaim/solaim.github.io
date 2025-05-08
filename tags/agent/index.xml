@@ -11,8 +11,47 @@
     </image>
     <generator>Hugo -- 0.147.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 07 May 2025 15:05:08 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 08 May 2025 14:23:49 +0800</lastBuildDate>
     <atom:link href="https://solaim.github.io/tags/agent/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dify实现及思考</title>
+      <link>https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/</link>
+      <pubDate>Thu, 08 May 2025 14:23:49 +0800</pubDate>
+      <guid>https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/</guid>
+      <description>&lt;h2 id=&#34;实现&#34;&gt;实现&lt;/h2&gt;
+&lt;p&gt;Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。&lt;/p&gt;
+&lt;p&gt;主要代码目录如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;.&lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;..&lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;api&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 后端实现目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  app.py         &lt;span class=&#34;c1&#34;&gt;# 入口文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  controllers&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 控制层，注册路由&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    console&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;# 前端API&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    files&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;      &lt;span class=&#34;c1&#34;&gt;# 图片、文件API&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    inner_api&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 插件API&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    service_api&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    web&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;        
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  services&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;     &lt;span class=&#34;c1&#34;&gt;# 业务实现层&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  models&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;       &lt;span class=&#34;c1&#34;&gt;# 模型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  core&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;         &lt;span class=&#34;c1&#34;&gt;# 逻辑实现&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;web&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 前端实现目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;后端框架使用Flask，使用flask-restful管理路由，使用celery进行分布式任务管理。&lt;/p&gt;
+&lt;p&gt;架构层面：&lt;/p&gt;
+&lt;p&gt;API server &amp;lt;&amp;ndash;&amp;gt; Worker&lt;/p&gt;
+&lt;p&gt;为了支持横向扩展，可以多节点部署worker，属于基于事件驱动的架构。&lt;/p&gt;
+&lt;p&gt;实现层面：&lt;/p&gt;
+&lt;p&gt;分层架构，经典的控制、服务、模型分层。&lt;/p&gt;
+&lt;p&gt;数据库：&lt;/p&gt;
+&lt;p&gt;业务管理使用的pg，是除MySQL外很流行的开源关系型数据库。&lt;/p&gt;
+&lt;p&gt;为支持RAG，dify支持了很多款向量数据库，可以按需配置。&lt;/p&gt;
+&lt;p&gt;部署：
+docker compose 一行命令完成部署，快速体验很赞。&lt;/p&gt;
+&lt;h2 id=&#34;思考&#34;&gt;思考&lt;/h2&gt;
+&lt;p&gt;翻看dify的源码，有种熟悉的感觉，因为这就是第一份工作的完整技术栈。&lt;/p&gt;
+&lt;p&gt;作为技术开发者，追逐新颖、时髦的技术，认为这些很酷，但是有时候会忘了出发点：&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;技术是用来解决问题的！&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Dify目前已经将近96K的star。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>AI agent实战</title>
       <link>https://solaim.github.io/posts/ai_agent%E5%AE%9E%E6%88%98/</link>
