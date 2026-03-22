@@ -9,10 +9,57 @@
       <url>https://solaim.github.io/img/favicon.webp</url>
       <link>https://solaim.github.io/img/favicon.webp</link>
     </image>
-    <generator>Hugo -- 0.147.2</generator>
+    <generator>Hugo -- 0.158.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 May 2025 14:23:49 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 22 Mar 2026 18:43:28 +0800</lastBuildDate>
     <atom:link href="https://solaim.github.io/categories/agent/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Claude Code国内使用手册</title>
+      <link>https://solaim.github.io/posts/claude-code%E5%9B%BD%E5%86%85%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</link>
+      <pubDate>Sun, 22 Mar 2026 18:43:28 +0800</pubDate>
+      <guid>https://solaim.github.io/posts/claude-code%E5%9B%BD%E5%86%85%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</guid>
+      <description>&lt;h2 id=&#34;claude-code&#34;&gt;Claude code&lt;/h2&gt;
+&lt;p&gt;Claude Code 是 Anthropic 官方推出的命令行 AI 编程助手，于 2024 年发布。它将 Claude 的强大能力带入终端，让你可以用自然语言直接操作文件、执行命令、管理 Git 仓库。&lt;/p&gt;
+&lt;p&gt;与传统 IDE 插件式的 AI 助手不同，Claude Code 是一个真正的自主 Agent——它不仅能给出代码建议，还能直接执行 shell 命令、编辑多文件、运行测试。它支持 MCP（Model Context Protocol）协议，可以连接外部工具和服务，并允许用户自定义 Skills 来扩展功能。&lt;/p&gt;
+&lt;p&gt;无论是日常开发、代码审查、重构还是调试，Claude Code 都能成为你的得力助手，尤其适合习惯在终端工作的开发者。&lt;/p&gt;
+&lt;p&gt;2025年Claude code发布了IDE插件，支持Vscode、Jetbrains等IDE。&lt;/p&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+&lt;h3 id=&#34;npm方式推荐&#34;&gt;npm方式(推荐)&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;npm install -g @anthropic-ai/claude-code
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;前提条件&lt;/strong&gt;：需要安装 Node.js（建议 v18 或更高版本）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;国内可用，建议使用npm方式安装&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;目前官方推荐的方式&#34;&gt;目前官方推荐的方式&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;macOS / Linux:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;curl -fsSL https://claude.ai/install.sh &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Windows (PowerShell):&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;irm &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;https&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;//&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;claude&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ai&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;install&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;py&#34;&gt;ps1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;iex
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装完成后，运行以下命令验证：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;claude --version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;解析脚本文件，二进制文件在谷歌云，国内无法正常下载&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;硬核下载方案：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 获取最新版本&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/latest
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 获取可下载的版本元数据，测试时最新版本为2.1.63&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/2.1.63/manifest.json
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 下载&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mac&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/2.1.63/darwin-x64/claude
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# windows x64&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/2.1.63/win32-x64/claude.exe
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;订阅&#34;&gt;订阅&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;官方订阅：锁区，国内无法正常使用&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Dify实现及思考</title>
       <link>https://solaim.github.io/posts/dify%E5%AE%9E%E7%8E%B0%E5%8F%8A%E6%80%9D%E8%80%83/</link>
@@ -22,8 +69,8 @@
 &lt;p&gt;Dify前端使用React框架实现，这里不做深入探索，来看看后端的实现。&lt;/p&gt;
 &lt;p&gt;主要代码目录如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;.&lt;span class=&#34;se&#34;&gt;\
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;..&lt;span class=&#34;se&#34;&gt;\
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;api&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 后端实现目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;..&lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;api&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 后端实现目录&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  app.py         &lt;span class=&#34;c1&#34;&gt;# 入口文件&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  controllers&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# 控制层，注册路由&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    console&lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;# 前端API&lt;/span&gt;
@@ -103,7 +150,8 @@ docker compose 一行命令完成部署，快速体验很赞。&lt;/p&gt;
 &lt;p&gt;1、计算机或相关专业本科及以上学历，2年以上工作经验，熟练掌握Python，或至少一门主流开发语言。&lt;/p&gt;
 &lt;p&gt;2、有Agent平台/应用开发经验者优先，熟悉coze，dify，langflow等开发平台，了解RAG、Agent机制，使用过langchain等开源系统，有prompt工程业务优化经验者优先。&lt;/p&gt;
 &lt;p&gt;3、有比较敏锐的产品意识和数据分析能力。&lt;/p&gt;
-&lt;p&gt;4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;4、有优秀的架构设计能力，了解包括检索引擎、kv存储、在线应用框架、批流处理等中间件系统，有承担过千万级以上产品应用架构设计者优先。&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;从上面的JD可以提取的信息：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;开发语言：Python(C++、Golang需求也较多)&lt;/li&gt;
@@ -113,7 +161,8 @@ docker compose 一行命令完成部署，快速体验很赞。&lt;/p&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;ai-agent&#34;&gt;AI Agent&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;AI Agent（也称人工智能代理、智能体）是一种能够感知环境、进行决策和执行动作的智能实体。智能体像人一样，它有记忆、有逻辑分析能力、有任务的拆解能力、问题的拆解能力和最后综合回来统一解决问题的能力。&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;&lt;img alt=&#34;Agent&#34; loading=&#34;lazy&#34; src=&#34;https://solaim.github.io/img/agent.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;智能体的组成：&lt;/p&gt;
 &lt;ul&gt;
@@ -154,7 +203,9 @@ docker compose 一行命令完成部署，快速体验很赞。&lt;/p&gt;
 &lt;li&gt;采样：服务器通过客户端请求 LLM&lt;/li&gt;
 &lt;li&gt;根：定义了服务器可以操作的边界&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;详细文档请参考&lt;a href=&#34;https://modelcontextprotocol.io/introduction&#34;&gt;官方文档&lt;/a&gt;&lt;/p&gt;</description>
+&lt;p&gt;详细文档请参考&lt;a href=&#34;https://modelcontextprotocol.io/introduction&#34;&gt;官方文档&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;a2a&#34;&gt;A2A&lt;/h2&gt;
+&lt;p&gt;A2A（Agent2Agent）协议是由 Google Cloud 发起的开放协议，旨在促进不同 AI Agent 之间的互操作性。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

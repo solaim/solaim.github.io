@@ -9,15 +9,22 @@
       <url>https://solaim.github.io/img/favicon.webp</url>
       <link>https://solaim.github.io/img/favicon.webp</link>
     </image>
-    <generator>Hugo -- 0.147.2</generator>
+    <generator>Hugo -- 0.158.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 May 2025 14:23:49 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 22 Mar 2026 18:43:28 +0800</lastBuildDate>
     <atom:link href="https://solaim.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Agent</title>
       <link>https://solaim.github.io/tags/agent/</link>
-      <pubDate>Thu, 08 May 2025 14:23:49 +0800</pubDate>
+      <pubDate>Sun, 22 Mar 2026 18:43:28 +0800</pubDate>
       <guid>https://solaim.github.io/tags/agent/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>AI</title>
+      <link>https://solaim.github.io/tags/ai/</link>
+      <pubDate>Sun, 22 Mar 2026 18:43:28 +0800</pubDate>
+      <guid>https://solaim.github.io/tags/ai/</guid>
       <description></description>
     </item>
     <item>
@@ -95,13 +102,6 @@
       <link>https://solaim.github.io/tags/ansible/</link>
       <pubDate>Wed, 10 Apr 2019 21:21:23 +0800</pubDate>
       <guid>https://solaim.github.io/tags/ansible/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>AI</title>
-      <link>https://solaim.github.io/tags/ai/</link>
-      <pubDate>Tue, 19 Dec 2017 20:44:16 +0800</pubDate>
-      <guid>https://solaim.github.io/tags/ai/</guid>
       <description></description>
     </item>
   </channel>
