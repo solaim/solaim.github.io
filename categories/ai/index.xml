@@ -11,8 +11,45 @@
     </image>
     <generator>Hugo -- 0.158.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 22 Mar 2026 19:45:21 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 22 Mar 2026 20:19:37 +0800</lastBuildDate>
     <atom:link href="https://solaim.github.io/categories/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Claude Skills实践</title>
+      <link>https://solaim.github.io/posts/claude-skills%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Sun, 22 Mar 2026 20:19:37 +0800</pubDate>
+      <guid>https://solaim.github.io/posts/claude-skills%E5%AE%9E%E8%B7%B5/</guid>
+      <description>&lt;h2 id=&#34;引言&#34;&gt;引言&lt;/h2&gt;
+&lt;h3 id=&#34;什么是-claude-skills&#34;&gt;什么是 Claude Skills&lt;/h3&gt;
+&lt;p&gt;Claude Skills 是 Claude Code 提供的一种可复用提示词模板机制。它允许用户将常用的任务流程封装成可执行的&amp;quot;技能&amp;quot;，通过 &lt;code&gt;/技能名称&lt;/code&gt; 的方式快速调用。&lt;/p&gt;
+&lt;p&gt;Skills 本质上是预定义的提示词（prompts），存储在项目的 &lt;code&gt;.claude/skills/&lt;/code&gt; 目录下。每个 Skill 是一个 Markdown 文件，包含任务描述和执行指令。当用户调用 Skill 时，Claude Code 会自动加载该文件的内容作为对话的起始提示。&lt;/p&gt;
+&lt;p&gt;例如，内置的 &lt;code&gt;/commit&lt;/code&gt; Skill 会引导 Claude 按照规范的流程创建 git commit，而 &lt;code&gt;/review-pr&lt;/code&gt; 则帮助用户审查 Pull Request。&lt;/p&gt;
+&lt;h3 id=&#34;为什么需要-skills&#34;&gt;为什么需要 Skills&lt;/h3&gt;
+&lt;p&gt;在日常开发中，我们经常会重复执行某些任务，比如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;代码提交&lt;/strong&gt;：遵循特定的 commit message 规范&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;代码审查&lt;/strong&gt;：按照团队的 PR 审查清单逐项检查&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;文档生成&lt;/strong&gt;：为新功能自动生成文档模板&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;测试运行&lt;/strong&gt;：执行特定的测试命令并分析结果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每次手动输入这些指令不仅繁琐，还容易遗漏关键步骤。Skills 的价值在于：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;提高效率&lt;/strong&gt;：一键触发复杂的多步骤任务&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;保证一致性&lt;/strong&gt;：确保每次执行都遵循相同的流程和标准&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;知识沉淀&lt;/strong&gt;：将团队的 best practice 固化为可复用的模板&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;降低门槛&lt;/strong&gt;：新成员可以通过 Skills 快速上手团队工作流&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;skills-基础概念&#34;&gt;Skills 基础概念&lt;/h2&gt;
+&lt;h3 id=&#34;skills-的定义和作用&#34;&gt;Skills 的定义和作用&lt;/h3&gt;
+&lt;p&gt;从技术角度看，一个 Skill 是一个 Markdown 文件，其目录层级如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;~/.claude/skills/           # 用户级别（个人使用，跨项目可用）
+└── my-skill/
+    └── SKILL.md            # Skill 定义文件
+
+&amp;lt;project&amp;gt;/.claude/skills/   # 项目级别（随项目共享，团队通用）
+└── team-skill/
+    └── SKILL.md
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;每个 Skill 是一个独立的目录，目录名即为 Skill 名称，内部包含一个 &lt;code&gt;SKILL.md&lt;/code&gt; 文件。文件结构如下：&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Vscode Claude Code编程实践</title>
       <link>https://solaim.github.io/posts/vscode-claude-code%E7%BC%96%E7%A8%8B%E5%AE%9E%E8%B7%B5/</link>
